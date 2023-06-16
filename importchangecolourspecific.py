@@ -4,8 +4,8 @@ bpy.ops.import_scene.gltf(filepath="C:/Users/tk1837/Blender scripts/SimpleExampl
 
 bpy.context.object.location = (1, 2, 12)
 
-activeobject = bpy.data.objects['LCFS_1']
-obj1 = bpy.context.scene.objects['Winding_pack_1']
+activeobject = bpy.context.scene.objects[1] #1 and 2 refers to mesh LCFS_1 and Winding_pack_1 (print(bpy.data.meshes)) 
+obj1 = bpy.context.scene.objects[2]
 
 mat = bpy.data.materials.new(name="MatName")
 material = bpy.data.materials.new(name="MaterialName")
