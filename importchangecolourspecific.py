@@ -1,6 +1,6 @@
 import bpy
 
-bpy.ops.import_scene.gltf(filepath="C:/Users/tk1837/Blender scripts/SimpleExample.gltf")
+bpy.ops.import_scene.gltf(filepath="")
 
 bpy.context.object.location = (1, 2, 12)
 
