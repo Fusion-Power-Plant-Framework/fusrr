@@ -1,0 +1,38 @@
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+    - id: trailing-whitespace
+      exclude: test_data
+    - id: check-merge-conflict
+    - id: end-of-file-fixer
+      exclude: test_data
+    - id: mixed-line-ending
+      args: [--fix=lf]
+      exclude: test_data
+
+-   repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+    - id: isort
+
+-   repo: https://github.com/psf/black
+    rev: 23.3.0
+    hooks:
+    - id: black
+      language_version: python3.8
+
+-   repo: https://github.com/pycqa/flake8
+    rev: 6.0.0
+    hooks:
+    - id: flake8
+      verbose: True
+      additional_dependencies: [flake8-docstrings,  pep8-naming, flake8-bandit]
+      args: [--exit-zero]
+
+-   repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v2.5.1
+    hooks:
+    - id: prettier
+      types_or: [json]
+      args: [--tab-width=2]
