@@ -4,10 +4,10 @@ import os
 
 def save_image():
     """Saves render as PNG"""
-    bpy.context.scene.render.filepath = '/home/hannah/blender_venv/Image_name' 
+    bpy.context.scene.render.filepath = '/home/blender_venv/Image_name' 
     bpy.ops.render.render(write_still=1)
 
-bpy.ops.import_scene.gltf(filepath="/home/hannah/Downloads/SimpleExample.gltf")
+bpy.ops.import_scene.gltf(filepath="/home/Downloads/SimpleExample.gltf")
 
 bpy.context.object.location = (1, 2, 12)
 
@@ -27,4 +27,4 @@ material.diffuse_color = (1, 2, 13, 4)
 save_image()
 
 def test_saveimage():
-    assert os.path.isfile('/home/hannah/blender_venv/Image_name.png') == True
+    assert os.path.isfile('/home/blender_venv/Image_name.png') == True
