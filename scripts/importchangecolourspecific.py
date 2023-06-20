@@ -17,6 +17,5 @@ obj1.data.materials.append(material)
 mat.diffuse_color = (10, 3, 12, 5)
 material.diffuse_color = (1, 2, 13, 4)
 
-
 bpy.context.scene.render.filepath = '/home/hannah/blender_venv/NameofPNG' #Saves render as PNG
 bpy.ops.render.render(write_still=1)
