@@ -12,28 +12,32 @@ class OutputParams:
     no_of_tfcoils: float
     bigq: float
 
-    def tab(self):
+    def tab(self, set2):
         paramtable = [
-            ["Output Parameters", "Value"],
-            ["rmajor", self.rmajor],
-            ["rminor", self.rminor],
-            ["no_of_tfcoils", self.no_of_tfcoils],
-            ["Q", self.bigq],
+            ["Output Parameters", "Data Set 1", "Data Set 2"],
+            ["rmajor", self.rmajor, set2.rmajor],
+            ["rminor", self.rminor, set2.rminor],
+            ["no_of_tfcoils", self.no_of_tfcoils, set2.no_of_tfcoils],
+            ["Q", self.bigq, set2.bigq],
         ]
 
-        table1 = tabulate(paramtable)
-        print(table1)
+        output_table = tabulate(paramtable)
+        print(output_table)
 
 
-""" DataSet1 = OutputParams(12,10,7,2) # test data
-DataSet1.tab() """
+def get_data(file_name=".DAT file"):
+    mfile_path = Path(file_name)  # insert file path here to PROCESS OUTPUT FILE .DAT
+    mfile = MFile(filename=str(mfile_path))
+    rmajor = mfile.data["rmajor"].get_scan(-1)
+    rminor = mfile.data["rminor"].get_scan(-1)
+    no_of_tfcoils = mfile.data["n_tf"].get_scan(-1)
+    bigq = mfile.data["bigq"].get_scan(-1)
 
-mfile_path = Path("silly_data.DAT")  # insert file path here to PROCESS OUTPUT FILE .DAT
-mfile = MFile(filename=str(mfile_path))
-rmajor = mfile.data["rmajor"].get_scan(-1)
-rminor = mfile.data["rminor"].get_scan(-1)
-no_of_tfcoils = mfile.data["n_tf"].get_scan(-1)
-bigq = mfile.data["bigq"].get_scan(-1)
+    return rmajor, rminor, no_of_tfcoils, bigq
 
-DataSet2 = OutputParams(rmajor, rminor, no_of_tfcoils, bigq)
-DataSet2.tab()
+
+rmajor, rminor, no_of_tfcoils, bigq = get_data("silly_data.DAT")
+Instance1 = OutputParams(rmajor, rminor, no_of_tfcoils, bigq)
+rmajor, rminor, no_of_tfcoils, bigq = get_data("baseline_2018_MFILE.DAT")
+Instance2 = OutputParams(rmajor, rminor, no_of_tfcoils, bigq)
+Instance1.tab(Instance2)
