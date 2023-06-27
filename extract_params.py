@@ -46,17 +46,14 @@ class OutputParams:
 
 
 def comparison(output_parameters: list[OutputParams]) -> str:
-    # Creates the two instances to compare and converts to dictionary
+    # Takes a list of instances of dataclass and makes them into dictionaries
     output_parameters = [asdict(o_p) for o_p in output_parameters]
 
     param_list = []
-    header_list = []
+    # Creates list and pops file_name to use as headers for table
+    header_list = [o_p.pop("file_name") for o_p in output_parameters]
 
-    # Appends to header list and removes the file name from params
-    header_list.extend([o_p.pop("file_name") for o_p in output_parameters])
-
-    # Looks for same key in both outputs to match
-
+    # Looks for same key in output_parameters list of dictionaries
     for key in output_parameters[0].keys():
         row = [key]
         for o_p in output_parameters:
