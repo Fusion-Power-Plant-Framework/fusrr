@@ -6,6 +6,8 @@ Also allows manually inputting params to store in class.
 Currently set to 5 output params but can add any key from .DAT file
 
 """
+from __future__ import annotations
+
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Optional
@@ -24,7 +26,7 @@ class OutputParams:
     file_name: Optional[str] = None
 
     @classmethod
-    def from_file(cls, file_name):
+    def from_file(cls, file_name: str) -> OutputParams:
         mfile_path = Path(
             file_name
         )  # insert file path here to PROCESS OUTPUT FILE .DAT
@@ -39,33 +41,34 @@ class OutputParams:
 
         return cls(
             file_name=file_name,
-            **{param: mfile.data[param].get_scan(-1) for param in output_params}
+            **{param: mfile.data[param].get_scan(-1) for param in output_params},
         )
 
 
-def comparison(two_files=list):
+def comparison(output_parameters: list[OutputParams]) -> str:
     # Creates the two instances to compare and converts to dictionary
-    process1 = asdict(OutputParams.from_file(two_files[0]))
-    process2 = asdict(OutputParams.from_file(two_files[1]))
+    output_parameters = [asdict(o_p) for o_p in output_parameters]
 
     param_list = []
     header_list = []
 
     # Appends to header list and removes the file name from params
-    header_list.append(process1.pop("file_name"))
-    header_list.append(process2.pop("file_name"))
+    header_list.extend([o_p.pop("file_name") for o_p in output_parameters])
 
     # Looks for same key in both outputs to match
-    for key in process1.keys():
-        if key in process2:
-            param_list.append([key, process1.get(key), process2.get(key)])
-        else:
-            pass
 
+    for key in output_parameters[0].keys():
+        row = [key]
+        for o_p in output_parameters:
+            if key in o_p:
+                row.append(o_p.get(key))
+            else:
+                row.append(None)
+        param_list.append(row)
     # Tabulates the params in columns for each file
     return tabulate(
         param_list,
-        headers=["Params", header_list[0], header_list[1]],
+        headers=["Params", *header_list],
         tablefmt="fancy_outline",
         numalign="right",
     )
