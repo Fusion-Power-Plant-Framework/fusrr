@@ -18,6 +18,13 @@ from tabulate import tabulate
 
 @dataclass
 class OutputParams:
+    """DataClass to store output params
+
+    Returns:
+        dataclass: 5 "test" parameters + file_name which is optional in case of manual
+        input for OutputParams
+    """
+
     rmajor: float
     rminor: float
     n_tf: float
@@ -27,6 +34,8 @@ class OutputParams:
 
     @classmethod
     def from_file(cls, file_name: str) -> OutputParams:
+        """Makes instance of class from file name"""
+
         mfile_path = Path(
             file_name
         )  # insert file path here to PROCESS OUTPUT FILE .DAT
@@ -46,6 +55,13 @@ class OutputParams:
 
 
 def comparison(output_parameters: list[OutputParams]) -> str:
+    """Takes list of instances and formats them comparing keys in table
+
+    Returns
+    -------
+    str
+        Ready to be tabulated by tabulate module
+    """
     # Takes a list of instances of dataclass and makes them into dictionaries
     output_parameters = [asdict(o_p) for o_p in output_parameters]
 
