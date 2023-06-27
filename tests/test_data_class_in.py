@@ -2,9 +2,16 @@ from dataclasses import asdict
 from pathlib import Path
 
 import pytest
+<<<<<<< HEAD
 from extract_params import OutputParams
 from process.io.mfile import MFile
 
+=======
+from process.io.mfile import MFile
+
+from extract_params import OutputParams
+
+>>>>>>> a52e178 (Adding Testing)
 
 class Testfilein:
     def setup_method(self):
@@ -18,7 +25,11 @@ class Testfilein:
             assert value == pytest.approx(result)
 
     def test_correct_params_from_file(self):
+<<<<<<< HEAD
         mfile = MFile(Path(__file__).parent / "example_process_params.DAT")
+=======
+        mfile = MFile(Path(__file__).parent / "test_react.DAT")
+>>>>>>> a52e178 (Adding Testing)
         for count, (key, value) in enumerate(asdict(self.test).items()):
             if key != "file_name":
                 assert value == pytest.approx((mfile.data[key]).get_scan(-1))
