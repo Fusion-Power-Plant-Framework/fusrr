@@ -19,7 +19,7 @@ class Testfilein:
             assert value == pytest.approx(result)
 
     def test_correct_params_from_file(self):
-        mfile = MFile(Path(__file__).parent / "test_react.DAT")
+        mfile = MFile(Path(__file__).parent / "example_process_params.DAT")
         for count, (key, value) in enumerate(asdict(self.test).items()):
             if key != "file_name":
                 assert value == pytest.approx((mfile.data[key]).get_scan(-1))
