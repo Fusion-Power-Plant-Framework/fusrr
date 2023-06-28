@@ -26,10 +26,14 @@ class Testfilein:
 
     def test_correct_params_from_file(self):
 <<<<<<< HEAD
+<<<<<<< HEAD
         mfile = MFile(Path(__file__).parent / "example_process_params.DAT")
 =======
         mfile = MFile(Path(__file__).parent / "test_react.DAT")
 >>>>>>> a52e178 (Adding Testing)
+=======
+        mfile = MFile(Path(__file__).parent / "example_process_params.DAT")
+>>>>>>> 7e6f253 (Test for extract_bluemira_params testing json read)
         for count, (key, value) in enumerate(asdict(self.test).items()):
             if key != "file_name":
                 assert value == pytest.approx((mfile.data[key]).get_scan(-1))
