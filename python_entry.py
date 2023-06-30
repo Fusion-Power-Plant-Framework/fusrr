@@ -32,15 +32,22 @@ def move_location(x, y, z):
     bpy.context.object.location = (x, y, z)
 
 def move_camera(x, y, z):
-    """Selects and moves camera (not yet working)"""
-    bpy.data.objects['Camera'].select_set(True)
+    """Selects and moves camera"""
+    camera = bpy.data.objects['Camera']
+    camera.location = (x, y, z)
 
+def delete_cube():
+    """Goodbye default cube"""
+    bpy.ops.object.select_all(action = 'DESELECT')
+    bpy.data.objects['Cube'].select_set(True)
+    bpy.ops.object.delete()
 
 importfilepath = "/home/Downloads/SimpleExample.gltf"
-imagepathname = "/home/blender_venv/Image_name.png"
+imagepathname = "render.png"
 
 import_file(importfilepath)
-
+delete_cube()
+move_camera(15, -20, 20)
 move_location(1,2,12)
 
 save_image(imagepathname )
