@@ -49,7 +49,7 @@ for path in importfilepaths:
     break
 imagepathname = "render.png"
 
-import_file(importfilepath)
+import_file(str(importfilepath))
 delete_cube()
 move_camera(15, -20, 20)
 move_location(1,2,12)
