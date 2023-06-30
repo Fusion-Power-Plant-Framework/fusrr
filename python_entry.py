@@ -43,7 +43,7 @@ def delete_cube():
     bpy.data.objects['Cube'].select_set(True)
     bpy.ops.object.delete()
 
-importfilepaths = (ath.cwd().glob('*.gltf')
+importfilepaths = Path.cwd().glob('*.gltf')
 for path in importfilepaths:
     importfilepath = path
     break
