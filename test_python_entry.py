@@ -3,7 +3,7 @@ import os
 
 from python_entry import save_image
 
-imagepath = "/home/blender_venv/Image_name.png"
+imagepath = "render.png"
 
 
 def test_save_image():
