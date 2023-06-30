@@ -1,5 +1,6 @@
 """Imports Simple Example of reactor, changes location, selects/ generates and colours meshes and outputs a rendered image as PNG file"""
 import bpy
+from pathlib import Path
 
 def import_file(pathforfile):
     """Imports gltf file"""
@@ -42,7 +43,10 @@ def delete_cube():
     bpy.data.objects['Cube'].select_set(True)
     bpy.ops.object.delete()
 
-importfilepath = "/home/Downloads/SimpleExample.gltf"
+importfilepaths = (ath.cwd().glob('*.gltf')
+for path in importfilepaths:
+    importfilepath = path
+    break
 imagepathname = "render.png"
 
 import_file(importfilepath)
