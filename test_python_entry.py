@@ -1,5 +1,4 @@
-"""Test to locate png in specified directory. Ensure no other pngs in file or the test will always pass."""
-import os
+from pathlib import Path
 
 from python_entry import save_image
 
@@ -7,5 +6,6 @@ imagepath = "render.png"
 
 
 def test_save_image():
+    """Test to assert if render has been saved"""
     save_image(imagepath)
-    assert os.path.isfile(imagepath) == True
+    assert Path(imagepath).exists() == True
