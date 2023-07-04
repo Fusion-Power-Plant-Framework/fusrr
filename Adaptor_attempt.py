@@ -3,7 +3,14 @@
 
 class BasicParameters:
     """Adapting basic BLUEMIRA or PROCESS data classes to common format"""
-
+    def __init__(self, data_input):
+        self.data_input  = data_input
+        
+        if self.data_input == MFile: ###file type/ way to define PROCESS vs BLUEMIRA (path('my_file').suffix = DAT?)
+            self.adapt_process()
+        else:
+            self.adapt_bluemira()
+    
     def adapt_process(self):
         """Convert parameters from PROCESS dataclasses to generic format"""
         from Dictionary_Basic import process_param
@@ -18,15 +25,7 @@ class BasicParameters:
             generic_name = bluemira_param[param_name]
             setattr(self, generic_name, param_value)
 
-    def __init__(self, data_input):
-        self.data_input  = data_input
-        
-        if type(self.data_input) == 'process':
-            self.adapt_process()
-        else:
-            self.adapt_bluemira()
+input_data = OutputParams.from_file('baseline_MFILE.DAT')
 
-process_data = MilesPROCESSextraction('.DAT')
-
-adapted_params = BasicParameters(process_data)
+adapted_params = BasicParameters(input_data)
 
