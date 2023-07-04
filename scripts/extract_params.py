@@ -45,11 +45,38 @@ class OutputParams:
         output_params.pop(
             output_params.index("file_name")
         )  # Removes file_name to match key values to attributes
+#From line 50 - 80 WIP
+        def adapt_process(self):
+            """Convert parameters from PROCESS dataclasses to generic format"""
+            from Dictionary_Basic import process_param
+            for param_name, param_value in input_data.items():
+                try:    #if param found in both dict then:
+                    generic_name = process_param[param_name]
+                    setattr(self, generic_name, param_value)
+                except KeyError:
+                    pass
+        
+        def adapt_bluemira(self):
+            """Convert parameters from BLUEMIRA dataclesses to generic format"""
+            from Dictionary_Basic import bluemira_param
+            for param_name, param_value in input_data.items():
+                try:
+                    generic_name = bluemira_param[param_name]
+                    setattr(self, generic_name, param_value)
+                except KeyError:
+                    continue
+        if MFile:
 
-        return cls(
+            return cls(
+                file_name=file_name,
+                **{param: mfile.data[adapt_process[param]].get_scan(-1) for param in output_params},
+            )
+        elif jsonFile:
+            return cls(
             file_name=file_name,
-            **{param: mfile.data[param].get_scan(-1) for param in output_params},
+            **{param: bluemira_data[adapt_bluemira[param]["value"]] for param in output_params},
         )
+#50 - 80 is example of adaptor creating generic output for both PROCESS and BLUEMIRA, needs more work
 
 def comparison(output_parameters: list[OutputParams]) -> str:
     """Takes list of instances and formats them comparing keys in table
