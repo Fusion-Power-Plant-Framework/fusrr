@@ -6,7 +6,7 @@ class BasicParameters:
     def __init__(self, data_input):
         self.data_input  = data_input
         
-        if self.data_input == MFile: ###file type/ way to define PROCESS vs BLUEMIRA (path('my_file').suffix = DAT?)
+        if self.data_input == MFile: 
             self.adapt_process()
         else:
             self.adapt_bluemira()
