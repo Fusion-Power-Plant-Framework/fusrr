@@ -1,5 +1,7 @@
 """Adaptor to convert BLUEMIRA and PROCESS parameters to common Reactor class"""
 #(Currently untested WIP)
+from process.io.mfile import MFile
+from extract_params import OutputParams
 
 class BasicParameters:
     """Adapting basic BLUEMIRA or PROCESS data classes to common format"""
