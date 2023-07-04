@@ -1,4 +1,4 @@
-"""Adaptor to convert BLUEMIRA and PROCESS parameters to common Reactor class"""
+"""Adapter to convert BLUEMIRA and PROCESS parameters to common Reactor class"""
 #(Currently WIP)
 from extract_params import OutputParams
 from dataclasses import asdict
