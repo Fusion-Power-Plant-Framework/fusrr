@@ -36,9 +36,7 @@ class OutputParams:
     def from_file(cls, file_name: str) -> OutputParams:
         """Makes instance of class from file name"""
 
-        mfile_path = Path(
-            file_name
-        )  # insert file path here to PROCESS OUTPUT FILE .DAT
+        mfile_path = Path(file_name)  # insert file path here to PROCESS OUTPUT FILE .DAT
         mfile = MFile(filename=str(mfile_path))
 
         output_params = list(
