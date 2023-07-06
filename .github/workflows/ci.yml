@@ -8,7 +8,7 @@ on:
       - main
 
 jobs:
-  build-and-test:
+  code-quality:
 
     runs-on: ubuntu-latest
 
@@ -25,6 +25,9 @@ jobs:
 
     - name: Setup Environment
       run: pip install ".[dev]"
+
+    - name: Try to fail
+      run: exit 1
 
     - name: Check Code Quality
       shell: bash -l {0}
