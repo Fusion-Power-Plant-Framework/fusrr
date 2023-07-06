@@ -1,4 +1,4 @@
-"""Imports Simple Example of reactor, changes location, selects/ generates and colours meshes and outputs a rendered image as PNG file"""
+"""Imports .gltf from cwd, changes location of imported object, selects/ generates and colours meshes and outputs a rendered image as PNG file"""
 import bpy
 from pathlib import Path
 
@@ -43,15 +43,18 @@ def delete_cube():
     bpy.data.objects['Cube'].select_set(True)
     bpy.ops.object.delete()
 
-importfilepaths = Path.cwd().glob('*.gltf')
+importfilepaths = Path.cwd().glob('*.gltf') # Finds first .gltf file in cwd - check it is wanted
 for path in importfilepaths:
-    importfilepath = path
+    file_import = path
     break
 imagepathname = "render.png"
 
-import_file(str(importfilepath))
+try:
+    import_file(str(file_import))
+except NameError:
+    raise FileNotFoundError(f"No .gltf found in {str(Path.cwd())}")
 delete_cube()
 move_camera(15, -20, 20)
 move_location(1,2,12)
 
-save_image(imagepathname )
+save_image(imagepathname)
