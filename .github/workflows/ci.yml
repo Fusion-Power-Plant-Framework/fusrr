@@ -26,11 +26,7 @@ jobs:
     - name: Setup Environment
       run: pip install ".[dev]"
 
-    - name: Try to fail
-      run: exit 1
-
     - name: Check Code Quality
-      shell: bash -l {0}
       run: |
         SKIP=flake8,black pre-commit run --all-files
         flake8 --count
