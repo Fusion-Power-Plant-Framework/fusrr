@@ -1,4 +1,4 @@
-name: bluemira_ci
+name: rendering_ci
 
 on:
   pull_request:
