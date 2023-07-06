@@ -13,7 +13,7 @@ classifiers=[
     ]
 dependencies = [
     "bpy",
-    "process",
+    #"process",  # TODO install PROCESS once opensource?
     "tabulate"
 ]
 
