@@ -3,7 +3,6 @@ from dataclasses import asdict
 from pathlib import Path
 
 import pytest
-
 from extract_bluemira_params import BlueOutputParams
 
 

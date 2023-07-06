@@ -2,9 +2,8 @@ from dataclasses import asdict
 from pathlib import Path
 
 import pytest
-from process.io.mfile import MFile
-
 from extract_params import OutputParams
+from process.io.mfile import MFile
 
 
 class Testfilein:
