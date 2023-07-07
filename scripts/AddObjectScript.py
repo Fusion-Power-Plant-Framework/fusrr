@@ -19,12 +19,12 @@ class TestPanel(bpy.types.Panel):
     bl_region_type = "UI"
     bl_category = "AddObject"
 
-    def draw(self, context):
+    def draw(self, context: bpy):
         """Makes the panel with labels and icons
 
         Parameters
         ----------
-        context : bpy tpye
+        context :
             current active scene
         """
         layout = self.layout
