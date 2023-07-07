@@ -1,3 +1,6 @@
+"""Changes the colour of the imported CAD files meshes
+"""
+
 import bpy
 
 bpy.ops.import_scene.gltf(filepath="")
@@ -19,4 +22,5 @@ obj1.data.materials.append(material)
 mat.diffuse_color = (10, 3, 12, 5)
 material.diffuse_color = (1, 2, 13, 4)
 
-# Changes location of object, generates new mesh and changes colour. Specific to SimpleExample as needed to call in names of each mesh.
+# Changes location of object, generates new mesh and changes colour.
+# Specific to SimpleExample as needed to call in names of each mesh.
