@@ -18,10 +18,12 @@ from tabulate import tabulate
 
 @dataclass
 class OutputParams:
-    """DataClass to store output params
+    """Data Class to store Output parameters
 
-    Returns:
-        dataclass: 5 "test" parameters + file_name which is optional in case of manual
+    Returns
+    -------
+    Dataclass
+        5 "test" parameters + file_name which is optional in case of manual
         input for OutputParams
     """
 
@@ -35,7 +37,6 @@ class OutputParams:
     @classmethod
     def from_file(cls, file_name: str) -> OutputParams:
         """Makes instance of class from file name"""
-
         mfile_path = Path(file_name)  # insert file path here to PROCESS OUTPUT FILE .DAT
         mfile = MFile(filename=str(mfile_path))
 
