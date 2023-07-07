@@ -1,7 +1,18 @@
+"""
+Creates a panel inside blender 3D view to add a cube or cylinder.
+"""
 import bpy
 
 
 class TestPanel(bpy.types.Panel):
+    """Test panel in 3D view.
+
+    Parameters
+    ----------
+    bpy : bpy item
+        Panel to create buttons
+    """
+
     bl_label = "Test Panel"
     bl_idname = "PT_Test"
     bl_space_type = "VIEW_3D"
@@ -9,6 +20,13 @@ class TestPanel(bpy.types.Panel):
     bl_category = "AddObject"
 
     def draw(self, context):
+        """Makes the panel with labels and icons
+
+        Parameters
+        ----------
+        context : bpy tpye
+            current active scene
+        """
         layout = self.layout
 
         row = layout.row()
@@ -19,10 +37,12 @@ class TestPanel(bpy.types.Panel):
 
 
 def register():
+    """registers class"""
     bpy.utils.register_class(TestPanel)
 
 
 def unregister():
+    """deregisters class"""
     bpy.utils.unregister_class(TestPanel)
 
 
