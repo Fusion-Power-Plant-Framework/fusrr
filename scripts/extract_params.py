@@ -49,7 +49,7 @@ class OutputParams:
 
         return cls(
             file_name=file_name,
-            **{param: mfile.data[adapt_process[param]].get_scan(-1) for param in output_params},
+            **{param: mfile.data[param].get_scan(-1) for param in output_params},
         )
 
 def comparison(output_parameters: list[OutputParams]) -> str:
