@@ -37,12 +37,12 @@ class TestPanel(bpy.types.Panel):
 
 
 def register():
-    """registers class"""
+    """Registers class"""
     bpy.utils.register_class(TestPanel)
 
 
 def unregister():
-    """deregisters class"""
+    """Deregisters class"""
     bpy.utils.unregister_class(TestPanel)
 
 
