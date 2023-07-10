@@ -15,7 +15,7 @@ def move_camera(x, y, z):
     camera.location = (x, y, z)
 
 
-def camera_fix(camera: bpy.data, target: bpy.data):
+def camera_fix(camera: str, target: str):
     """Fixes camera to look at target
 
     Parameters
@@ -23,8 +23,10 @@ def camera_fix(camera: bpy.data, target: bpy.data):
     camera : bpy.data.objects[""]
     target : bpy.data.object[""]
     """
-    constraint = camera.constraints.new(type="TRACK_TO")
-    constraint.target = target
+
+    # *Will break if object "camera" or target doesn't exist.
+    constraint = bpy.data.objects[camera].constraints.new(type="TRACK_TO")
+    constraint.target = bpy.data.objects[target]
 
 
 def delete_cube():
