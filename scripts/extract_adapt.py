@@ -29,7 +29,7 @@ class OutputParams:
     """DataClass to store generic output parameters
 
     Returns:
-        dataclass: 5 "test" parameters + file_name which is optional in case of manual
+        dataclass: listed parameters + file_name which is optional in case of manual
         input for OutputParams
     """
 
