@@ -10,29 +10,41 @@ from process.io.mfile import MFile
 import argparse
 import json
 
-argParser = argparse.ArgumentParser()
-argParser.add_argument("-fn", "--file_name", help="input file")
-args = argParser.parse_args()
-
 def adapt_bluemira(input_data):
-    """Converts generic name into BLUEMIRA parameters for use in class method"""
+    """
+    Converts generic name into BLUEMIRA parameters for use in class method
+
+    Returns:
+        List of BLUEMIRA parameta=er names
+    """
     from Dictionary_Basic import bluemira_param
     blue_out = []
     for param_name in input_data:
-        blue_name = bluemira_param[param_name]
-        blue_out.append(blue_name)
+        blue_out.append(bluemira_param[param_name])
     return blue_out
 
+def main():
+    """Pass in file and call to generate generic output"""
+    argParser = argparse.ArgumentParser()
+    argParser.add_argument("-fn", "--file_name", help="input file")
+    args = argParser.parse_args()
+    file_name = str(args.file_name)
+    generic_output = OutputParams.from_file(file_name)
+    #print('generic_output=', generic_output)
+    return generic_output
 
 @dataclass
 class OutputParams:
     """DataClass to store generic output parameters
 
     Returns:
+<<<<<<< HEAD
         dataclass: listed parameters, their values + file_name which is optional in case of manual
+=======
+        dataclass: listed parameters and values + file_name which is optional in case of manual
+>>>>>>> 0d2b04b (Updates)
         input for OutputParams
     """
-
     rmajor: float
     No_TF: float
     file_name: Optional[str] = None
@@ -66,8 +78,5 @@ class OutputParams:
 
         return cls(file_name=file_name, **variables)
 
-
-file_name = str(args.file_name)
-generic_output = OutputParams.from_file(file_name)
-print('generic_output=', generic_output)
- 
+if __name__ == "__main__":
+    main()
