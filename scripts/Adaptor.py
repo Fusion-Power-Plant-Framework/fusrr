@@ -38,11 +38,7 @@ class OutputParams:
     """DataClass to store generic output parameters
 
     Returns:
-<<<<<<< HEAD
         dataclass: listed parameters, their values + file_name which is optional in case of manual
-=======
-        dataclass: listed parameters and values + file_name which is optional in case of manual
->>>>>>> 0d2b04b (Updates)
         input for OutputParams
     """
     rmajor: float
