@@ -1,4 +1,5 @@
 """Dictionary for generic params for adaptor"""
 
-process_param = dict({'rmajor':'rmajor', 'n_tf':'No_TF'})
-bluemira_param = dict({'R_0':'rmajor', 'n_TF':'No_TF'})
+process_param = dict({'rmajor' :'rmajor', 'No_TF':'n_tf'})
+bluemira_param = dict({'rmajor':'R_0', 'No_TF':'n_TF'})
+
