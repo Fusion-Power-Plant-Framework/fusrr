@@ -36,15 +36,12 @@ def bluemira_file_adaptor(input_data, filepath):
     -------
         Dictionary containing generic parameters and their values
     """
-    blue_out = []
     variables = {}
     with open(str(filepath), "r") as fh:
         data_obj = json.load(fh)
-    for param_name in input_data:
-        blue_out.append(bluemira_param[param_name])
-    for name_1, name_2 in zip(input_data, blue_out):
+    for name in input_data:
         try:
-            variables[name_1] = data_obj[name_2]["value"]
+            variables[name] = data_obj[bluemira_param[name]]["value"]
         except KeyError:
             continue
     return variables

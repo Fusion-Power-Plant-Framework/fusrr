@@ -6,7 +6,7 @@ from renderingpipline.adaptor import OutputParams
 
 def main():
     """Pass in file and call to generate generic output"""
-    argparser = argparse.argumentparser()
+    argparser = argparse.ArgumentParser()
     argparser.add_argument("-fn", "--file_name", help="input file")
     args = argparser.parse_args()
     file_name = str(args.file_name)
