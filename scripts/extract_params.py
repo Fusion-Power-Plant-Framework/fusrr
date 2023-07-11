@@ -46,11 +46,11 @@ class OutputParams:
             output_params.index("file_name")
         )  # Removes file_name to match key values to attributes
 
-
         return cls(
             file_name=file_name,
             **{param: mfile.data[param].get_scan(-1) for param in output_params},
         )
+
 
 def comparison(output_parameters: list[OutputParams]) -> str:
     """Takes list of instances and formats them comparing keys in table

@@ -2,6 +2,7 @@ import argparse
 
 from renderingpipline.adaptor import OutputParams
 
+
 def main():
     """Pass in file and call to generate generic output"""
     argParser = argparse.ArgumentParser()
@@ -9,8 +10,9 @@ def main():
     args = argParser.parse_args()
     file_name = str(args.file_name)
     generic_output = OutputParams.from_file(file_name)
-    print('generic_output=', generic_output)
+    print("generic_output=", generic_output)
     return generic_output
+
 
 if __name__ == "__main__":
     generic_output = main()
