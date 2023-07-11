@@ -17,7 +17,8 @@ def process_file_adaptor(input_data, filepath):
     """
     Imports data from mfile and assigns name and value
 
-    Returns:
+    Returns
+    -------
         Dictionary containing generic parameters and their values
     """
     variables = {}
@@ -31,7 +32,8 @@ def bluemira_file_adaptor(input_data, filepath):
     """
     Converts generic name into BLUEMIRA parameters to then be reassigned values and names
 
-    Returns:
+    Returns
+    -------
         Dictionary containing generic parameters and their values
     """
     blue_out = []
@@ -52,9 +54,10 @@ def bluemira_file_adaptor(input_data, filepath):
 class OutputParams:
     """DataClass to store generic output parameters
 
-    Returns:
-        dataclass: listed parameters, their values + file_name which is optional in case of manual
-        input for OutputParams
+    Returns
+    -------
+        dataclass: listed parameters, their values + file_name which
+        is optional in case of manual input for OutputParams
     """
 
     rmajor: float
@@ -63,7 +66,10 @@ class OutputParams:
 
     @classmethod
     def from_file(cls, file_name: str) -> OutputParams:
-        """Makes instance of class from file name and assigns values to generic parameters"""
+        """
+        Makes instance of class from file name
+        and assigns values to generic parameters
+        """
         file_path = Path(file_name)
         output_names = list(cls.__annotations__.keys())
         output_names.pop(output_names.index("file_name"))

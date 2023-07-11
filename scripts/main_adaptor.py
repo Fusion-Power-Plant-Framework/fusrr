@@ -1,3 +1,4 @@
+"""Executes adaptor.py"""
 import argparse
 
 from renderingpipline.adaptor import OutputParams
@@ -5,9 +6,9 @@ from renderingpipline.adaptor import OutputParams
 
 def main():
     """Pass in file and call to generate generic output"""
-    argParser = argparse.ArgumentParser()
-    argParser.add_argument("-fn", "--file_name", help="input file")
-    args = argParser.parse_args()
+    argparser = argparse.argumentparser()
+    argparser.add_argument("-fn", "--file_name", help="input file")
+    args = argparser.parse_args()
     file_name = str(args.file_name)
     generic_output = OutputParams.from_file(file_name)
     print("generic_output=", generic_output)
