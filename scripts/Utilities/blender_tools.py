@@ -51,3 +51,20 @@ def save_image(file_name: str):
 
     bpy.context.scene.render.filepath = str(file_name)
     bpy.ops.render.render(write_still=True, use_viewport=True)
+
+
+def join_obj(names: list):
+    """Joins objects in list into one object
+
+    Parameters
+    ----------
+    names : list
+        strings of names of objects wanted to be joined
+    """
+    bpy.ops.object.select_all(action="DESELECT")
+    for obj_name in names:
+        selected_objects = bpy.data.objects.get(str(obj_name))
+        selected_objects.select_set(True)
+
+    bpy.context.view_layer.objects.active = bpy.context.scene.objects[str(names[0])]
+    bpy.ops.object.join()
