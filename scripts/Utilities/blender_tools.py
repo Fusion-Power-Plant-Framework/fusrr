@@ -68,3 +68,18 @@ def join_obj(names: list):
 
     bpy.context.view_layer.objects.active = bpy.context.scene.objects[str(names[0])]
     bpy.ops.object.join()
+
+
+def make_face_from_vertices(vertex_obj: str):
+    """Makes a face from group of vertices
+
+    Parameters
+    ----------
+    vertex_obj : object
+        name of object where vertices are
+    """
+    bpy.data.objects[str(vertex_obj)].select_set(True)
+    bpy.ops.object.mode_set(mode="EDIT")
+    bpy.ops.mesh.select_all(action="SELECT")
+    bpy.ops.mesh.edge_face_add()
+    bpy.ops.object.mode_set(mode="OBJECT")
