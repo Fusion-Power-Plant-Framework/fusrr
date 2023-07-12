@@ -78,8 +78,51 @@ def make_face_from_vertices(vertex_obj: str):
     vertex_obj : object
         name of object where vertices are
     """
+    bpy.ops.object.select_all(action="DESELECT")
     bpy.data.objects[str(vertex_obj)].select_set(True)
     bpy.ops.object.mode_set(mode="EDIT")
     bpy.ops.mesh.select_all(action="SELECT")
     bpy.ops.mesh.edge_face_add()
     bpy.ops.object.mode_set(mode="OBJECT")
+
+
+def rect_blend(rectangle: object):
+    x_coords = []
+    y_coords = []
+    # Gets bottom left point
+    x0 = rectangle.get_x()
+    y0 = rectangle.get_y()
+    x_coords.append(x0)
+    y_coords.append(y0)
+
+    # Gets bottom right point
+    x1 = x0 + rectangle.get_width()
+    x_coords.append(x1)
+    y_coords.append(y0)
+
+    # Top right point
+    y1 = y0 + rectangle.get_height()
+    x_coords.append(x1)
+    y_coords.append(y1)
+
+    # Gets top left point
+
+    x_coords.append(x0)
+    y_coords.append(y1)
+
+    centre_coords = list(zip(x_coords, y_coords))
+
+    return centre_coords
+
+
+def change_to_mesh(object_names: list):
+    bpy.ops.object.select_all(action="DESELECT")
+
+    for i in object_names:
+        bpy.data.objects[str(i)].select_set(True)
+
+    bpy.context.view_layer.objects.active = bpy.context.scene.objects[
+        str(object_names[4])
+    ]
+    bpy.ops.object.convert(target="MESH")
+    bpy.ops.object.select_all(action="DESELECT")

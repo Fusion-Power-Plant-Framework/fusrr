@@ -24,8 +24,6 @@ def plot_plasma(plasma_shape):
 
     Arguments:
         axis --> axis object to plot to
-        mfile_data --> MFILE data object
-        scan --> scan number to use
     """
 
     r0 = plasma_shape.rmajor
@@ -128,6 +126,6 @@ bt.camera_fix(camera="Camera", target="Empty")
 
 bt.save_image("Plasma")
 
-# Save the Blender scene as a .blend file
-# blend_file_path = ex/file/path
-# bpy.ops.wm.save_as_mainfile(filepath=blend_file_path)
+# Save the Blender scene as a .gltf file
+# blend_file_path = "ex/file/path"
+# bpy.ops.export_scene.gltf(filepath = blend_file_path)
