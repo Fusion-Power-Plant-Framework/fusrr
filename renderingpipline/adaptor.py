@@ -60,6 +60,9 @@ class OutputParams:
 
     rmajor: float
     No_TF: float
+    rminor: float
+    delta95: float
+    kappa95: float
     file_name: Optional[str] = None
 
     @classmethod
