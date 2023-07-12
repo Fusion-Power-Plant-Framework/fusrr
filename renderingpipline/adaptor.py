@@ -63,6 +63,7 @@ class OutputParams:
     rminor: float
     delta95: float
     kappa95: float
+    i_single_null: float
     file_name: Optional[str] = None
 
     @classmethod

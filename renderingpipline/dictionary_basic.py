@@ -7,6 +7,7 @@ process_param = dict(
         "rminor": "rminor",
         "delta_95": "triang95",
         "kappa95": "kappa95",
+        "i_single_null": "i_single_null",
     }
 )
 
