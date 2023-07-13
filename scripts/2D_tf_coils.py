@@ -12,16 +12,17 @@ import bpy
 import bmesh
 import matplotlib.pyplot as plt
 import numpy as np
-import Utilities.blender_tools as bt
 from matplotlib import patches
 from Tf_coil_dict import arc_points
-from tf_coil_shape_params import TfCoilShapeParams
+
+import renderingpipline.utilities.blender_tools as bt
+from renderingpipline.adaptor import OutputParams
 
 # TODO: Some imports manual need fixing!
-tf_coil_shape = TfCoilShapeParams.from_file(file_name="baseline_2018_MFILE.DAT")
+tf_coil_shape = OutputParams.from_file(file_name="baseline_2018_MFILE.DAT")
 rtangle = np.pi / 2
 i_tf_sup = int(1)
-tfcth = 1.4000e00
+tfcth = tf_coil_shape.tfcth
 
 
 def tf_coil_outline(coords):
