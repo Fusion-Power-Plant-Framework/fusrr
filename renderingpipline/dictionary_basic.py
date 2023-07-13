@@ -1,6 +1,5 @@
 """Dictionary for generic params for adaptor"""
 
-
 process_param = dict(
     {
         "rmajor": "rmajor",

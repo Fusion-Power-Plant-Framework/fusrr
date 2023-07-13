@@ -8,17 +8,18 @@
 """
 import math
 
-import bmesh
 import bpy
+import bmesh
 import matplotlib.pyplot as plt
 import numpy as np
-import Utilities.blender_tools as bt
 from plasma_shape_params import PlasmaShapeParams
 
-plasma_shape = PlasmaShapeParams.from_file(file_name="")
+import renderingpipline.utilities.blender_tools as bt
+from renderingpipline.adaptor import OutputParams
+
+plasma_shape = OutputParams.from_file("baseline_2018_MFILE.DAT")
 
 
-# TODO: plot_plasma from plot_proc file in process. Want to use that directly in future.
 def plot_plasma(plasma_shape):
     """Plots the plasma boundary arcs.
 
@@ -28,7 +29,7 @@ def plot_plasma(plasma_shape):
 
     r0 = plasma_shape.rmajor
     a = plasma_shape.rminor
-    delta = 1.5 * plasma_shape.triang95
+    delta = 1.5 * plasma_shape.delta_95
     kappa = (1.1 * plasma_shape.kappa95) + 0.04
     i_single_null = plasma_shape.i_single_null
 
@@ -124,7 +125,7 @@ bt.empty_obj(half_x, half_y, 0)
 camera = bt.move_camera(half_x, half_y, 40)
 bt.camera_fix(camera="Camera", target="Empty")
 
-bt.save_image("Plasma")
+# bt.save_image("Plasma")
 
 # Save the Blender scene as a .gltf file
 # blend_file_path = "ex/file/path"

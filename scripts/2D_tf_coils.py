@@ -8,8 +8,8 @@
 """
 import math
 
-import bmesh
 import bpy
+import bmesh
 import matplotlib.pyplot as plt
 import numpy as np
 import Utilities.blender_tools as bt
