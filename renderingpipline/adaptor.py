@@ -64,6 +64,57 @@ class OutputParams:
     delta95: float
     kappa95: float
     i_single_null: float
+    x1: float
+    x2: float
+    x3: float
+    x4: float
+    x5: float
+    y1: float
+    y2: float
+    y3: float
+    y4: float
+    y5: float
+    tfcth: float
+    vvblgap: float
+    d_vv_in: float
+    d_vv_out: float
+    blnktth: float
+    bore: float
+    ohcth: float
+    precomp: float
+    gapoh: float
+    tftsgap: float
+    thshield_ib: float
+    gapds: float
+    shldith: float
+    vvblgapi: float
+    blnkith: float
+    fwith: float
+    scrapli: float
+    rminori: float
+    rminoro: float
+    scraplo: float
+    fwoth: float
+    blnkoth: float
+    vvblgapo: float
+    shldoth: float
+    gapsto: float
+    thshield_ob: float
+    tfthko: float
+    rminor_kappa: float
+    vgaptop: float
+    fwtth: float
+    vvblgap: float
+    shldtth: float
+    d_vv_top: float
+    vgap2: float
+    thshield_vb: float
+    vgap: float
+    divfix: float
+    shldlth: float
+    d_vv_bot: float
+    tftsgap: float
+
     file_name: Optional[str] = None
 
     @classmethod
