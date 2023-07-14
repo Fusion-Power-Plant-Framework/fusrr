@@ -57,6 +57,7 @@ process_param = dict(
         "shldlth": "shldlth",
         "d_vv_bot": "d_vv_bot",
         "tftsgap": "tftsgap",
+        "triang": "triang",
     }
 )
 

@@ -117,6 +117,7 @@ class OutputParams:
     shldlth: float
     d_vv_bot: float
     tftsgap: float
+    triang: float
 
     file_name: Optional[str] = None
 
