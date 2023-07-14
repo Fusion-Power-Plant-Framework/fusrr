@@ -2,9 +2,12 @@
 import abc
 from inspect import getmembers
 
+import blender_tools as bt
 import bmesh
 import bpy
-from blender_tools import Utilities as bt
+import numpy as np
+
+from renderingpipline.adaptor import OutputParams
 
 
 # Reactor will render whole scene
@@ -44,25 +47,26 @@ class Reactor:
 
 
 class BlenderComponent(abc.ABC):  # renders individual components
-    @abc.abstractmethod
-    def render(self, view):
-        # render individual component
-
-        object_list = ["line_object", "line_object.001"]
-        bt.join_obj(object_list)
-        bt.make_face_from_vertices("line_object")
-
-        return None
-
-    @abc.abstractmethod
-    def setup_scene(self, view, x, y, z):
-        """sets up scene for a component"""
-
     def _delete_cube(self):
-        # setup scene to render
+        """Sacrifice another cube"""
         bt.delete_cube()
 
-        return None
+    # @abc.abstractmethod
+    # def render(self, view):
+    # #      render individual component
+
+    #      object_list = ["line_object", "line_object.001"]
+    #      bt.join_obj(object_list)
+    #      bt.make_face_from_vertices("line_object")
+
+    #      return None
+
+    def setup_scene1(self, x, y, z):  # Could be done by view?
+        """sets up scene for a component"""
+        bpy.ops.object.empty_add(location=(x, y, z))
+        camera = bpy.data.objects["Camera"]
+        camera.location = (x, y, z + 40)
+        bt.camera_fix("Camera", "Empty")
 
     def render_component_mesh(self):
         """sets up scene in which to build mesh + builds new mesh"""
@@ -86,26 +90,17 @@ class Plasma(BlenderComponent):  # specific parts of the plasma to plot (and ren
         self.y_coords = y_coords
         self.z_coords = z_coords
 
-    # def render(self, view):
-    #     self.setup_scene(view)
-    #     # render
-
-    def setup_scene(self):  # some of this can be moved into View/ scene as more general
+    def setup_scene(self):
         """Setup as given in 2D_plasma.py, ideally this will find its way to a more general class"""
-        bpy.ops.object.empty_add(location=(self.x_coords, self.y_coords, self.z_coords))
-        camera = bpy.data.objects["Camera"]
-        camera.location = (self.x_coords, self.y_coords, self.z_coords + 40)
-        constraint = bpy.data.objects["Camera"].constraints.new(type="TRACK_TO")
-        constraint.target = bpy.data.objects["Empty"]
-
+        self.setup_scene1(self.x_coords, self.y_coords, self.z_coords)
         object_list = [
             "line_object",
             "line_object.001",
         ]  # this bit is less general, likely need to remain in plasma class
         bt.join_obj(object_list)
         bt.make_face_from_vertices("line_object")
-        bt.delete_cube()
-        # self._delete_cube()
+        self._delete_cube()
+        # print(dir(self))
         # return super().setup_scene(view, x, y, z)
 
     @staticmethod
@@ -202,15 +197,22 @@ class Plasma(BlenderComponent):  # specific parts of the plasma to plot (and ren
         return half_x, half_y
 
 
-class tfCoil(BlenderComponent):
+class tfCoil(BlenderComponent):  # plotting not yet working, rest seems to be ok
+    def __init__(self, tf_coil_shape, tfcth):  # , tfcth):
+        self.tf_coil_shape = tf_coil_shape
+        self.tfcth = tfcth
+        print(dir(self))
+
     import numpy as np
 
     rtangle = np.pi / 2
+    i_tf_sup = int(1)
+    # def __innit__(self, tfcoil_shape, tfcth):
+    #     self.tfcoil_shape = tfcoil_shape
+    #     self.tfcth = tfcth
 
-    def __innit__(self, ect):
-        self.ect = ect
-
-    def tf_coil_outline(self, coords):
+    @staticmethod
+    def tf_coil_outline(coords):
         """Renders the spline of the tf coil
 
         Parameters
@@ -238,7 +240,8 @@ class tfCoil(BlenderComponent):
 
         return None
 
-    def ellips_fill(self, a1=0, a2=0, b1=0, b2=0, x0=0, y0=0, ang1=0, ang2=rtangle):
+    @staticmethod
+    def ellips_fill(a1=0, a2=0, b1=0, b2=0, x0=0, y0=0, ang1=0, ang2=rtangle):
         """Fills the space between two concentric ellipse sectors.
 
         Arguments
@@ -265,6 +268,108 @@ class tfCoil(BlenderComponent):
         verts.extend(endpoint)
 
         return verts
+
+    def plot_tf_coils(self):
+        """Function to plot TF coils
+
+        Arguments:
+            axis --> axis object to plot to
+            mfile_data --> MFILE.DAT object
+            scan --> scan number to use
+
+        """
+        # Arc points
+        # MDK Only 4 points now required for elliptical arcs
+        from matplotlib import patches
+
+        rtangle = np.pi / 2
+        x1 = self.tf_coil_shape.x1
+        y1 = self.tf_coil_shape.y1
+        x2 = self.tf_coil_shape.x2
+        y2 = self.tf_coil_shape.y2
+        x3 = self.tf_coil_shape.x3
+        y3 = self.tf_coil_shape.y3
+        x4 = self.tf_coil_shape.x4
+        y4 = self.tf_coil_shape.y4
+        x5 = self.tf_coil_shape.x5
+        y5 = self.tf_coil_shape.y5
+        if y3 != 0:
+            print("TF coil geometry: The value of yarc(3) is not zero, but should be.")
+
+        x0 = x2
+        y0 = y1
+        a1 = x2 - x1
+        b1 = y2 - y1
+        a2 = a1 + self.tfcth
+        b2 = b1 + self.tfcth
+        verts = self.ellips_fill(
+            a1=a1,
+            a2=a2,
+            b1=b1,
+            b2=b2,
+            x0=x0,
+            y0=y0,
+            ang1=rtangle,
+            ang2=2 * rtangle,
+        )
+        self.tf_coil_outline(verts)
+        # Outboard upper arc
+        x0 = x2
+        y0 = 0
+        a1 = x3 - x2
+        b1 = y2
+        a2 = a1 + self.tfcth
+        b2 = b1 + self.tfcth
+        verts = self.ellips_fill(
+            a1=a1, a2=a2, b1=b1, b2=b2, x0=x0, y0=y0, ang1=0, ang2=rtangle
+        )
+        self.tf_coil_outline(verts)
+        # Inboard lower arc
+        x0 = x4
+        y0 = y5
+        a1 = x4 - x5
+        b1 = y5 - y4
+        a2 = a1 + self.tfcth
+        b2 = b1 + self.tfcth
+        verts = self.ellips_fill(
+            a1=a1, a2=a2, b1=b1, b2=b2, x0=x0, y0=y0, ang1=-rtangle, ang2=-2 * rtangle
+        )
+        self.tf_coil_outline(verts)
+        # Outboard lower arc
+        x0 = x4
+        y0 = 0
+        a1 = x3 - x2
+        b1 = -y4
+        a2 = a1 + self.tfcth
+        b2 = b1 + self.tfcth
+        verts = self.ellips_fill(
+            a1=a1, a2=a2, b1=b1, b2=b2, x0=x0, y0=y0, ang1=0, ang2=-rtangle
+        )
+        self.tf_coil_outline(verts)
+        # Vertical leg
+        # Bottom left corner
+        rect = patches.Rectangle(
+            [x5 - self.tfcth, y5], self.tfcth, (y1 - y5), lw=0, facecolor="cyan"
+        )
+        centre_coords = bt.rect_blend(rect)
+        self.tf_coil_outline(centre_coords)
+
+    def setup_tfscene(self):
+        self.setup_scene1(10, 5, 0)
+        object_list = [
+            "TestObject",
+            "TestObject.001",
+            "TestObject.002",
+            "TestObject.003",
+            "TestObject.004",
+        ]
+
+        bt.change_to_mesh(object_names=object_list)
+        for i in object_list:
+            bt.make_face_from_vertices(str(i))
+
+        self._delete_cube()
+        print(dir(self))
 
 
 # Default view + different options
