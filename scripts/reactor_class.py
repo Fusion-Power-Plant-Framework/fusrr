@@ -1,15 +1,18 @@
 """Reactor Class WIP - developing basic structure, plasma class should run fine. Making more general functions and organising componenets """
 import abc
+import math
 from inspect import getmembers
 
 import blender_tools as bt
 import bmesh
 import bpy
 import numpy as np
+from matplotlib import patches
 
 
-# Reactor will render whole scene
 class Reactor:
+    """Reactor class - methods for rendering whole reactor scenes (WIP)"""
+
     def __init__(self, **components):
         # Preset options, have default settings for reactor components here
         for name, comp in components.items():
@@ -35,38 +38,31 @@ class Reactor:
 
     def get_reactor_centre(self):
         """Can be useful for camera tracking"""
+        # develop from plasma_centre?
         pass
 
     def save_image(file_name: str):
         """Saves render as PNG"""
         bpy.context.scene.render.filepath = str(file_name)
         bpy.ops.render.render(write_still=True, use_viewport=True)
-        # save .gltf as well in future
+        # possibly save .gltf as well in future
 
 
 class BlenderComponent(abc.ABC):  # renders individual components
+    """Stores default functions for blender setup and renderings"""
+
     def _delete_cube(self):
-        """Sacrifice another cube"""
+        """deletes default cube"""
         bt.delete_cube()
 
-    # @abc.abstractmethod
-    # def render(self, view):
-    # #      render individual component
-
-    #      object_list = ["line_object", "line_object.001"]
-    #      bt.join_obj(object_list)
-    #      bt.make_face_from_vertices("line_object")
-
-    #      return None
-
     def setup_scene1(self, x, y, z):  # Could be done by view?
-        """sets up scene for a component"""
+        """sets up scene for rendering - tracks camera to empty object"""
         bpy.ops.object.empty_add(location=(x, y, z))
         camera = bpy.data.objects["Camera"]
         camera.location = (x, y, z + 40)
         bt.camera_fix("Camera", "Empty")
 
-    def render_component_mesh(self):
+    def render_component_mesh(self):  # currently used just for plasma
         """sets up scene in which to build mesh + builds new mesh"""
         scene = bpy.context.scene
         bpy.context.view_layer.objects.active = None
@@ -81,20 +77,21 @@ class BlenderComponent(abc.ABC):  # renders individual components
         return scene, mesh, bm
 
 
-class Plasma(BlenderComponent):  # specific parts of the plasma to plot (and render?)
+class Plasma(BlenderComponent):
+    """Contains methods for plotting and rendering different parts of the plasma"""
+
     def __init__(self, x_coords, y_coords, z_coords):
-        # self.shape = self._shapecreator(xcoord, zcoord)
         self.x_coords = x_coords
         self.y_coords = y_coords
         self.z_coords = z_coords
 
     def setup_scene(self):
-        """Setup as given in 2D_plasma.py, ideally this will find its way to a more general class"""
+        """Sets up cameras and objects for rendering"""
         self.setup_scene1(self.x_coords, self.y_coords, self.z_coords)
         object_list = [
             "line_object",
             "line_object.001",
-        ]  # this bit is less general, likely need to remain in plasma class
+        ]  # is there a way to automate naming of objects?
         bt.join_obj(object_list)
         bt.make_face_from_vertices("line_object")
         self._delete_cube()
@@ -110,9 +107,6 @@ class Plasma(BlenderComponent):  # specific parts of the plasma to plot (and ren
             mfile_data --> MFILE data object
             scan --> scan number to use
         """
-        import math
-
-        import numpy as np
 
         r0 = plasma_shape.rmajor
         a = plasma_shape.rminor
@@ -179,14 +173,12 @@ class Plasma(BlenderComponent):  # specific parts of the plasma to plot (and ren
         bm.free()
 
         scene.view_layers.update()
-
-        # print(dir(self.self))
         return None
 
     @staticmethod
     def plasma_centre(
         x1, x2, y1, y2
-    ):  # general, should be able to apply to most components
+    ):  # general, should be able to apply to most components - depending on plotting
         """calculates centre of plasma for tracking"""
         half_arr = int(len(x1) / 2)
         half_x = x1[half_arr] - x2[half_arr]
@@ -196,12 +188,12 @@ class Plasma(BlenderComponent):  # specific parts of the plasma to plot (and ren
 
 
 class tfCoil(BlenderComponent):  # need to reposition the camera but otherwise fine
+    """Contains method for plotting and rendering tf coils"""
+
     def __init__(self, tf_coil_shape, tfcth):
         self.tf_coil_shape = tf_coil_shape
         self.tfcth = tfcth
-        print(dir(self))
-
-    import numpy as np
+        # print(dir(self))
 
     rtangle = np.pi / 2
     i_tf_sup = int(1)
@@ -216,7 +208,6 @@ class tfCoil(BlenderComponent):  # need to reposition the camera but otherwise f
         y_coords : numpy array
 
         """
-        print("I've also been called!")
         curve = bpy.data.curves.new(name="Curve_test", type="CURVE")
         curve.fill_mode = "NONE"
 
@@ -248,9 +239,6 @@ class tfCoil(BlenderComponent):  # need to reposition the camera but otherwise f
         ang1, ang2 are the polar angles of the start and end
 
         """
-        import numpy as np
-
-        print("I've been called!")
         angs = np.linspace(ang1, ang2, endpoint=True)
         r1 = ((np.cos(angs) / a1) ** 2 + (np.sin(angs) / b1) ** 2) ** (-0.5)
         xs1 = r1 * np.cos(angs) + x0
@@ -277,7 +265,6 @@ class tfCoil(BlenderComponent):  # need to reposition the camera but otherwise f
         """
         # Arc points
         # MDK Only 4 points now required for elliptical arcs
-        from matplotlib import patches
 
         rtangle = np.pi / 2
         x1 = self.tf_coil_shape.x1
@@ -352,7 +339,7 @@ class tfCoil(BlenderComponent):  # need to reposition the camera but otherwise f
         self.tf_coil_outline(centre_coords)
 
     def setup_tfscene(self):
-        self.setup_scene1(10, 5, 0)
+        self.setup_scene1(10, 5, 0)  # make coordinates inputs?
         object_list = [
             "TestObject",
             "TestObject.001",
@@ -366,13 +353,16 @@ class tfCoil(BlenderComponent):  # need to reposition the camera but otherwise f
             bt.make_face_from_vertices(str(i))
 
         self._delete_cube()
-        print(dir(self))
+        # print(dir(self))
 
 
-# Default view + different options
 class View(abc.ABC):
+    """Holds methods for default veiw"""
+
     @abc.abstractmethod
-    def view(self, view, x, y, z):
+    def view(
+        self, view, x, y, z
+    ):  # similar to scene_setup need to decide on views/structure
         """Sets default view"""
         bt.empty_obj(x, y, z)
         bt.move_camera(x, y, z + 40)
@@ -380,6 +370,8 @@ class View(abc.ABC):
 
 
 class View1(View):
+    """additional options for views"""
+
     def add_light(self, x, y, z):
         """adds sunlight object to default view"""
         bpy.ops.object.light_add(type="SUN", location=(x, y, z))
