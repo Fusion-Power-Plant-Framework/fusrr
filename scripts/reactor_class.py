@@ -7,8 +7,6 @@ import bmesh
 import bpy
 import numpy as np
 
-from renderingpipline.adaptor import OutputParams
-
 
 # Reactor will render whole scene
 class Reactor:
@@ -197,8 +195,8 @@ class Plasma(BlenderComponent):  # specific parts of the plasma to plot (and ren
         return half_x, half_y
 
 
-class tfCoil(BlenderComponent):  # plotting not yet working, rest seems to be ok
-    def __init__(self, tf_coil_shape, tfcth):  # , tfcth):
+class tfCoil(BlenderComponent):  # need to reposition the camera but otherwise fine
+    def __init__(self, tf_coil_shape, tfcth):
         self.tf_coil_shape = tf_coil_shape
         self.tfcth = tfcth
         print(dir(self))
@@ -207,9 +205,6 @@ class tfCoil(BlenderComponent):  # plotting not yet working, rest seems to be ok
 
     rtangle = np.pi / 2
     i_tf_sup = int(1)
-    # def __innit__(self, tfcoil_shape, tfcth):
-    #     self.tfcoil_shape = tfcoil_shape
-    #     self.tfcth = tfcth
 
     @staticmethod
     def tf_coil_outline(coords):
@@ -221,6 +216,7 @@ class tfCoil(BlenderComponent):  # plotting not yet working, rest seems to be ok
         y_coords : numpy array
 
         """
+        print("I've also been called!")
         curve = bpy.data.curves.new(name="Curve_test", type="CURVE")
         curve.fill_mode = "NONE"
 
@@ -254,6 +250,7 @@ class tfCoil(BlenderComponent):  # plotting not yet working, rest seems to be ok
         """
         import numpy as np
 
+        print("I've been called!")
         angs = np.linspace(ang1, ang2, endpoint=True)
         r1 = ((np.cos(angs) / a1) ** 2 + (np.sin(angs) / b1) ** 2) ** (-0.5)
         xs1 = r1 * np.cos(angs) + x0
