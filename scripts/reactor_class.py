@@ -36,31 +36,21 @@ class Reactor:
         bpy.context.view_layer.objects.active = None  # no layers selected
         bpy.ops.object.select_all(action="DESELECT")  # no objects selected
 
-    def get_reactor_centre(self):
+    def get_reactor_centre(self, component_shape):
         """Can be useful for camera tracking"""
-        # develop from plasma_centre?
-        pass
+        x, y = 0, component_shape.rmajor
+        z = 4 * component_shape.rmajor
+        return x, y, z
+        # need to discuss best way to track - want to place empty object in centre of reactor
 
     def save_image(file_name: str):
         """Saves render as PNG"""
-        bpy.context.scene.render.filepath = str(file_name)
-        bpy.ops.render.render(write_still=True, use_viewport=True)
+        bt.save_image
         # possibly save .gltf as well in future
 
 
-class BlenderComponent(abc.ABC):  # renders individual components
+class BlenderComponent(abc.ABC):
     """Stores default functions for blender setup and renderings"""
-
-    def _delete_cube(self):
-        """deletes default cube"""
-        bt.delete_cube()
-
-    def setup_scene1(self, x, y, z):  # Could be done by view?
-        """sets up scene for rendering - tracks camera to empty object"""
-        bpy.ops.object.empty_add(location=(x, y, z))
-        camera = bpy.data.objects["Camera"]
-        camera.location = (x, y, z + 40)
-        bt.camera_fix("Camera", "Empty")
 
     def render_component_mesh(self):  # currently used just for plasma
         """sets up scene in which to build mesh + builds new mesh"""
@@ -76,27 +66,75 @@ class BlenderComponent(abc.ABC):  # renders individual components
 
         return scene, mesh, bm
 
+    def get_reactor_centre(
+        self, component_shape
+    ):  # not great but gives a view that should include all components
+        """Uses rmajor to make set of coordinates - Can be useful for camera tracking"""
+        x, y = 0, component_shape.rmajor
+        z = 6 * component_shape.rmajor
+        return x, y, z
+
+    def scene(self, x, y, z):
+        """Sets up camera for rendering"""
+        bt.delete_cube()
+        bt.empty_obj(x, y, 0)
+        bt.move_camera(x, y, z)
+        bt.camera_fix("Camera", "Empty")
+
+    def component_outline(self, coords):
+        """Renders the spline of component (currently only used for tf coil)
+
+        Parameters
+        ----------
+        x_coords : numpy array
+        y_coords : numpy array
+
+        """
+        curve = bpy.data.curves.new(name="Curve_test", type="CURVE")
+        curve.fill_mode = "NONE"
+
+        ob = bpy.data.objects.new(name="TestObject", object_data=curve)
+        scene = bpy.context.scene
+        scene.collection.objects.link(ob)
+        bpy.context.view_layer.objects.active = None
+
+        spline = curve.splines.new(type="POLY")
+        spline.points.add(len(coords) - 1)
+        for i, point in enumerate(spline.points):
+            point.co[0:2] = coords[i]
+
+        bpy.ops.object.select_all(action="DESELECT")
+        bpy.context.view_layer.objects.active = ob
+        ob.select_set(True)
+
+        return None
+
+
+class view_default(abc.ABC):
+    """Holds methods for default veiw"""
+
+    @abc.abstractclassmethod
+    def view(self):
+        pass
+
+
+class view1(view_default):
+    """additional options for views"""
+
+    def view(self):
+        bt.camera_fix("Camera", "Empty")
+
+    def add_light(self, x, y, z):
+        """adds sunlight object to default view"""
+        bpy.ops.object.light_add(type="SUN", location=(x, y, z))
+
 
 class Plasma(BlenderComponent):
     """Contains methods for plotting and rendering different parts of the plasma"""
 
-    def __init__(self, x_coords, y_coords, z_coords):
-        self.x_coords = x_coords
-        self.y_coords = y_coords
-        self.z_coords = z_coords
-
-    def setup_scene(self):
-        """Sets up cameras and objects for rendering"""
-        self.setup_scene1(self.x_coords, self.y_coords, self.z_coords)
-        object_list = [
-            "line_object",
-            "line_object.001",
-        ]  # is there a way to automate naming of objects?
-        bt.join_obj(object_list)
-        bt.make_face_from_vertices("line_object")
-        self._delete_cube()
+    def __init__(self, plasma_shape):
+        self.plasma_shape = plasma_shape
         # print(dir(self))
-        # return super().setup_scene(view, x, y, z)
 
     @staticmethod
     def plot(plasma_shape):
@@ -155,7 +193,7 @@ class Plasma(BlenderComponent):
 
         return xs1, xs2, ys1, ys2
 
-    def render(self):
+    def render(self, x_coords, y_coords):
         """Renders the vertices of the plasma array for plasma mesh
 
         Parameters
@@ -166,7 +204,7 @@ class Plasma(BlenderComponent):
         """
         scene, mesh, bm = self.render_component_mesh()
 
-        for x, y in zip(self.x_coords, self.y_coords):
+        for x, y in zip(x_coords, y_coords):
             bm.verts.new((x, y, 0))
 
         bm.to_mesh(mesh)
@@ -186,46 +224,35 @@ class Plasma(BlenderComponent):
 
         return half_x, half_y
 
+    def setup_scene(self, x_coords, y_coords, z_coords):
+        """Sets up cameras and objects for rendering"""
+        self.scene(x_coords, y_coords, z_coords)
+        object_list = [
+            "line_object",
+            "line_object.001",
+        ]  # is there a way to automate naming of objects?
+        bt.join_obj(object_list)
+        bt.make_face_from_vertices("line_object")
 
-class tfCoil(BlenderComponent):  # need to reposition the camera but otherwise fine
+    def build(self):
+        """Combines above functions to plot, track and render plasma"""
+        xs1, xs2, ys1, ys2 = self.plot(self.plasma_shape)
+        x, y = self.plasma_centre(xs1, xs2, ys1, ys2)
+        self.render(xs1, ys2)
+        self.render(xs2, ys2)
+        self.setup_scene(x, y, 0)
+
+
+class tfCoil(BlenderComponent):
     """Contains method for plotting and rendering tf coils"""
 
-    def __init__(self, tf_coil_shape, tfcth):
+    def __init__(self, tf_coil_shape):
         self.tf_coil_shape = tf_coil_shape
-        self.tfcth = tfcth
+        # self.tfcth = tfcth
         # print(dir(self))
 
     rtangle = np.pi / 2
     i_tf_sup = int(1)
-
-    @staticmethod
-    def tf_coil_outline(coords):
-        """Renders the spline of the tf coil
-
-        Parameters
-        ----------
-        x_coords : numpy array
-        y_coords : numpy array
-
-        """
-        curve = bpy.data.curves.new(name="Curve_test", type="CURVE")
-        curve.fill_mode = "NONE"
-
-        ob = bpy.data.objects.new(name="TestObject", object_data=curve)
-        scene = bpy.context.scene
-        scene.collection.objects.link(ob)
-        bpy.context.view_layer.objects.active = None
-
-        spline = curve.splines.new(type="POLY")
-        spline.points.add(len(coords) - 1)
-        for i, point in enumerate(spline.points):
-            point.co[0:2] = coords[i]
-
-        bpy.ops.object.select_all(action="DESELECT")
-        bpy.context.view_layer.objects.active = ob
-        ob.select_set(True)
-
-        return None
 
     @staticmethod
     def ellips_fill(a1=0, a2=0, b1=0, b2=0, x0=0, y0=0, ang1=0, ang2=rtangle):
@@ -266,6 +293,7 @@ class tfCoil(BlenderComponent):  # need to reposition the camera but otherwise f
         # Arc points
         # MDK Only 4 points now required for elliptical arcs
 
+        tfcth = self.tf_coil_shape.tfcth
         rtangle = np.pi / 2
         x1 = self.tf_coil_shape.x1
         y1 = self.tf_coil_shape.y1
@@ -284,8 +312,8 @@ class tfCoil(BlenderComponent):  # need to reposition the camera but otherwise f
         y0 = y1
         a1 = x2 - x1
         b1 = y2 - y1
-        a2 = a1 + self.tfcth
-        b2 = b1 + self.tfcth
+        a2 = a1 + tfcth
+        b2 = b1 + tfcth
         verts = self.ellips_fill(
             a1=a1,
             a2=a2,
@@ -296,50 +324,52 @@ class tfCoil(BlenderComponent):  # need to reposition the camera but otherwise f
             ang1=rtangle,
             ang2=2 * rtangle,
         )
-        self.tf_coil_outline(verts)
+        self.component_outline(verts)
         # Outboard upper arc
         x0 = x2
         y0 = 0
         a1 = x3 - x2
         b1 = y2
-        a2 = a1 + self.tfcth
-        b2 = b1 + self.tfcth
+        a2 = a1 + tfcth
+        b2 = b1 + tfcth
         verts = self.ellips_fill(
             a1=a1, a2=a2, b1=b1, b2=b2, x0=x0, y0=y0, ang1=0, ang2=rtangle
         )
-        self.tf_coil_outline(verts)
+        self.component_outline(verts)
         # Inboard lower arc
         x0 = x4
         y0 = y5
         a1 = x4 - x5
         b1 = y5 - y4
-        a2 = a1 + self.tfcth
-        b2 = b1 + self.tfcth
+        a2 = a1 + tfcth
+        b2 = b1 + tfcth
         verts = self.ellips_fill(
             a1=a1, a2=a2, b1=b1, b2=b2, x0=x0, y0=y0, ang1=-rtangle, ang2=-2 * rtangle
         )
-        self.tf_coil_outline(verts)
+        self.component_outline(verts)
         # Outboard lower arc
         x0 = x4
         y0 = 0
         a1 = x3 - x2
         b1 = -y4
-        a2 = a1 + self.tfcth
-        b2 = b1 + self.tfcth
+        a2 = a1 + tfcth
+        b2 = b1 + tfcth
         verts = self.ellips_fill(
             a1=a1, a2=a2, b1=b1, b2=b2, x0=x0, y0=y0, ang1=0, ang2=-rtangle
         )
-        self.tf_coil_outline(verts)
+        self.component_outline(verts)
         # Vertical leg
         # Bottom left corner
         rect = patches.Rectangle(
-            [x5 - self.tfcth, y5], self.tfcth, (y1 - y5), lw=0, facecolor="cyan"
+            [x5 - tfcth, y5], tfcth, (y1 - y5), lw=0, facecolor="cyan"
         )
         centre_coords = bt.rect_blend(rect)
-        self.tf_coil_outline(centre_coords)
+        self.component_outline(centre_coords)
 
-    def setup_tfscene(self):
-        self.setup_scene1(10, 5, 0)  # make coordinates inputs?
+    def setup_scene(self):
+        """Sets up scene and objects for rendering"""
+        x, y, z = self.get_reactor_centre(self.tf_coil_shape)
+        self.scene(x, y, z)  # Tracking works but is wonky
         object_list = [
             "TestObject",
             "TestObject.001",
@@ -352,26 +382,12 @@ class tfCoil(BlenderComponent):  # need to reposition the camera but otherwise f
         for i in object_list:
             bt.make_face_from_vertices(str(i))
 
-        self._delete_cube()
         # print(dir(self))
 
-
-class View(abc.ABC):
-    """Holds methods for default veiw"""
-
-    @abc.abstractmethod
-    def view(
-        self, view, x, y, z
-    ):  # similar to scene_setup need to decide on views/structure
-        """Sets default view"""
-        bt.empty_obj(x, y, z)
-        bt.move_camera(x, y, z + 40)
-        bt.camera_fix(camera="Camera", target="Empty")
+    def build(self):
+        """Plots tracks and renders tf coils"""
+        self.plot_tf_coils()
+        self.setup_scene()
 
 
-class View1(View):
-    """additional options for views"""
-
-    def add_light(self, x, y, z):
-        """adds sunlight object to default view"""
-        bpy.ops.object.light_add(type="SUN", location=(x, y, z))
+# class Blanket(BlenderComponent):
