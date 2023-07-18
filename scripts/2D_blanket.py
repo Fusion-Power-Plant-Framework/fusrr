@@ -1,22 +1,19 @@
-"""WIP plots blanket in 2D blender view
-    !!! NOT WORKING AT THE MOMENT !!!
-
-    Returns
-    -------
-    Blanket shape blend file
 """
-import math
+WIP plots blanket in 2D blender view
+!!! NOT WORKING AT THE MOMENT !!!
+
+Returns
+-------
+Blanket shape blend file
+
+"""
 from dataclasses import asdict
 
 import bpy
-import bmesh
-import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib import patches
 
 import renderingpipline.utilities.blender_tools as bt
 from renderingpipline.adaptor import OutputParams
-from renderingpipline.dictionary_basic import process_param
 from renderingpipline.utilities.process_build_tools import (
     RADIAL_BUILD,
     vertical_lower,
@@ -29,6 +26,18 @@ blanket_shape_dict = {k: str(v) for k, v in asdict(blanket_shape).items()}
 
 
 def cumul_setup(blanket_shape_dict):
+    """Sets up each part of the blanket
+
+    Parameters
+    ----------
+    blanket_shape_dict : dictionary
+        dictionary of dataclass
+
+    Returns
+    -------
+    Two dictionaries
+        Upper and lower builds of blanket
+    """
     upper = dict()
     cumulative_upper = dict()
     subtotal = 0
@@ -55,6 +64,7 @@ def plotdh(r0, a, delta, kap):
     """Plots half a thin D-section, centred on z = 0.
 
     Arguments:
+    ----------
         axis --> axis object to plot to
         r0 --> major radius of centre
         a --> horizontal radius
@@ -62,6 +72,7 @@ def plotdh(r0, a, delta, kap):
         kap --> elongation
 
     Returns:
+    ----------
         rs --> radial coordinates of D-section
         zs --> vertical coordinates of D-section
     """
@@ -75,6 +86,7 @@ def plotdhgap(inpt, outpt, inthk, outthk, toppt, topthk, delta):
     """Plots half a thick D-section with a gap.
 
     Arguments:
+    ----------
         axis --> axis object to plot to
         inpt --> inner points
         outpt --> outer points
@@ -132,6 +144,9 @@ def plot_blanket(blanket_shape, cumulative_upper, cumulative_lower):
     """Function to plot blanket
 
     Arguments:
+
+    ---------
+
       axis --> axis object to plot to
       mfile_data --> MFILE.DAT object
       scan --> scan number to use
@@ -195,11 +210,14 @@ def cumulative_radial_build(section, blanket_shape):
     including the given section.
 
     Arguments:
+    ---------
+
         section --> section of the radial build to go up to
         mfile_data --> MFILE data object
         scan --> scan number to use
 
     Returns:
+    ---------
         cumulative_build --> cumulative radial build up to section given
 
     """
