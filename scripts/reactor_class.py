@@ -1,4 +1,7 @@
-"""Reactor Class WIP - developing basic structure, plasma class should run fine. Making more general functions and organising componenets """
+"""
+Reactor Class WIP - developing basic structure, plasma class should run fine.
+Making more general functions and organising componenets
+"""
 import abc
 import math
 from inspect import getmembers
@@ -30,18 +33,12 @@ class Reactor:
 
         blender_scene.render()
 
-    # def default_scene(self):
-    #     """Deletes any preset features"""
-    #     bt.delete_cube()
-    #     bpy.context.view_layer.objects.active = None  # no layers selected
-    #     bpy.ops.object.select_all(action="DESELECT")  # no objects selected
-
-    def get_reactor_centre(self, component_shape):
-        """Can be useful for camera tracking"""
-        x, y = 0, component_shape.rmajor
-        z = 4 * component_shape.rmajor
-        return x, y, z
-        # need to discuss best way to track - want to place empty object in centre of reactor
+    # def get_reactor_centre(self, component_shape):
+    #     """Can be useful for camera tracking"""
+    #     x, y = 0, component_shape.rmajor
+    #     z = 4 * component_shape.rmajor
+    #     return x, y, z
+    #     # need to discuss best way to track - want to place empty object in centre of reactor
 
     def save_image(file_name: str):
         """Saves render as PNG"""
@@ -152,7 +149,7 @@ class view_default(abc.ABC):
         pass
 
 
-class view1(view_default):
+class view(view_default):
     """additional options for views"""
 
     def view(self):
