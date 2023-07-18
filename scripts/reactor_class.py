@@ -1,6 +1,6 @@
 """
-Reactor Class WIP - developing basic structure, plasma class should run fine.
-Making more general functions and organising componenets
+Reactor Class WIP - developing basic structure, plasma class and tf class working.
+Need to impliment proper structure to use Reactor class and tidy rendering functions.
 """
 import abc
 import math
@@ -22,7 +22,7 @@ class Reactor:
             setattr(self, name, comp)
 
     def render(self, view):
-        # making scene for rendering
+        """render whole reactor scene"""
         to_render = dict(
             mem for mem in getmembers(self, lambda m: isinstance(m, BlenderComponent))
         )
@@ -33,13 +33,7 @@ class Reactor:
 
         blender_scene.render()
 
-    # def get_reactor_centre(self, component_shape):
-    #     """Can be useful for camera tracking"""
-    #     x, y = 0, component_shape.rmajor
-    #     z = 4 * component_shape.rmajor
-    #     return x, y, z
-    #     # need to discuss best way to track - want to place empty object in centre of reactor
-
+    @staticmethod
     def save_image(file_name: str):
         """Saves render as PNG"""
         bt.save_image(file_name)
@@ -49,7 +43,7 @@ class Reactor:
 class BlenderComponent(abc.ABC):
     """Stores default functions for blender setup and renderings"""
 
-    def render_component_mesh(self):  # currently used just for plasma
+    def render_component_mesh(self):  # Currently used just for plasma
         """sets up scene in which to build mesh + builds new mesh"""
         scene = bpy.context.scene
         bpy.context.view_layer.objects.active = None
@@ -126,7 +120,7 @@ class BlenderComponent(abc.ABC):
         active_objects = bpy.context.selected_objects
         # h = input('Enter hex: ').lstrip('#')
         # RGB = (tuple(int(h[i:i+2], 16) for i in (0, 2, 4)))
-        if colour == None:
+        if colour is None:
             colour = self.hex_color_to_rgba("#7d2f8e")
         else:
             colour = self.hex_color_to_rgba(colour)
@@ -141,7 +135,7 @@ class BlenderComponent(abc.ABC):
                 continue
 
 
-class view_default(abc.ABC):
+class View_Default(abc.ABC):
     """Holds methods for default veiw"""
 
     @abc.abstractclassmethod
