@@ -1,6 +1,10 @@
 """test for adaptor"""
 
-from adaptor import OutputParams, bluemira_file_adaptor, process_file_adaptor
+from renderingpipline.adaptor import (
+    OutputParams,
+    bluemira_file_adaptor,
+    process_file_adaptor,
+)
 
 # test to see if generic outputs are the same
 # test to see if dictionary is returned

@@ -30,11 +30,11 @@ class Reactor:
 
         blender_scene.render()
 
-    def default_scene(self):
-        """Deletes any preset features"""
-        bt.delete_cube()
-        bpy.context.view_layer.objects.active = None  # no layers selected
-        bpy.ops.object.select_all(action="DESELECT")  # no objects selected
+    # def default_scene(self):
+    #     """Deletes any preset features"""
+    #     bt.delete_cube()
+    #     bpy.context.view_layer.objects.active = None  # no layers selected
+    #     bpy.ops.object.select_all(action="DESELECT")  # no objects selected
 
     def get_reactor_centre(self, component_shape):
         """Can be useful for camera tracking"""
@@ -45,7 +45,7 @@ class Reactor:
 
     def save_image(file_name: str):
         """Saves render as PNG"""
-        bt.save_image
+        bt.save_image(file_name)
         # possibly save .gltf as well in future
 
 
@@ -108,6 +108,40 @@ class BlenderComponent(abc.ABC):
         ob.select_set(True)
 
         return None
+
+    def hex_color_to_rgba(self, hex_color):
+        """Converts hex to blender's sRGB"""
+        hex_color = hex_color[1:]
+        red = int(hex_color[:2], 16)
+        srgb_red = red / 255
+
+        green = int(hex_color[2:4], 16)
+        srgb_green = green / 255
+
+        blue = int(hex_color[4:6], 16)
+        srgb_blue = blue / 255
+
+        return tuple([srgb_red, srgb_green, srgb_blue, 1.0])
+
+    def default_colour(self, colour):
+        """Creates material to add colour to active objects(s)"""
+        bpy.ops.object.select_all(action="SELECT")
+        active_objects = bpy.context.selected_objects
+        # h = input('Enter hex: ').lstrip('#')
+        # RGB = (tuple(int(h[i:i+2], 16) for i in (0, 2, 4)))
+        if colour == None:
+            colour = self.hex_color_to_rgba("#7d2f8e")
+        else:
+            colour = self.hex_color_to_rgba(colour)
+        # print(colour)
+        for object in active_objects:
+            try:
+                mat = bpy.data.materials.new(name="MatName")
+                object.data.materials.append(mat)
+                mat.diffuse_color = colour
+                bpy.context.scene.view_layers.update()
+            except AttributeError:
+                continue
 
 
 class view_default(abc.ABC):
@@ -240,6 +274,7 @@ class Plasma(BlenderComponent):
         x, y = self.plasma_centre(xs1, xs2, ys1, ys2)
         self.render(xs1, ys2)
         self.render(xs2, ys2)
+        self.default_colour(colour=None)
         self.setup_scene(x, y, 0)
 
 
@@ -388,6 +423,7 @@ class tfCoil(BlenderComponent):
         """Plots tracks and renders tf coils"""
         self.plot_tf_coils()
         self.setup_scene()
+        self.default_colour(colour="#0072c2")
 
 
 # class Blanket(BlenderComponent):
