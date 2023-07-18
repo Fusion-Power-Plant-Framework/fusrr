@@ -143,7 +143,7 @@ class View_Default(abc.ABC):
         pass
 
 
-class view(view_default):
+class view(View_Default):
     """additional options for views"""
 
     def view(self):
