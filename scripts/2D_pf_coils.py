@@ -1,10 +1,15 @@
-import math
+"""Plots polodial cross section of PF coils in blender
+
+    Returns
+    -------
+    blend file of pf coils
+        _description_
+"""
+
 from dataclasses import asdict
 
 import bpy
 import bmesh
-import matplotlib.pyplot as plt
-import numpy as np
 from matplotlib import patches
 
 import renderingpipline.utilities.blender_tools as bt
@@ -75,12 +80,11 @@ def tf_coil_outline(coords):
 
 
 def plot_pf_coils(pf_coil_shape_dict):
-    """Function to plot PF coils
+    """plots pf coils
 
-    Arguments:
-        axis --> axis object to plot to
-        mfile_data --> MFILE.DAT object
-        scan --> scan number to use
+    Parameters
+    ----------
+    pf_coil_shape_dict : dictionary
     """
 
     coils_r = []
@@ -156,6 +160,6 @@ plot_pf_coils(pf_coil_shape_dict=pf_coil_shape_dict)
 
 bt.delete_cube()
 
-blend_file_path = "/home/miles/Downloads/test"
-bpy.ops.export_scene.gltf(filepath=blend_file_path)
-bpy.ops.wm.save_as_mainfile(filepath=blend_file_path)
+# blend_file_path = "/home/miles/Downloads/test"
+# bpy.ops.export_scene.gltf(filepath=blend_file_path)
+# bpy.ops.wm.save_as_mainfile(filepath=blend_file_path)

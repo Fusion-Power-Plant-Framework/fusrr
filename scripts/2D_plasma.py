@@ -3,14 +3,13 @@
     Returns
     -------
     png
-        image of 2D plasma
+        blend file of 2D cross section of plasma
 
 """
 import math
 
 import bpy
 import bmesh
-import matplotlib.pyplot as plt
 import numpy as np
 
 import renderingpipline.utilities.blender_tools as bt
@@ -20,10 +19,17 @@ plasma_shape = OutputParams.from_file("baseline_2018_MFILE.DAT")
 
 
 def plot_plasma(plasma_shape):
-    """Plots the plasma boundary arcs.
+    """plots plasma
 
-    Arguments:
-        axis --> axis object to plot to
+    Parameters
+    ----------
+    plasma_shape : dataclass
+        instance of data class for mfile
+
+    Returns
+    -------
+    tuple
+        arrays of coordinates
     """
 
     r0 = plasma_shape.rmajor
@@ -124,9 +130,9 @@ bt.empty_obj(half_x, half_y, 0)
 camera = bt.move_camera(half_x, half_y, 40)
 bt.camera_fix(camera="Camera", target="Empty")
 
-bt.save_image("Plasma")
+# bt.save_image("Plasma")
 
 # Save the Blender scene as a .gltf file
-blend_file_path = "/home/miles/downloads"
-bpy.ops.export_scene.gltf(filepath=blend_file_path)
-bpy.ops.wm.save_as_mainfile(filepath=blend_file_path)
+# blend_file_path = "/ex/file/path"
+# bpy.ops.export_scene.gltf(filepath=blend_file_path)
+# bpy.ops.wm.save_as_mainfile(filepath=blend_file_path)

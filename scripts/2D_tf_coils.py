@@ -6,14 +6,11 @@
         polodial cross section of Tf coil
 
 """
-import math
 
 import bpy
-import bmesh
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import patches
-from Tf_coil_dict import arc_points
 
 import renderingpipline.utilities.blender_tools as bt
 from renderingpipline.adaptor import OutputParams
@@ -55,15 +52,17 @@ def tf_coil_outline(coords):
 
 
 def ellips_fill(a1=0, a2=0, b1=0, b2=0, x0=0, y0=0, ang1=0, ang2=rtangle):
-    """Fills the space between two concentric ellipse sectors.
-
-    Arguments
+    """plots ellipses fill
 
     axis: plot object
     a1, a2, b1, b2 horizontal and vertical radii to be filled
     x0, y0 coordinates of centre of the ellipses
     ang1, ang2 are the polar angles of the start and end
 
+    Returns
+    -------
+    array
+        coordinates of ellipses
     """
     angs = np.linspace(ang1, ang2, endpoint=True)
     r1 = ((np.cos(angs) / a1) ** 2 + (np.sin(angs) / b1) ** 2) ** (-0.5)
@@ -88,7 +87,8 @@ def plot_tf_coils(tf_coil_shape):
         axis --> axis object to plot to
         mfile_data --> MFILE.DAT object
         scan --> scan number to use
-
+    -------
+    Calls plotting of tf coils
     """
     # Arc points
     # MDK Only 4 points now required for elliptical arcs
@@ -163,7 +163,7 @@ plot_tf_coils(tf_coil_shape=tf_coil_shape)
 
 # Rendering the outer and inner surface of the plasma
 
-# TODO: Naming to be automated
+# TODO: Naming to be automated and improved
 object_list = [
     "TestObject",
     "TestObject.001",

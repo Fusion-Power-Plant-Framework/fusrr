@@ -1,3 +1,10 @@
+"""WIP plots blanket in 2D blender view
+    !!! NOT WORKING AT THE MOMENT !!!
+
+    Returns
+    -------
+    Blanket shape blend file
+"""
 import math
 from dataclasses import asdict
 
@@ -278,6 +285,6 @@ tf_coil_outline(verts)
 bt.delete_cube()
 
 # Save the Blender scene as a .blend file
-blend_file_path = "/home/miles/Downloads/test"
-bpy.ops.wm.save_as_mainfile(filepath=blend_file_path)
+# blend_file_path = "/home/miles/Downloads/test"
+# bpy.ops.wm.save_as_mainfile(filepath=blend_file_path)
 # bpy.ops.export_scene.gltf(filepath=blend_file_path)
