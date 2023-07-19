@@ -55,7 +55,7 @@ process_param = dict(
         "vgap2": "vgap2",
         "thshield_vb": "thshield_vb",
         "vgap": "vgap",
-        "divfix": "divdix",
+        "divfix": "divfix",
         "shldlth": "shldlth",
         "d_vv_bot": "d_vv_bot",
         "tftsgap": "tftsgap",
