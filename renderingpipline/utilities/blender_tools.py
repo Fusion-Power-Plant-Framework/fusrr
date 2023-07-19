@@ -28,7 +28,6 @@ def camera_fix(camera: str, target: str):
     camera : bpy.data.objects[""]
     target : bpy.data.object[""]
     """
-
     # *Will break if object "camera" or "target" doesn't exist.
     constraint = bpy.data.objects[camera].constraints.new(type="TRACK_TO")
     constraint.target = bpy.data.objects[target]
@@ -90,7 +89,6 @@ def faces_pf_coils(vertex_obj: str):
     vertex_obj : object
         name of object where vertices are
     """
-
     bpy.ops.object.select_all(action="DESELECT")
     line_object = bpy.context.scene.objects.get(str(vertex_obj))
     if line_object is not None:
