@@ -22,7 +22,7 @@ class Reactor:
             setattr(self, name, comp)
 
     def render(self, view):
-        """render whole reactor scene"""
+        """Render whole reactor scene"""
         to_render = dict(
             mem for mem in getmembers(self, lambda m: isinstance(m, BlenderComponent))
         )
@@ -44,7 +44,7 @@ class BlenderComponent(abc.ABC):
     """Stores default functions for blender setup and renderings"""
 
     def render_component_mesh(self):  # Currently used just for plasma
-        """sets up scene in which to build mesh + builds new mesh"""
+        """Sets up scene in which to build mesh + builds new mesh"""
         scene = bpy.context.scene
         bpy.context.view_layer.objects.active = None
 
@@ -135,22 +135,24 @@ class BlenderComponent(abc.ABC):
                 continue
 
 
-class View_Default(abc.ABC):
+class ViewDefault(abc.ABC):
     """Holds methods for default veiw"""
 
     @abc.abstractclassmethod
     def view(self):
+        """Set up default view"""
         pass
 
 
-class view(View_Default):
+class View(ViewDefault):
     """additional options for views"""
 
     def view(self):
+        """Default view"""
         bt.camera_fix("Camera", "Empty")
 
     def add_light(self, x, y, z):
-        """adds sunlight object to default view"""
+        """Adds sunlight object to default view"""
         bpy.ops.object.light_add(type="SUN", location=(x, y, z))
 
 
@@ -163,14 +165,14 @@ class Plasma(BlenderComponent):
 
     @staticmethod
     def plot(plasma_shape):
-        """Plots the plasma boundary arcs.
+        """Plots the plasma boundary arcs
 
         Arguments:
+        ---------
             axis --> axis object to plot to
             mfile_data --> MFILE data object
             scan --> scan number to use
         """
-
         r0 = plasma_shape.rmajor
         a = plasma_shape.rminor
         delta = 1.5 * plasma_shape.delta_95
@@ -241,8 +243,8 @@ class Plasma(BlenderComponent):
     @staticmethod
     def plasma_centre(
         x1, x2, y1, y2
-    ):  # general, should be able to apply to most components - depending on plotting
-        """calculates centre of plasma for tracking"""
+    ):  # General, should be able to apply to most components - depending on plotting
+        """Calculates centre of plasma for tracking"""
         half_arr = int(len(x1) / 2)
         half_x = x1[half_arr] - x2[half_arr]
         half_y = y1[half_arr] - y2[half_arr]
@@ -285,7 +287,7 @@ class TFCoil(BlenderComponent):
         """Fills the space between two concentric ellipse sectors.
 
         Arguments
-
+        ---------
         axis: plot object
         a1, a2, b1, b2 horizontal and vertical radii to be filled
         x0, y0 coordinates of centre of the ellipses
@@ -309,12 +311,11 @@ class TFCoil(BlenderComponent):
 
     def plot_tf_coils(self):
         """Function to plot TF coils
-
         Arguments:
+        --------
             axis --> axis object to plot to
             mfile_data --> MFILE.DAT object
             scan --> scan number to use
-
         """
         # Arc points
         # MDK Only 4 points now required for elliptical arcs
