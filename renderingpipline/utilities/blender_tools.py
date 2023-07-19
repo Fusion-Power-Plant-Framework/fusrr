@@ -1,4 +1,5 @@
-"""Useful combination of blender tools"""
+"""Useful combination of blender tools
+"""
 
 
 import bpy
@@ -22,7 +23,6 @@ def move_camera(x, y, z):
 
 def camera_fix(camera: str, target: str):
     """Fixes camera to look at target
-
     Parameters
     ----------
     camera : bpy.data.objects[""]
@@ -52,7 +52,6 @@ def save_image(file_name: str):
 
 def join_obj(names: list):
     """Joins objects in list into one object
-
     Parameters
     ----------
     names : list
@@ -69,7 +68,6 @@ def join_obj(names: list):
 
 def make_face_from_vertices(vertex_obj: str):
     """Makes a face from group of vertices
-
     Parameters
     ----------
     vertex_obj : object
@@ -81,18 +79,42 @@ def make_face_from_vertices(vertex_obj: str):
     bpy.ops.mesh.select_all(action="SELECT")
     bpy.ops.mesh.edge_face_add()
     bpy.ops.object.mode_set(mode="OBJECT")
+    bpy.ops.object.select_all(action="DESELECT")
+
+
+def faces_pf_coils(vertex_obj: str):
+    """Makes a face from group of vertices
+    Parameters
+    ----------
+    vertex_obj : object
+        name of object where vertices are
+    """
+    bpy.ops.object.select_all(action="DESELECT")
+    line_object = bpy.context.scene.objects.get(str(vertex_obj))
+    if line_object is not None:
+        line_object.select_set(True)
+        bpy.context.view_layer.objects.active = line_object
+        bpy.ops.object.mode_set(mode="EDIT")
+        bpy.ops.mesh.select_all(action="SELECT")
+        bpy.ops.mesh.edge_face_add()
+        bpy.ops.object.mode_set(mode="OBJECT")
+        bpy.ops.object.select_all(action="DESELECT")
+    else:
+        print("No object selected")
 
 
 def rect_blend(rectangle: object):
-    """Creates rectangle
+    """Makes a rectangle to be plotted in blender from rectangle patches object
 
-    Args
-    ----
-        rectangle (object): input object
+    Parameters
+    ----------
+    rectangle : object
+        from matplotlib patches
 
     Returns
     -------
-        centre_cords: array
+    array
+        coordinates of vertices
     """
     x_coords = []
     y_coords = []
@@ -122,20 +144,79 @@ def rect_blend(rectangle: object):
     return centre_coords
 
 
-def change_to_mesh(object_names: list):
-    """Changes plotted object to mesh
+def rect_blend_sep(rectangle: object):
+    """Makes a x and y seperated coordinate rectangle
+    # ! Can just adapt rect_blend function to do this
 
-    Args:
-    ----
-        object_names (list): name of object in blender
+    Parameters
+    ----------
+    rectangle : object
+        matplotlib patches rectangle
+
+    Returns
+    -------
+    tuple of lists
+        x and y coords
+    """
+    x_coords = []
+    y_coords = []
+    # Gets bottom left point
+    x0 = rectangle.get_x()
+    y0 = rectangle.get_y()
+    x_coords.append(x0)
+    y_coords.append(y0)
+
+    # Gets bottom right point
+    x1 = x0 + rectangle.get_width()
+    x_coords.append(x1)
+    y_coords.append(y0)
+
+    # Top right point
+    y1 = y0 + rectangle.get_height()
+    x_coords.append(x1)
+    y_coords.append(y1)
+
+    # Gets top left point
+
+    x_coords.append(x0)
+    y_coords.append(y1)
+
+    return x_coords, y_coords
+
+
+def change_to_mesh(object_names: list):
+    """Changes spline object to mesh
+
+    Parameters
+    ----------
+    object_names : list
+        objects in blender scene
     """
     bpy.ops.object.select_all(action="DESELECT")
 
     for i in object_names:
         bpy.data.objects[str(i)].select_set(True)
-
+    # ! Selects object 0 to be active object, must change soon
     bpy.context.view_layer.objects.active = bpy.context.scene.objects[
-        str(object_names[4])
+        str(object_names[0])
     ]
     bpy.ops.object.convert(target="MESH")
+    bpy.ops.object.select_all(action="DESELECT")
+
+
+def spin_extrusion(face_mesh):
+    """Spin extrudes around y axis in blender 2Pi radians
+
+    Parameters
+    ----------
+    face_mesh : str
+        Name of face_mesh to be spun extruded
+    """
+    obj = bpy.context.scene.objects.get(str(face_mesh))
+    obj.select_set(True)
+    bpy.context.view_layer.objects.active = obj
+    bpy.ops.object.mode_set(mode="EDIT")
+    bpy.ops.mesh.select_all(action="SELECT")
+    bpy.ops.mesh.spin(angle=6.28319, steps=30, axis=(0.0, 1.0, 0.0))  # Polodial rotation
+    bpy.ops.object.mode_set(mode="OBJECT")
     bpy.ops.object.select_all(action="DESELECT")
