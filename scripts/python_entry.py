@@ -1,6 +1,7 @@
 """
-Imports .gltf from cwd, changes location of imported object, selects/ generates
-and colours meshes and outputs a rendered image as PNG file
+Imports .gltf from cwd, changes location of imported object,
+selects/ generatesand colours meshes
+and outputs a rendered image as PNG file
 """
 from pathlib import Path
 
