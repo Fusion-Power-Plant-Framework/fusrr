@@ -269,7 +269,7 @@ class Plasma(BlenderComponent):
         self.setup_scene(x, y, 0)
 
 
-class tfCoil(BlenderComponent):
+class TFCoil(BlenderComponent):
     """Contains method for plotting and rendering tf coils"""
 
     def __init__(self, tf_coil_shape):
