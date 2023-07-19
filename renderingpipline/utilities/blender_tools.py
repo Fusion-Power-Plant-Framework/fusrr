@@ -23,7 +23,6 @@ def move_camera(x, y, z):
 
 def camera_fix(camera: str, target: str):
     """Fixes camera to look at target
-
     Parameters
     ----------
     camera : bpy.data.objects[""]
@@ -37,7 +36,6 @@ def camera_fix(camera: str, target: str):
 
 def delete_cube():
     """Removes default cube if present"""
-
     for o in bpy.context.scene.objects:
         if o.name == "Cube":
             bpy.ops.object.select_all(action="DESELECT")
@@ -49,14 +47,12 @@ def delete_cube():
 
 def save_image(file_name: str):
     """Saves render as PNG"""
-
     bpy.context.scene.render.filepath = str(file_name)
     bpy.ops.render.render(write_still=True, use_viewport=True)
 
 
 def join_obj(names: list):
     """Joins objects in list into one object
-
     Parameters
     ----------
     names : list
@@ -73,7 +69,6 @@ def join_obj(names: list):
 
 def make_face_from_vertices(vertex_obj: str):
     """Makes a face from group of vertices
-
     Parameters
     ----------
     vertex_obj : object
@@ -90,7 +85,6 @@ def make_face_from_vertices(vertex_obj: str):
 
 def faces_pf_coils(vertex_obj: str):
     """Makes a face from group of vertices
-
     Parameters
     ----------
     vertex_obj : object
@@ -154,7 +148,7 @@ def rect_blend(rectangle: object):
 
 def rect_blend_sep(rectangle: object):
     """Makes a x and y seperated coordinate rectangle
-    #! Can just adapt rect_blend function to do this
+    # ! Can just adapt rect_blend function to do this
 
     Parameters
     ----------
@@ -204,7 +198,7 @@ def change_to_mesh(object_names: list):
 
     for i in object_names:
         bpy.data.objects[str(i)].select_set(True)
-    #! Selects object 0 to be active object, must change soon
+    # ! Selects object 0 to be active object, must change soon
     bpy.context.view_layer.objects.active = bpy.context.scene.objects[
         str(object_names[0])
     ]
