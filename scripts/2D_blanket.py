@@ -228,14 +228,14 @@ def cumulative_radial_build(section, blanket_shape):
     complete = False
     cumulative_build = 0
     for item in RADIAL_BUILD:
-        if item == "rminori" or item == "rminoro":
+        if item == "rminori" or item == "rminoro" or item == "rminor":
             cumulative_build += blanket_shape.rminor
-        elif item == "vvblgapi" or item == "vvblgapo":
+        elif item == "vvblgapi" or item == "vvblgapo" or item == "vvblgap":
             cumulative_build += blanket_shape.vvblgap
         elif "d_vv_in" in item:
             cumulative_build += blanket_shape.d_vv_in
         elif "d_vv_out" in item:
-            cumulative_build += blanket_shape.d_vv_outc_shldith
+            cumulative_build += blanket_shape.d_vv_out #was d_vv_outc_shldith - need to check correct parameters
 
         if item == section:
             complete = True
