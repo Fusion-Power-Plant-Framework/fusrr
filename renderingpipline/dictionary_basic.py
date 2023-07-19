@@ -1,4 +1,67 @@
 """Dictionary for generic params for adaptor"""
 
-process_param = dict({"rmajor": "rmajor", "No_TF": "n_tf"})
-bluemira_param = dict({"rmajor": "R_0", "No_TF": "n_TF"})
+
+process_param = dict(
+    {
+        "rmajor": "rmajor",
+        "No_TF": "n_tf",
+        "rminor": "rminor",
+        "delta_95": "triang95",
+        "kappa95": "kappa95",
+        "i_single_null": "i_single_null",
+        "x1": "xarc(1)",
+        "x2": "xarc(2)",
+        "x3": "xarc(3)",
+        "x4": "xarc(4)",
+        "x5": "xarc(5)",
+        "y1": "yarc(1)",
+        "y2": "yarc(2)",
+        "y3": "yarc(3)",
+        "y4": "yarc(4)",
+        "y5": "yarc(5)",
+        "tfcth": "tfcth",
+        "d_vv_in": "d_vv_in",
+        "d_vv_out": "d_vv_out",
+        "blnktth": "blnktth",
+        "bore": "bore",
+        "ohcth": "ohcth",
+        "precomp": "precomp",
+        "gapoh": "gapoh",
+        "tftsgap": "tftsgap",
+        "thshield_ib": "thshield_ib",
+        "gapds": "gapds",
+        "shldith": "shldith",
+        "vvblgapi": "vvblgapi",
+        "blnkith": "blnkith",
+        "fwith": "fwith",
+        "scrapli": "scrapli",
+        "rminori": "rminor",
+        "rminoro": "rminoro",
+        "scraplo": "scraplo",
+        "fwoth": "fwoth",
+        "blnkoth": "blnkoth",
+        "vvblgapo": "vvblgapo",
+        "shldoth": "shldoth",
+        "gapsto": "gapsto",
+        "thshield_ob": "thshield_ob",
+        "tfthko": "tfthko",
+        "rminor_kappa": "rminor*kappa",
+        "vgaptop": "vgaptop",
+        "fwtth": "fwtth",
+        "vvblgap": "vvblgap",
+        "shldtth": "shldtth",
+        "d_vv_top": "d_vv_top",
+        "vgap2": "vgap2",
+        "thshield_vb": "thshield_vb",
+        "vgap": "vgap",
+        "divfix": "divdix",
+        "shldlth": "shldlth",
+        "d_vv_bot": "d_vv_bot",
+        "tftsgap": "tftsgap",
+    }
+)
+
+
+bluemira_param = dict(
+    {"rmajor": "R_0", "No_TF": "n_TF", "delta95": "delta_95", "kappa95": "kappa95"}
+)
