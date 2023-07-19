@@ -86,10 +86,12 @@ def make_face_from_vertices(vertex_obj: str):
 def rect_blend(rectangle: object):
     """Creates rectangle
 
-    Args:
-        rectangle (object): _description_
+    Args
+    ----
+        rectangle (object): input object
 
-    Returns:
+    Returns
+    -------
         centre_cords: array
     """
     x_coords = []
@@ -124,6 +126,7 @@ def change_to_mesh(object_names: list):
     """Changes plotted object to mesh
 
     Args:
+    ----
         object_names (list): name of object in blender
     """
     bpy.ops.object.select_all(action="DESELECT")
