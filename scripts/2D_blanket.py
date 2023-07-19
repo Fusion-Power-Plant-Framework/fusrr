@@ -72,7 +72,7 @@ def plotdh(r0, a, delta, kap):
         kap --> elongation
 
     Returns:
-    ----------
+    --------
         rs --> radial coordinates of D-section
         zs --> vertical coordinates of D-section
     """
@@ -144,8 +144,7 @@ def plot_blanket(blanket_shape, cumulative_upper, cumulative_lower):
     """Function to plot blanket
 
     Arguments:
-
-    ---------
+    ----------
 
       axis --> axis object to plot to
       mfile_data --> MFILE.DAT object
@@ -210,14 +209,14 @@ def cumulative_radial_build(section, blanket_shape):
     including the given section.
 
     Arguments:
-    ---------
+    ----------
 
         section --> section of the radial build to go up to
         mfile_data --> MFILE data object
         scan --> scan number to use
 
     Returns:
-    ---------
+    --------
         cumulative_build --> cumulative radial build up to section given
 
     """
