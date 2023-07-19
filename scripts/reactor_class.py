@@ -299,6 +299,8 @@ class Plasma(BlenderComponent):
 class TFCoil(BlenderComponent):
     """Contains method for plotting and rendering tf coils"""
 
+    i_tf_sup = int(1)
+
     def __init__(self, tf_coil_shape):
         self.tf_coil_shape = tf_coil_shape
 
