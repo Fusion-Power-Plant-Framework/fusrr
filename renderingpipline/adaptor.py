@@ -62,7 +62,7 @@ class OutputParams:
     """
 
     rmajor: float
-    No_TF: float
+    n_tf: float
     rminor: float
     delta_95: float
     kappa95: float
@@ -77,18 +77,18 @@ class OutputParams:
     y3: float
     y4: float
     y5: float
-    tfcth: float
+    tfc_inleg: float
     vvblgap: float
     d_vv_in: float
     d_vv_out: float
     blnktth: float
     bore: float
-    ohcth: float
+    cs_rad_th: float
     precomp: float
-    gapoh: float
+    cs_rad_gap: float
     tftsgap: float
     thshield_ib: float
-    gapds: float
+    thshldgap: float
     shldith: float
     vvblgapi: float
     blnkith: float
