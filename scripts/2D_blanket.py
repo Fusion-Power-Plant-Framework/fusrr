@@ -22,7 +22,9 @@ from renderingpipline.utilities.process_build_tools import (
 
 blanket_shape = OutputParams.from_file(file_name="baseline_2018_MFILE.DAT")
 
-blanket_shape_dict = {k: str(v) for k, v in asdict(blanket_shape).items()}
+blanket_shape_dict: dict[str, str] = {
+    k: str(v) for k, v in asdict(blanket_shape).items()
+}
 
 
 def cumul_setup(blanket_shape_dict):
@@ -62,20 +64,24 @@ cumulative_upper, cumulative_lower = cumul_setup(blanket_shape_dict=blanket_shap
 
 def plotdh(r0, a, delta, kap):
     """Plots half a thin D-section, centred on z = 0.
-
-    Arguments:
+    Parameters
     ----------
-        axis --> axis object to plot to
-        r0 --> major radius of centre
-        a --> horizontal radius
-        delta --> triangularity
-        kap --> elongation
+    r0 : float
+        major radius of centre
+    a : float
+        _horizontal radius
+    delta : float
+        triangularity
+    kap : float
+        elongation
 
-    Returns:
-    --------
-        rs --> radial coordinates of D-section
-        zs --> vertical coordinates of D-section
+
+    Returns
+    -------
+    rs --> radial coordinates of D-section
+    zs --> vertical coordinates of D-section
     """
+
     angs = np.linspace(0, np.pi, 50, endpoint=True)
     rs = r0 + a * np.cos(angs + delta * np.sin(1.0 * angs))
     zs = kap * a * np.sin(angs)
@@ -85,19 +91,23 @@ def plotdh(r0, a, delta, kap):
 def plotdhgap(inpt, outpt, inthk, outthk, toppt, topthk, delta):
     """Plots half a thick D-section with a gap.
 
-    Arguments:
+    Parameters
     ----------
-        axis --> axis object to plot to
-        inpt --> inner points
-        outpt --> outer points
-        inthk --> inner thickness
-        outthk --> outer thickness
-        toppt --> top points
-        topthk --> top thickness
-        delta --> triangularity
-        col --> color for fill
+    axis --> axis object to plot to
+    inpt --> inner points
+    outpt --> outer points
+    inthk --> inner thickness
+    outthk --> outer thickness
+    toppt --> top points
+    topthk --> top thickness
+    delta --> triangularity
+    col --> color for fill
 
+    Returns
+    -------
+    Tuple of arrays
     """
+
     arc = np.pi / 4.0
     r01 = (inpt + outpt) / 2.0
     r02 = (inpt + inthk + outpt - outthk) / 2.0
@@ -143,14 +153,13 @@ def plotdhgap(inpt, outpt, inthk, outthk, toppt, topthk, delta):
 def plot_blanket(blanket_shape, cumulative_upper, cumulative_lower):
     """Function to plot blanket
 
-    Arguments:
+    Parameters
     ----------
-
-      axis --> axis object to plot to
-      mfile_data --> MFILE.DAT object
-      scan --> scan number to use
-
+    axis --> axis object to plot to
+    mfile_data --> MFILE.DAT object
+    scan --> scan number to use
     """
+
     point_array = ()
     triang = blanket_shape.triang
     blnkith = blanket_shape.blnkith
@@ -208,18 +217,14 @@ def cumulative_radial_build(section, blanket_shape):
     """Function for calculating the cumulative radial build up to and
     including the given section.
 
-    Arguments:
+
+    Parameters
     ----------
-
-        section --> section of the radial build to go up to
-        mfile_data --> MFILE data object
-        scan --> scan number to use
-
-    Returns:
-    --------
-        cumulative_build --> cumulative radial build up to section given
+    section --> section of the radial build to go up to
+    blanket_shape --> Dataclass
 
     """
+
     complete = False
     cumulative_build = 0
     for item in RADIAL_BUILD:
