@@ -1,6 +1,5 @@
 """Dictionary for generic params for adaptor"""
 
-
 process_param = dict(
     {
         "rmajor": "rmajor",
@@ -9,6 +8,7 @@ process_param = dict(
         "delta_95": "triang95",
         "kappa95": "kappa95",
         "i_single_null": "i_single_null",
+        # TF Coil use
         "x1": "xarc(1)",
         "x2": "xarc(2)",
         "x3": "xarc(3)",
@@ -23,6 +23,7 @@ process_param = dict(
         "d_vv_in": "d_vv_in",
         "d_vv_out": "d_vv_out",
         "blnktth": "blnktth",
+        # Blanket use
         "bore": "bore",
         "ohcth": "ohcth",
         "precomp": "precomp",
@@ -54,10 +55,38 @@ process_param = dict(
         "vgap2": "vgap2",
         "thshield_vb": "thshield_vb",
         "vgap": "vgap",
-        "divfix": "divdix",
+        "divfix": "divfix",
         "shldlth": "shldlth",
         "d_vv_bot": "d_vv_bot",
         "tftsgap": "tftsgap",
+        "triang": "triang",
+        # PF coil use
+        "ohdz": "ohdz",
+        "iohcl": "iohcl",
+        "rpf1": "rpf(01)",
+        "rpf2": "rpf(02)",
+        "rpf3": "rpf(03)",
+        "rpf4": "rpf(04)",
+        "rpf5": "rpf(05)",
+        "rpf6": "rpf(06)",
+        "zpf1": "zpf(01)",
+        "zpf2": "zpf(02)",
+        "zpf3": "zpf(03)",
+        "zpf4": "zpf(04)",
+        "zpf5": "zpf(05)",
+        "zpf6": "zpf(06)",
+        "pfdr1": "pfdr01",
+        "pfdr2": "pfdr02",
+        "pfdr3": "pfdr03",
+        "pfdr4": "pfdr04",
+        "pfdr5": "pfdr05",
+        "pfdr6": "pfdr06",
+        "pfdz1": "pfdz01",
+        "pfdz2": "pfdz02",
+        "pfdz3": "pfdz03",
+        "pfdz4": "pfdz04",
+        "pfdz5": "pfdz05",
+        "pfdz6": "pfdz06",
     }
 )
 

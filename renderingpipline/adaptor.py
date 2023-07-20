@@ -117,6 +117,34 @@ class OutputParams:
     shldlth: float
     d_vv_bot: float
     tftsgap: float
+    triang: float
+    bore: float
+    ohdz: float
+    iohcl: float
+    rpf1: float
+    rpf2: float
+    rpf3: float
+    rpf4: float
+    rpf5: float
+    rpf6: float
+    zpf1: float
+    zpf2: float
+    zpf3: float
+    zpf4: float
+    zpf5: float
+    zpf6: float
+    pfdr1: float
+    pfdr2: float
+    pfdr3: float
+    pfdr4: float
+    pfdr5: float
+    pfdr6: float
+    pfdz1: float
+    pfdz2: float
+    pfdz3: float
+    pfdz4: float
+    pfdz5: float
+    pfdz6: float
 
     file_name: Optional[str] = None
 
