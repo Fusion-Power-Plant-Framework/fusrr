@@ -9,7 +9,6 @@
 import argparse
 
 import bpy
-
 from extract_params import OutputParams
 
 argParser = argparse.ArgumentParser()
