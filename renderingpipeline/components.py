@@ -4,8 +4,11 @@ A file that stores the blender components of the reactor
 import abc
 import math
 
+
 import bpy
 import bmesh
+from dataclasses import asdict
+from inspect import getmembers
 import numpy as np
 from matplotlib import patches
 
@@ -73,7 +76,7 @@ class BlenderComponent(abc.ABC):
         z = 6 * component_shape.rmajor
         return x, y, z
 
-    def scene(self, x, y, z):
+    def frame(self, x, y, z):
         """Sets up camera for rendering"""
         delete_cube()
         empty_obj(x, y, 0)
@@ -237,7 +240,7 @@ class Plasma(BlenderComponent):
 
     def setup_scene(self, x_coords, y_coords, z_coords):
         """Sets up cameras and objects for rendering"""
-        self.scene(x_coords, y_coords, z_coords)
+        self.frame(x_coords, y_coords, z_coords)
         object_list = [
             "line_object",
             "line_object.001",
@@ -347,8 +350,8 @@ class TFCoil(BlenderComponent):
 
     def setup_scene(self):
         """Sets up scene and objects for rendering"""
-        x, y, z = self.tracking_centre(self.tf_coil_shape)
-        self.scene(x, y, z)  # Tracking works but is wonky
+        x, y, z = self.get_reactor_centre(self.tf_coil_shape)
+        self.frame(x, y, z)  # Tracking works but is wonky
         object_list = [
             "TestObject",
             "TestObject.001",
@@ -422,3 +425,130 @@ class Cryostat(BlenderComponent):
         self._cryo_outline()
         self.scene(0, 0, 100)
         self.default_colour(colour="#2e7ebc")
+
+
+class PfCoils(BlenderComponent):
+    """Contains methods for plotting and rendering Pf_coils
+
+    Parameters
+    ----------
+    BlenderComponent : instance
+        Inherits other general methods for components
+    """
+
+    def __init__(self, pf_coil_shape) -> None:
+        self.pf_coil_shape = pf_coil_shape
+
+    # TODO: pf_coil_render is identical to plasma render, move it to component class!
+    @staticmethod
+    def pf_coil_render(x_coords, y_coords, coil_name):
+        """Renders the vertices of the plasma array
+
+        Parameters
+        ----------
+        x_coords : numpy array
+        y_coords : numpy array
+
+        """
+        bpy.ops.object.select_all(action="DESELECT")
+        scene = bpy.context.scene
+        bpy.context.view_layer.objects.active = None
+
+        mesh = bpy.data.meshes.new("line_mesh")
+        line_obj = bpy.data.objects.new(str(coil_name), mesh)
+        scene.collection.objects.link(line_obj)
+        scene.view_layers.update()
+
+        bm = bmesh.new()
+
+        for x, y in zip(x_coords, y_coords):
+            bm.verts.new((x, y, 0))
+
+        bm.to_mesh(mesh)
+        bm.free()
+
+        scene.view_layers.update()
+
+        return mesh
+
+    def plot_pf_coils(self):
+        pf_coil_shape_dict = {k: str(v) for k, v in asdict(self.pf_coil_shape).items()}
+        print(pf_coil_shape_dict)
+
+        coils_r = []
+        coils_z = []
+        coils_dr = []
+        coils_dz = []
+        coil_text = []
+
+        number_of_coils = 0
+        for key in pf_coil_shape_dict.keys():
+            if "rpf" in key:
+                number_of_coils += 1
+
+        bore = float(pf_coil_shape_dict["bore"])
+        ohcth = float(pf_coil_shape_dict["ohcth"])
+        ohdz = float(pf_coil_shape_dict["ohdz"])
+
+        # Check for Central Solenoid
+        if "iohcl" in pf_coil_shape_dict:
+            iohcl = pf_coil_shape_dict["iohcl"]
+        else:
+            iohcl = 1
+
+        # If Central Solenoid present, ignore last entry in for loop
+        # The last entry will be the OH coil in this case
+        if iohcl == 0:
+            noc = number_of_coils + 1
+        else:
+            noc = number_of_coils
+
+        for coil in range(1, noc + 1):
+            coils_r.append(pf_coil_shape_dict["rpf{:01}".format(coil)])
+            coils_z.append(pf_coil_shape_dict["zpf{:01}".format(coil)])
+            coils_dr.append(pf_coil_shape_dict["pfdr{:01}".format(coil)])
+            coils_dz.append(pf_coil_shape_dict["pfdz{:01}".format(coil)])
+            coil_text.append(str(coil + 1))
+
+        for i in range(len(coils_r)):
+            print(i)
+            r_1 = float(coils_r[i]) - 0.5 * float(coils_dr[i])
+            z_1 = float(coils_z[i]) - 0.5 * float(coils_dz[i])
+            r_2 = float(coils_r[i]) - 0.5 * float(coils_dr[i])
+            z_2 = float(coils_z[i]) + 0.5 * float(coils_dz[i])
+            r_3 = float(coils_r[i]) + 0.5 * float(coils_dr[i])
+            z_3 = float(coils_z[i]) + 0.5 * float(coils_dz[i])
+            r_4 = float(coils_r[i]) + 0.5 * float(coils_dr[i])
+            z_4 = float(coils_z[i]) - 0.5 * float(coils_dz[i])
+            r_5 = float(coils_r[i]) - 0.5 * float(coils_dr[i])
+            z_5 = float(coils_z[i]) - 0.5 * float(coils_dz[i])
+
+            r_points = [r_1, r_2, r_3, r_4, r_5]
+            z_points = [z_1, z_2, z_3, z_4, z_5]
+
+            pf_coil_name = f"pf_coil{i}"
+            self.pf_coil_render(r_points, z_points, pf_coil_name)
+            bt.faces_pf_coils(pf_coil_name)
+
+        central_coil = patches.Rectangle([bore, (-ohdz / 2)], ohcth, ohdz)
+        central_coil_name = "central_coil"
+        x_coords, y_coords = bt.rect_blend_sep(central_coil)
+
+        self.pf_coil_render(
+            x_coords=x_coords, y_coords=y_coords, coil_name=central_coil_name
+        )
+        bt.faces_pf_coils(central_coil_name)
+
+    def setup_scene(self):
+        """Sets up scene and objects for rendering"""
+        x, y, z = self.get_reactor_centre(self.pf_coil_shape)
+        self.frame(x, y, z)  # Tracking works but is wonky
+
+    def build(self):
+        """Plots tracks and renders tf coils"""
+        self.plot_pf_coils()
+        self.setup_scene()
+        self.default_colour(colour="#0072c2")
+
+
+# class Blanket(BlenderComponent):
