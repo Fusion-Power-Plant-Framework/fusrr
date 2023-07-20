@@ -6,9 +6,9 @@ import abc
 import math
 from inspect import getmembers
 
+import bpy
 import blender_tools as bt
 import bmesh
-import bpy
 import numpy as np
 from matplotlib import patches
 

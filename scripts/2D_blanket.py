@@ -64,24 +64,22 @@ cumulative_upper, cumulative_lower = cumul_setup(blanket_shape_dict=blanket_shap
 
 
 def plotdh(r0, a, delta, kap):
-    """Plots half a thin D-section, centred on z = 0.
+    """Plots half a thin D section, centred on z=0
 
     Parameters
     ----------
-    r0 : float
+    r0 :
         major radius of centre
-    a : float
-        _horizontal radius
-    delta : float
+    a :
+        horizontal radius
+    delta :
         triangularity
-    kap : float
+    kap :
         elongation
-
 
     Returns
     -------
-    rs --> radial coordinates of D-section
-    zs --> vertical coordinates of D-section
+    Tuple of arrays
     """
     angs = np.linspace(0, np.pi, 50, endpoint=True)
     rs = r0 + a * np.cos(angs + delta * np.sin(1.0 * angs))
@@ -90,23 +88,30 @@ def plotdh(r0, a, delta, kap):
 
 
 def plotdhgap(inpt, outpt, inthk, outthk, toppt, topthk, delta):
-    """Plots half a thick D-section with a gap.
+    """Plots half thick D-section with a gap.
 
     Parameters
     ----------
-    axis --> axis object to plot to
-    inpt --> inner points
-    outpt --> outer points
-    inthk --> inner thickness
-    outthk --> outer thickness
-    toppt --> top points
-    topthk --> top thickness
-    delta --> triangularity
-    col --> color for fill
+    inpt : _type_
+        inner points
+    outpt : _type_
+        outer points
+    inthk : _type_
+        inner thickness
+    outthk : _type_
+        outer thickness
+    toppt : _type_
+        top points
+    topthk : _type_
+        top thickness
+    delta : _type_
+        triangularity
 
     Returns
     -------
-    Tuple of arrays
+    Tuple of arrays:
+        array of points to be plotted in blender
+
     """
     arc = np.pi / 4.0
     r01 = (inpt + outpt) / 2.0
@@ -155,9 +160,19 @@ def plot_blanket(blanket_shape, cumulative_upper, cumulative_lower):
 
     Parameters
     ----------
-    axis --> axis object to plot to
-    mfile_data --> MFILE.DAT object
-    scan --> scan number to use
+    blanket_shape :
+        instance of parameter class
+    cumulative_upper :
+        dictionary of upper blanket
+    cumulative_lower :
+        dictionary of lower blanket
+
+    Returns
+    -------
+    Multiple array
+        arrays of different sections of blanket
+        # ! Clarification of each section still required
+        # ! Not all may be needed here
     """
     point_array = ()
     triang = blanket_shape.triang
@@ -219,8 +234,14 @@ def cumulative_radial_build(section, blanket_shape):
 
     Parameters
     ----------
-    section --> section of the radial build to go up to
-    blanket_shape --> Dataclass
+    section :
+        Section being built
+    blanket_shape :
+        Instance of dataclass
+
+    Returns
+    -------
+    Radial build section
 
     """
     complete = False
@@ -273,9 +294,12 @@ def tf_coil_outline(coords):
 
     Parameters
     ----------
-    x_coords : numpy array
-    y_coords : numpy array
+    coords :
+        coordiantes of outline
 
+    Returns
+    -------
+    None
     """
     curve = bpy.data.curves.new(name="Curve_test", type="CURVE")
     curve.fill_mode = "NONE"
@@ -302,9 +326,14 @@ def plasma_render(x_coords, y_coords):
 
     Parameters
     ----------
-    x_coords : numpy array
-    y_coords : numpy array
+    x_coords :
+        x coordinate array
+    y_coords :
+        y coordinate array
 
+    Returns
+    -------
+    None
     """
     scene = bpy.context.scene
     bpy.context.view_layer.objects.active = None
