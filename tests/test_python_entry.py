@@ -15,4 +15,4 @@ for path in delete_png:
 def test_save_image():
     """Test to assert if render has been saved"""
     save_image(imagepathname)
-    assert Path(imagepathname).exists() == True
+    assert Path(imagepathname).exists()
