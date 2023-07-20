@@ -93,17 +93,17 @@ class OutputParams:
     vvblgapi: float
     blnkith: float
     fwith: float
-    scrapli: float
+    scrapthi: float
     rminori: float
     rminoro: float
-    scraplo: float
+    scraptho: float
     fwoth: float
     blnkoth: float
     vvblgapo: float
     shldoth: float
-    gapsto: float
+    vvtfgap: float
     thshield_ob: float
-    tfthko: float
+    tfth_outleg: float
     rminor_kappa: float
     vgaptop: float
     fwtth: float
