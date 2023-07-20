@@ -1,10 +1,10 @@
-"""Script to render 2D plasma from PROCESS Mfile data in blender
+"""
+Script to render 2D plasma from PROCESS Mfile data in blender
 
-    Returns
-    -------
-    .gltf file
-        polodial cross section of Tf coil
-
+Returns
+-------
+.gltf file
+polodial cross section of Tf coil
 """
 
 import bpy
@@ -83,7 +83,7 @@ def plot_tf_coils(tf_coil_shape):
     """Function to plot TF coils
 
     Arguments:
-    ----------
+    ---------
         axis --> axis object to plot to
         mfile_data --> MFILE.DAT object
         scan --> scan number to use
