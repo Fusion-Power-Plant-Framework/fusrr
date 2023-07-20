@@ -472,6 +472,7 @@ class PfCoils(BlenderComponent):
         return mesh
 
     def plot_pf_coils(self):
+        """Plots pf coils"""
         pf_coil_shape_dict = {k: str(v) for k, v in asdict(self.pf_coil_shape).items()}
         print(pf_coil_shape_dict)
 
