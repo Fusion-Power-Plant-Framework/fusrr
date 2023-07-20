@@ -74,12 +74,3 @@ if Path(file_import).exists():
     save_image(imagepathname)
 else:
     raise FileNotFoundError(f"No .gltf found in {str(Path.cwd())}")
-# try:
-#     import_file(str(file_import))
-# except NameError:
-#     raise FileNotFoundError(f"No .gltf found in {str(Path.cwd())}")
-delete_cube()
-move_camera(15, -20, 20)
-move_location(1, 2, 12)
-
-save_image(imagepathname)
