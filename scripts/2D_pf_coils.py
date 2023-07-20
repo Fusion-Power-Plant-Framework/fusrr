@@ -1,9 +1,9 @@
-"""Plots polodial cross section of PF coils in blender
+"""
+Plots polodial cross section of PF coils in blender
 
-    Returns
-    -------
-    blend file of pf coils
-        _description_
+Returns
+-------
+blend file of pf coils
 """
 
 from dataclasses import asdict
@@ -80,13 +80,12 @@ def tf_coil_outline(coords):
 
 
 def plot_pf_coils(pf_coil_shape_dict):
-    """plots pf coils
+    """Plots pf coils
 
     Parameters
     ----------
     pf_coil_shape_dict : dictionary
     """
-
     coils_r = []
     coils_z = []
     coils_dr = []

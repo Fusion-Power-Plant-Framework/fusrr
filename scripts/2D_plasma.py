@@ -1,10 +1,10 @@
-"""Script to render 2D plasma from PROCESS Mfile data in blender
+"""
+Script to render 2D plasma from PROCESS Mfile data in blender
 
-    Returns
-    -------
-    png
-        blend file of 2D cross section of plasma
-
+Returns
+-------
+png
+    blend file of 2D cross section of plasma
 """
 import math
 
@@ -19,7 +19,7 @@ plasma_shape = OutputParams.from_file("baseline_2018_MFILE.DAT")
 
 
 def plot_plasma(plasma_shape):
-    """plots plasma
+    """Plots plasma
 
     Parameters
     ----------
@@ -31,7 +31,6 @@ def plot_plasma(plasma_shape):
     tuple
         arrays of coordinates
     """
-
     r0 = plasma_shape.rmajor
     a = plasma_shape.rminor
     delta = 1.5 * plasma_shape.delta_95

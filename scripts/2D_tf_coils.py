@@ -8,7 +8,6 @@
 """
 
 import bpy
-import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import patches
 
@@ -52,7 +51,7 @@ def tf_coil_outline(coords):
 
 
 def ellips_fill(a1=0, a2=0, b1=0, b2=0, x0=0, y0=0, ang1=0, ang2=rtangle):
-    """plots ellipses fill
+    """Plots ellipses fill
 
     axis: plot object
     a1, a2, b1, b2 horizontal and vertical radii to be filled
@@ -84,11 +83,11 @@ def plot_tf_coils(tf_coil_shape):
     """Function to plot TF coils
 
     Arguments:
+    ----------
         axis --> axis object to plot to
         mfile_data --> MFILE.DAT object
         scan --> scan number to use
-    -------
-    Calls plotting of tf coils
+
     """
     # Arc points
     # MDK Only 4 points now required for elliptical arcs
