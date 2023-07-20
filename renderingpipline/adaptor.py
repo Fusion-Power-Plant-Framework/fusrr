@@ -25,6 +25,7 @@ def process_file_adaptor(input_data, filepath):
     variables = {}
     data_obj = MFile(filename=str(filepath))
     for name_1 in input_data:
+        variables[name_1] = data_obj.data[process_param[name_1]].get_scan(-1)
         try:
             variables[name_1] = data_obj.data[process_param[name_1]].get_scan(-1)
         except KeyError:
