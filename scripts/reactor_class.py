@@ -6,11 +6,12 @@ import abc
 import math
 from inspect import getmembers
 
-import blender_tools as bt
 import bmesh
 import bpy
 import numpy as np
 from matplotlib import patches
+
+import scripts.blender_tools as bt
 
 
 def ellips_fill(a1=0, a2=0, b1=0, b2=0, x0=0, y0=0, ang1=0, ang2=np.pi / 2):
@@ -57,7 +58,7 @@ class Reactor:
         blender_scene = bpy.context.scene
         for mem in to_render.values():
             mem.setup_scene(view)
-
+        # setup camera after scene
         blender_scene.render()
 
     @staticmethod
