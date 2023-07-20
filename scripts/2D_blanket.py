@@ -10,6 +10,7 @@ Blanket shape blend file
 from dataclasses import asdict
 
 import bpy
+import bmesh
 import numpy as np
 
 import renderingpipline.utilities.blender_tools as bt
@@ -20,7 +21,7 @@ from renderingpipline.utilities.process_build_tools import (
     vertical_upper,
 )
 
-blanket_shape = OutputParams.from_file(file_name="baseline_2018_MFILE.DAT")
+blanket_shape = OutputParams.from_file(file_name="scripts/baseline_2018_MFILE.DAT")
 
 blanket_shape_dict: dict[str, str] = {
     k: str(v) for k, v in asdict(blanket_shape).items()
@@ -64,6 +65,7 @@ cumulative_upper, cumulative_lower = cumul_setup(blanket_shape_dict=blanket_shap
 
 def plotdh(r0, a, delta, kap):
     """Plots half a thin D-section, centred on z = 0.
+
     Parameters
     ----------
     r0 : float
@@ -81,7 +83,6 @@ def plotdh(r0, a, delta, kap):
     rs --> radial coordinates of D-section
     zs --> vertical coordinates of D-section
     """
-
     angs = np.linspace(0, np.pi, 50, endpoint=True)
     rs = r0 + a * np.cos(angs + delta * np.sin(1.0 * angs))
     zs = kap * a * np.sin(angs)
@@ -107,7 +108,6 @@ def plotdhgap(inpt, outpt, inthk, outthk, toppt, topthk, delta):
     -------
     Tuple of arrays
     """
-
     arc = np.pi / 4.0
     r01 = (inpt + outpt) / 2.0
     r02 = (inpt + inthk + outpt - outthk) / 2.0
@@ -159,7 +159,6 @@ def plot_blanket(blanket_shape, cumulative_upper, cumulative_lower):
     mfile_data --> MFILE.DAT object
     scan --> scan number to use
     """
-
     point_array = ()
     triang = blanket_shape.triang
     blnkith = blanket_shape.blnkith
@@ -172,11 +171,11 @@ def plot_blanket(blanket_shape, cumulative_upper, cumulative_lower):
         # Upper blanket: outer surface
         radx = (
             cumulative_radial_build("blnkoth", blanket_shape)
-            + cumulative_radial_build("vvblgapi", blanket_shape)
+            + cumulative_radial_build("vvblgap", blanket_shape)
         ) / 2.0
         rminx = (
             cumulative_radial_build("blnkoth", blanket_shape)
-            - cumulative_radial_build("vvblgapi", blanket_shape)
+            - cumulative_radial_build("vvblgap", blanket_shape)
         ) / 2.0
 
         kapx = cumulative_upper["blnktth"] / rminx
@@ -224,7 +223,6 @@ def cumulative_radial_build(section, blanket_shape):
     blanket_shape --> Dataclass
 
     """
-
     complete = False
     cumulative_build = 0
     for item in RADIAL_BUILD:
@@ -235,7 +233,7 @@ def cumulative_radial_build(section, blanket_shape):
         elif "d_vv_in" in item:
             cumulative_build += blanket_shape.d_vv_in
         elif "d_vv_out" in item:
-            cumulative_build += blanket_shape.d_vv_out #was d_vv_outc_shldith - need to check correct parameters
+            cumulative_build += blanket_shape.d_vv_out  # c_shldith
 
         if item == section:
             complete = True
@@ -299,14 +297,51 @@ def tf_coil_outline(coords):
     return None
 
 
-tf_coil_outline(verts)
-# tf_coil_outline(verts2)
-# tf_coil_outline(verts3)
-# tf_coil_outline(verts4)
-# tf_coil_outline(verts5)
+def plasma_render(x_coords, y_coords):
+    """Renders the vertices of the plasma array
+
+    Parameters
+    ----------
+    x_coords : numpy array
+    y_coords : numpy array
+
+    """
+    scene = bpy.context.scene
+    bpy.context.view_layer.objects.active = None
+
+    mesh = bpy.data.meshes.new("line_mesh")
+    line_obj = bpy.data.objects.new("line_object", mesh)
+    scene.collection.objects.link(line_obj)
+    scene.view_layers.update()
+
+    bm = bmesh.new()
+
+    for x, y in zip(x_coords, y_coords):
+        bm.verts.new((x, y, 0))
+
+    bm.to_mesh(mesh)
+    bm.free()
+
+    scene.view_layers.update()
+
+    return None
+
+
+# tf_coil_outline(verts) #lower end - does not join with verts5
+# tf_coil_outline(verts2) #overlapping other lines
+# tf_coil_outline(verts3) #produces point
+# tf_coil_outline(verts4) #line connecting with 5 and 1
+# tf_coil_outline(verts5) #converges to point on either side
+plasma_render(rs1, zs1)
+plasma_render(rs2, zs2)
+plasma_render(rs3, zs3)  # plotting in wrong place? - straight(ish) line
+plasma_render(rs4, zs4)  # may also be in wrong place, better looking than above
+# plasma_render(osrs, oszs) #WRONG - more strange lines
+plasma_render(isrs, iszs)  # one of these is not being plotted
+# plasma_render(rs, zs) #same as above + strange line
 bt.delete_cube()
 
 # Save the Blender scene as a .blend file
-# blend_file_path = "/home/miles/Downloads/test"
-# bpy.ops.wm.save_as_mainfile(filepath=blend_file_path)
+blend_file_path = "blanket_test"
+bpy.ops.wm.save_as_mainfile(filepath=blend_file_path)
 # bpy.ops.export_scene.gltf(filepath=blend_file_path)
