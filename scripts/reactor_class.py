@@ -6,8 +6,8 @@ import abc
 import math
 from inspect import getmembers
 
-import bmesh
 import bpy
+import bmesh
 import numpy as np
 from matplotlib import patches
 
