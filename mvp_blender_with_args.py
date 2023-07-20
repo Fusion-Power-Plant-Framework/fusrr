@@ -1,19 +1,19 @@
-"""Takes input MFILE from process and uses major radius to control "test sphere"
+"""
+Takes input MFILE from process and uses major radius to control "test sphere"
 
-    Returns
-    -------
-    png
-        Image of sphere
-    """
-
+Returns
+-------
+png
+    Image of sphere
+"""
 import argparse
 
 import bpy
 from extract_params import OutputParams
 
-argParser = argparse.ArgumentParser()
-argParser.add_argument("-fn", "--file_name", help=".DAT input file")
-args = argParser.parse_args()
+argparser = argparse.ArgumentParser()
+argparser.add_argument("-fn", "--file_name", help=".DAT input file")
+args = argparser.parse_args()
 
 
 # Creating the test sphere at the centre of the space
@@ -96,12 +96,11 @@ def delete_cube():
 
 def save_image(file_name):
     """Saves render as PNG"""
-
     bpy.context.scene.render.filepath = f"test {file_name}"
     bpy.ops.render.render(write_still=True, use_viewport=True)
 
 
-# Can be adjusted by user.
+# Can be adjusted by user
 
 file_name = str(args.file_name)
 delete_cube()
