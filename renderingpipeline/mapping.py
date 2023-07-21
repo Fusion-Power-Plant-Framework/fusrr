@@ -1,5 +1,5 @@
 """Dictionary for generic params for adaptor"""
-# structure is key=renderingpiplein name
+# structure is key=renderingpipeline name
 # value= external program name
 process_param = dict(
     {
