@@ -3,6 +3,7 @@
 
 
 import bpy
+import bmesh
 
 
 def empty_obj(x, y, z):
