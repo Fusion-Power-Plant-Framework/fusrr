@@ -7,10 +7,38 @@ import math
 from inspect import getmembers
 
 import bpy
-import blender_tools as bt
 import bmesh
 import numpy as np
 from matplotlib import patches
+
+import scripts.blender_tools as bt
+
+
+def ellips_fill(a1=0, a2=0, b1=0, b2=0, x0=0, y0=0, ang1=0, ang2=np.pi / 2):
+    """Fills the space between two concentric ellipse sectors.
+
+    Arguments
+    ---------
+    axis: plot object
+    a1, a2, b1, b2 horizontal and vertical radii to be filled
+    x0, y0 coordinates of centre of the ellipses
+    ang1, ang2 are the polar angles of the start and end
+
+    """
+    angs = np.linspace(ang1, ang2, endpoint=True)
+    r1 = ((np.cos(angs) / a1) ** 2 + (np.sin(angs) / b1) ** 2) ** (-0.5)
+    xs1 = r1 * np.cos(angs) + x0
+    ys1 = r1 * np.sin(angs) + y0
+    angs = np.linspace(ang2, ang1, endpoint=True)
+    r2 = ((np.cos(angs) / a2) ** 2 + (np.sin(angs) / b2) ** 2) ** (-0.5)
+    xs2 = r2 * np.cos(angs) + x0
+    ys2 = r2 * np.sin(angs) + y0
+    verts = list(zip(xs1, ys1))
+    verts.extend(list(zip(xs2, ys2)))
+    endpoint = verts[-1:]
+    verts.extend(endpoint)
+
+    return verts
 
 
 class Reactor:
@@ -30,7 +58,7 @@ class Reactor:
         blender_scene = bpy.context.scene
         for mem in to_render.values():
             mem.setup_scene(view)
-
+        # setup camera after scene
         blender_scene.render()
 
     @staticmethod
@@ -57,7 +85,7 @@ class BlenderComponent(abc.ABC):
 
         return scene, mesh, bm
 
-    def get_reactor_centre(
+    def tracking_centre(
         self, component_shape
     ):  # not great but gives a view that should include all components
         """Uses rmajor to make set of coordinates - Can be useful for camera tracking"""
@@ -124,7 +152,6 @@ class BlenderComponent(abc.ABC):
             colour = self.hex_color_to_rgba("#7d2f8e")
         else:
             colour = self.hex_color_to_rgba(colour)
-        # print(colour)
         for object in active_objects:
             try:
                 mat = bpy.data.materials.new(name="MatName")
@@ -164,14 +191,12 @@ class Plasma(BlenderComponent):
         # print(dir(self))
 
     @staticmethod
-    def plot(plasma_shape):
-        """Plots the plasma boundary arcs
+    def create_shape(plasma_shape):
+        """Generates coordinates for the plasma boundary arcs
 
         Arguments:
         ---------
-            axis --> axis object to plot to
-            mfile_data --> MFILE data object
-            scan --> scan number to use
+            plasma_shape: input values for componets
         """
         r0 = plasma_shape.rmajor
         a = plasma_shape.rminor
@@ -263,7 +288,7 @@ class Plasma(BlenderComponent):
 
     def build(self):
         """Combines above functions to plot, track and render plasma"""
-        xs1, xs2, ys1, ys2 = self.plot(self.plasma_shape)
+        xs1, xs2, ys1, ys2 = self.create_shape(self.plasma_shape)
         x, y = self.plasma_centre(xs1, xs2, ys1, ys2)
         self.render(xs1, ys2)
         self.render(xs2, ys2)
@@ -276,40 +301,8 @@ class TFCoil(BlenderComponent):
 
     def __init__(self, tf_coil_shape):
         self.tf_coil_shape = tf_coil_shape
-        # self.tfcth = tfcth
-        # print(dir(self))
 
-    rtangle = np.pi / 2
-    i_tf_sup = int(1)
-
-    @staticmethod
-    def ellips_fill(a1=0, a2=0, b1=0, b2=0, x0=0, y0=0, ang1=0, ang2=rtangle):
-        """Fills the space between two concentric ellipse sectors.
-
-        Arguments
-        ---------
-        axis: plot object
-        a1, a2, b1, b2 horizontal and vertical radii to be filled
-        x0, y0 coordinates of centre of the ellipses
-        ang1, ang2 are the polar angles of the start and end
-
-        """
-        angs = np.linspace(ang1, ang2, endpoint=True)
-        r1 = ((np.cos(angs) / a1) ** 2 + (np.sin(angs) / b1) ** 2) ** (-0.5)
-        xs1 = r1 * np.cos(angs) + x0
-        ys1 = r1 * np.sin(angs) + y0
-        angs = np.linspace(ang2, ang1, endpoint=True)
-        r2 = ((np.cos(angs) / a2) ** 2 + (np.sin(angs) / b2) ** 2) ** (-0.5)
-        xs2 = r2 * np.cos(angs) + x0
-        ys2 = r2 * np.sin(angs) + y0
-        verts = list(zip(xs1, ys1))
-        verts.extend(list(zip(xs2, ys2)))
-        endpoint = verts[-1:]
-        verts.extend(endpoint)
-
-        return verts
-
-    def plot_tf_coils(self):
+    def create_shape(self):  # was plot_tf_coils
         """Function to plot TF coils
         Arguments:
         --------
@@ -320,7 +313,7 @@ class TFCoil(BlenderComponent):
         # Arc points
         # MDK Only 4 points now required for elliptical arcs
 
-        tfcth = self.tf_coil_shape.tfcth
+        tfc_inleg = self.tf_coil_shape.tfc_inleg
         rtangle = np.pi / 2
         x1 = self.tf_coil_shape.x1
         y1 = self.tf_coil_shape.y1
@@ -339,9 +332,9 @@ class TFCoil(BlenderComponent):
         y0 = y1
         a1 = x2 - x1
         b1 = y2 - y1
-        a2 = a1 + tfcth
-        b2 = b1 + tfcth
-        verts = self.ellips_fill(
+        a2 = a1 + tfc_inleg
+        b2 = b1 + tfc_inleg
+        verts = ellips_fill(
             a1=a1,
             a2=a2,
             b1=b1,
@@ -357,9 +350,9 @@ class TFCoil(BlenderComponent):
         y0 = 0
         a1 = x3 - x2
         b1 = y2
-        a2 = a1 + tfcth
-        b2 = b1 + tfcth
-        verts = self.ellips_fill(
+        a2 = a1 + tfc_inleg
+        b2 = b1 + tfc_inleg
+        verts = ellips_fill(
             a1=a1, a2=a2, b1=b1, b2=b2, x0=x0, y0=y0, ang1=0, ang2=rtangle
         )
         self.component_outline(verts)
@@ -368,9 +361,9 @@ class TFCoil(BlenderComponent):
         y0 = y5
         a1 = x4 - x5
         b1 = y5 - y4
-        a2 = a1 + tfcth
-        b2 = b1 + tfcth
-        verts = self.ellips_fill(
+        a2 = a1 + tfc_inleg
+        b2 = b1 + tfc_inleg
+        verts = ellips_fill(
             a1=a1, a2=a2, b1=b1, b2=b2, x0=x0, y0=y0, ang1=-rtangle, ang2=-2 * rtangle
         )
         self.component_outline(verts)
@@ -379,23 +372,23 @@ class TFCoil(BlenderComponent):
         y0 = 0
         a1 = x3 - x2
         b1 = -y4
-        a2 = a1 + tfcth
-        b2 = b1 + tfcth
-        verts = self.ellips_fill(
+        a2 = a1 + tfc_inleg
+        b2 = b1 + tfc_inleg
+        verts = ellips_fill(
             a1=a1, a2=a2, b1=b1, b2=b2, x0=x0, y0=y0, ang1=0, ang2=-rtangle
         )
         self.component_outline(verts)
         # Vertical leg
         # Bottom left corner
         rect = patches.Rectangle(
-            [x5 - tfcth, y5], tfcth, (y1 - y5), lw=0, facecolor="cyan"
+            [x5 - tfc_inleg, y5], tfc_inleg, (y1 - y5), lw=0, facecolor="cyan"
         )
         centre_coords = bt.rect_blend(rect)
         self.component_outline(centre_coords)
 
     def setup_scene(self):
         """Sets up scene and objects for rendering"""
-        x, y, z = self.get_reactor_centre(self.tf_coil_shape)
+        x, y, z = self.tracking_centre(self.tf_coil_shape)
         self.scene(x, y, z)  # Tracking works but is wonky
         object_list = [
             "TestObject",
@@ -413,7 +406,7 @@ class TFCoil(BlenderComponent):
 
     def build(self):
         """Plots tracks and renders tf coils"""
-        self.plot_tf_coils()
+        self.create_shape()
         self.setup_scene()
         self.default_colour(colour="#0072c2")
 
