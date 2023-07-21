@@ -5,19 +5,17 @@ import abc
 import math
 
 import bpy
-import bmesh
 import numpy as np
 from matplotlib import patches
 
-from renderingpipeline.blender_tools import (
-    camera_fix,
+from renderingpipeline.blender_tools import (  # camera_fix,; empty_obj,; move_camera,
     change_to_mesh,
+    component_outline,
     delete_cube,
-    empty_obj,
     join_obj,
     make_face_from_vertices,
-    move_camera,
     rect_blend,
+    render_component_mesh,
 )
 
 
@@ -51,62 +49,20 @@ def ellips_fill(a1=0, a2=0, b1=0, b2=0, x0=0, y0=0, ang1=0, ang2=np.pi / 2):
 class BlenderComponent(abc.ABC):
     """Stores default functions for blender setup and renderings"""
 
-    def render_component_mesh(self):  # Currently used just for plasma
-        """Sets up scene in which to build mesh + builds new mesh"""
-        scene = bpy.context.scene
-        bpy.context.view_layer.objects.active = None
+    # def tracking_centre( ##Tracking will  likely be done in View
+    #     self, component_shape
+    # ):  # not great but gives a view that should include all components
+    #     """Uses rmajor to make coordinates - Can be useful for camera tracking"""
+    #     x, y = 0, component_shape.rmajor
+    #     z = 6 * component_shape.rmajor
+    #     return x, y, z
 
-        mesh = bpy.data.meshes.new("line_mesh")
-        line_obj = bpy.data.objects.new("line_object", mesh)
-        scene.collection.objects.link(line_obj)
-        scene.view_layers.update()
-
-        bm = bmesh.new()
-
-        return scene, mesh, bm
-
-    def tracking_centre(
-        self, component_shape
-    ):  # not great but gives a view that should include all components
-        """Uses rmajor to make set of coordinates - Can be useful for camera tracking"""
-        x, y = 0, component_shape.rmajor
-        z = 6 * component_shape.rmajor
-        return x, y, z
-
-    def scene(self, x, y, z):
+    def scene(self):
         """Sets up camera for rendering"""
         delete_cube()
-        empty_obj(x, y, 0)
-        move_camera(x, y, z)
-        camera_fix("Camera", "Empty")
-
-    def component_outline(self, coords):
-        """Renders the spline of component (currently only used for tf coil)
-
-        Parameters
-        ----------
-        x_coords : numpy array
-        y_coords : numpy array
-
-        """
-        curve = bpy.data.curves.new(name="Curve_test", type="CURVE")
-        curve.fill_mode = "NONE"
-
-        ob = bpy.data.objects.new(name="TestObject", object_data=curve)
-        scene = bpy.context.scene
-        scene.collection.objects.link(ob)
-        bpy.context.view_layer.objects.active = None
-
-        spline = curve.splines.new(type="POLY")
-        spline.points.add(len(coords) - 1)
-        for i, point in enumerate(spline.points):
-            point.co[0:2] = coords[i]
-
-        bpy.ops.object.select_all(action="DESELECT")
-        bpy.context.view_layer.objects.active = ob
-        ob.select_set(True)
-
-        return None
+        # empty_obj(x, y, 0)
+        # move_camera(x, y, z)
+        # camera_fix("Camera", "Empty")
 
     def hex_color_to_rgba(self, hex_color):
         """Converts hex to blender's sRGB"""
@@ -213,7 +169,7 @@ class Plasma(BlenderComponent):
         y_coords : numpy array
 
         """
-        scene, mesh, bm = self.render_component_mesh()
+        scene, mesh, bm = render_component_mesh()
 
         for x, y in zip(x_coords, y_coords):
             bm.verts.new((x, y, 0))
@@ -225,9 +181,7 @@ class Plasma(BlenderComponent):
         return None
 
     @staticmethod
-    def plasma_centre(
-        x1, x2, y1, y2
-    ):  # General, should be able to apply to most components - depending on plotting
+    def plasma_centre(x1, x2, y1, y2):  # may not be needed after View class
         """Calculates centre of plasma for tracking"""
         half_arr = int(len(x1) / 2)
         half_x = x1[half_arr] - x2[half_arr]
@@ -235,9 +189,9 @@ class Plasma(BlenderComponent):
 
         return half_x, half_y
 
-    def setup_scene(self, x_coords, y_coords, z_coords):
+    def setup_scene(self):
         """Sets up cameras and objects for rendering"""
-        self.scene(x_coords, y_coords, z_coords)
+        self.scene()
         object_list = [
             "line_object",
             "line_object.001",
@@ -248,11 +202,10 @@ class Plasma(BlenderComponent):
     def build(self):
         """Combines above functions to plot, track and render plasma"""
         xs1, xs2, ys1, ys2 = self.create_shape(self.plasma_shape)
-        x, y = self.plasma_centre(xs1, xs2, ys1, ys2)
-        self.render(xs1, ys2)
+        self.render(xs1, ys1)
         self.render(xs2, ys2)
+        self.setup_scene()
         self.default_colour(colour=None)
-        self.setup_scene(x, y, 0)
 
 
 class TFCoil(BlenderComponent):
@@ -303,7 +256,7 @@ class TFCoil(BlenderComponent):
             ang1=rtangle,
             ang2=2 * rtangle,
         )
-        self.component_outline(verts)
+        component_outline(verts)
         # Outboard upper arc
         x0 = x2
         y0 = 0
@@ -314,7 +267,7 @@ class TFCoil(BlenderComponent):
         verts = ellips_fill(
             a1=a1, a2=a2, b1=b1, b2=b2, x0=x0, y0=y0, ang1=0, ang2=rtangle
         )
-        self.component_outline(verts)
+        component_outline(verts)
         # Inboard lower arc
         x0 = x4
         y0 = y5
@@ -325,7 +278,7 @@ class TFCoil(BlenderComponent):
         verts = ellips_fill(
             a1=a1, a2=a2, b1=b1, b2=b2, x0=x0, y0=y0, ang1=-rtangle, ang2=-2 * rtangle
         )
-        self.component_outline(verts)
+        component_outline(verts)
         # Outboard lower arc
         x0 = x4
         y0 = 0
@@ -336,19 +289,18 @@ class TFCoil(BlenderComponent):
         verts = ellips_fill(
             a1=a1, a2=a2, b1=b1, b2=b2, x0=x0, y0=y0, ang1=0, ang2=-rtangle
         )
-        self.component_outline(verts)
+        component_outline(verts)
         # Vertical leg
         # Bottom left corner
         rect = patches.Rectangle(
             [x5 - tfc_inleg, y5], tfc_inleg, (y1 - y5), lw=0, facecolor="cyan"
         )
         centre_coords = rect_blend(rect)
-        self.component_outline(centre_coords)
+        component_outline(centre_coords)
 
     def setup_scene(self):
         """Sets up scene and objects for rendering"""
-        x, y, z = self.tracking_centre(self.tf_coil_shape)
-        self.scene(x, y, z)  # Tracking works but is wonky
+        self.scene()
         object_list = [
             "TestObject",
             "TestObject.001",
