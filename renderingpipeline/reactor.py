@@ -162,27 +162,6 @@ class BlenderComponent(abc.ABC):
                 continue
 
 
-class ViewDefault(abc.ABC):
-    """Holds methods for default veiw"""
-
-    @abc.abstractclassmethod
-    def view(self):
-        """Set up default view"""
-        pass
-
-
-class View(ViewDefault):
-    """additional options for views"""
-
-    def view(self):
-        """Default view"""
-        bt.camera_fix("Camera", "Empty")
-
-    def add_light(self, x, y, z):
-        """Adds sunlight object to default view"""
-        bpy.ops.object.light_add(type="SUN", location=(x, y, z))
-
-
 class Plasma(BlenderComponent):
     """Contains methods for plotting and rendering different parts of the plasma"""
 

@@ -16,43 +16,6 @@ from process.io.mfile import MFile
 from tabulate import tabulate
 
 
-@dataclass
-class OutputParams:
-    """Data Class to store Output parameters
-
-    Returns
-    -------
-    Dataclass
-        5 "test" parameters + file_name which is optional in case of manual
-        input for OutputParams
-    """
-
-    rmajor: float
-    rminor: float
-    n_tf: float
-    bigq: float
-    tburn: float
-    file_name: Optional[str] = None
-
-    @classmethod
-    def from_file(cls, file_name: str) -> OutputParams:
-        """Makes instance of class from file name"""
-        mfile_path = Path(file_name)  # insert file path here to PROCESS OUTPUT FILE .DAT
-        mfile = MFile(filename=str(mfile_path))
-
-        output_params = list(
-            cls.__annotations__.keys()
-        )  # Creates list to find and remove file_name from mfile data
-        output_params.pop(
-            output_params.index("file_name")
-        )  # Removes file_name to match key values to attributes
-
-        return cls(
-            file_name=file_name,
-            **{param: mfile.data[param].get_scan(-1) for param in output_params},
-        )
-
-
 def comparison(output_parameters: list[OutputParams]) -> str:
     """Takes list of instances and formats them comparing keys in table
 

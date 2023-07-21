@@ -21,12 +21,6 @@ from renderingpipline.utilities.process_build_tools import (
     vertical_upper,
 )
 
-blanket_shape = OutputParams.from_file(file_name="scripts/baseline_2018_MFILE.DAT")
-
-blanket_shape_dict: dict[str, str] = {
-    k: str(v) for k, v in asdict(blanket_shape).items()
-}
-
 
 def cumul_setup(blanket_shape_dict):
     """Sets up each part of the blanket
@@ -58,9 +52,6 @@ def cumul_setup(blanket_shape_dict):
         cumulative_lower[item] = subtotal
 
     return cumulative_upper, cumulative_lower
-
-
-cumulative_upper, cumulative_lower = cumul_setup(blanket_shape_dict=blanket_shape_dict)
 
 
 def plotdh(r0, a, delta, kap):
@@ -268,26 +259,6 @@ def cumulative_radial_build(section, blanket_shape):
 #        else:
 #            cumulative_build += mfile_data.data[item].get_scan(scan)
 
-rs1, rs2, rs3, rs4, zs1, zs2, zs3, zs4, osrs, oszs, isrs, iszs, rs, zs = plot_blanket(
-    blanket_shape=blanket_shape,
-    cumulative_lower=cumulative_lower,
-    cumulative_upper=cumulative_upper,
-)
-
-
-verts = list(zip(rs1, zs1))
-added = list(zip(rs2[::-1], zs2[::-1]))
-verts.extend(added)
-
-verts2 = list(zip(rs3, zs3))
-added = list(zip(rs4[::-1], zs4[::-1]))
-verts2.extend(added)
-
-verts3 = list(zip(osrs, oszs))
-verts4 = list(zip(isrs, iszs))
-
-verts5 = list(zip(rs, zs))
-
 
 def tf_coil_outline(coords):
     """Renders the spline of the tf coil
@@ -356,21 +327,66 @@ def plasma_render(x_coords, y_coords):
     return None
 
 
-# tf_coil_outline(verts) #lower end - does not join with verts5
-# tf_coil_outline(verts2) #overlapping other lines
-# tf_coil_outline(verts3) #produces point
-# tf_coil_outline(verts4) #line connecting with 5 and 1
-# tf_coil_outline(verts5) #converges to point on either side
-plasma_render(rs1, zs1)
-plasma_render(rs2, zs2)
-plasma_render(rs3, zs3)  # plotting in wrong place? - straight(ish) line
-plasma_render(rs4, zs4)  # may also be in wrong place, better looking than above
-# plasma_render(osrs, oszs) #WRONG - more strange lines
-plasma_render(isrs, iszs)  # one of these is not being plotted
-# plasma_render(rs, zs) #same as above + strange line
-bt.delete_cube()
+def main():
+    blanket_shape = OutputParams.from_file(file_name="scripts/baseline_2018_MFILE.DAT")
 
-# Save the Blender scene as a .blend file
-blend_file_path = "blanket_test"
-bpy.ops.wm.save_as_mainfile(filepath=blend_file_path)
-# bpy.ops.export_scene.gltf(filepath=blend_file_path)
+    blanket_shape_dict: dict[str, str] = {
+        k: str(v) for k, v in asdict(blanket_shape).items()
+    }
+
+    cumulative_upper, cumulative_lower = cumul_setup(
+        blanket_shape_dict=blanket_shape_dict
+    )
+
+    (
+        rs1,
+        rs2,
+        rs3,
+        rs4,
+        zs1,
+        zs2,
+        zs3,
+        zs4,
+        osrs,
+        oszs,
+        isrs,
+        iszs,
+        rs,
+        zs,
+    ) = plot_blanket(
+        blanket_shape=blanket_shape,
+        cumulative_lower=cumulative_lower,
+        cumulative_upper=cumulative_upper,
+    )
+
+    verts = list(zip(rs1, zs1))
+    added = list(zip(rs2[::-1], zs2[::-1]))
+    verts.extend(added)
+
+    verts2 = list(zip(rs3, zs3))
+    added = list(zip(rs4[::-1], zs4[::-1]))
+    verts2.extend(added)
+
+    verts3 = list(zip(osrs, oszs))
+    verts4 = list(zip(isrs, iszs))
+
+    verts5 = list(zip(rs, zs))
+
+    # tf_coil_outline(verts) #lower end - does not join with verts5
+    # tf_coil_outline(verts2) #overlapping other lines
+    # tf_coil_outline(verts3) #produces point
+    # tf_coil_outline(verts4) #line connecting with 5 and 1
+    # tf_coil_outline(verts5) #converges to point on either side
+    plasma_render(rs1, zs1)
+    plasma_render(rs2, zs2)
+    plasma_render(rs3, zs3)  # plotting in wrong place? - straight(ish) line
+    plasma_render(rs4, zs4)  # may also be in wrong place, better looking than above
+    # plasma_render(osrs, oszs) #WRONG - more strange lines
+    plasma_render(isrs, iszs)  # one of these is not being plotted
+    # plasma_render(rs, zs) #same as above + strange line
+    bt.delete_cube()
+
+    # Save the Blender scene as a .blend file
+    blend_file_path = "blanket_test"
+    bpy.ops.wm.save_as_mainfile(filepath=blend_file_path)
+    # bpy.ops.export_scene.gltf(filepath=blend_file_path)

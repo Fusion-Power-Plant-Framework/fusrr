@@ -2,7 +2,7 @@
 import os
 from pathlib import Path
 
-from python_entry import imagepathname, save_image
+# from python_entry import imagepathname, save_image
 
 
 def test_save_image():
