@@ -9,11 +9,10 @@ blend file of pf coils
 from dataclasses import asdict
 
 import bpy
+import blender_tools as bt
 import bmesh
+from adaptor import OutputParams
 from matplotlib import patches
-
-import renderingpipline.utilities.blender_tools as bt
-from renderingpipline.adaptor import OutputParams
 
 pf_coil_shape = OutputParams.from_file("baseline_2018_MFILE.DAT")
 pf_coil_shape_dict = {k: str(v) for k, v in asdict(pf_coil_shape).items()}

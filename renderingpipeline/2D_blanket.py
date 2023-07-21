@@ -10,16 +10,11 @@ Blanket shape blend file
 from dataclasses import asdict
 
 import bpy
+import blender_tools as bt
 import bmesh
 import numpy as np
-
-import renderingpipline.utilities.blender_tools as bt
-from renderingpipline.adaptor import OutputParams
-from renderingpipline.utilities.process_build_tools import (
-    RADIAL_BUILD,
-    vertical_lower,
-    vertical_upper,
-)
+from adaptor import OutputParams
+from mapping import RADIAL_BUILD, vertical_lower, vertical_upper
 
 
 def cumul_setup(blanket_shape_dict):

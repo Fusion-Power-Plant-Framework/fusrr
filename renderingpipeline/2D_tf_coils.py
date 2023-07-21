@@ -8,11 +8,10 @@ polodial cross section of Tf coil
 """
 
 import bpy
+import blender_tools as bt
 import numpy as np
+from adaptor import OutputParams
 from matplotlib import patches
-
-import renderingpipline.utilities.blender_tools as bt
-from renderingpipline.adaptor import OutputParams
 
 # TODO: Some imports manual need fixing!
 tf_coil_shape = OutputParams.from_file(file_name="baseline_2018_MFILE.DAT")

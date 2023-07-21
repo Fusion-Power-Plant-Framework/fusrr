@@ -9,9 +9,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
+from mapping import bluemira_param, process_param
 from process.io.mfile import MFile
-
-from renderingpipeline.dictionary_basic import bluemira_param, process_param
 
 
 def process_file_adaptor(input_data, filepath):

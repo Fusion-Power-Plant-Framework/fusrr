@@ -9,11 +9,10 @@ png
 import math
 
 import bpy
+import blender_tools as bt
 import bmesh
 import numpy as np
-
-import renderingpipline.utilities.blender_tools as bt
-from renderingpipline.adaptor import OutputParams
+from adaptor import OutputParams
 
 plasma_shape = OutputParams.from_file("baseline_2018_MFILE.DAT")
 
