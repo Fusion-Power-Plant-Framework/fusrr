@@ -3,7 +3,6 @@ A file that stores the blender components of the reactor
 """
 import abc
 import math
-from inspect import getmembers
 
 import bpy
 import blender_tools as bt

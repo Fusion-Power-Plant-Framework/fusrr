@@ -6,7 +6,7 @@ from inspect import getmembers
 
 import bpy
 import blender_tools as bt
-from components import *
+from components import BlenderComponent
 
 
 class Reactor:

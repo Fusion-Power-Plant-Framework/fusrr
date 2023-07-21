@@ -8,7 +8,8 @@ Currently set to 5 output params but can add any key from .DAT file
 """
 from __future__ import annotations
 
-from process.io.mfile import MFile
+from dataclasses import asdict
+
 from tabulate import tabulate
 
 
