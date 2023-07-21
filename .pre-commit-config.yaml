@@ -28,7 +28,6 @@ repos:
     - id: flake8
       verbose: True
       additional_dependencies: [flake8-docstrings,  pep8-naming, flake8-bandit]
-      args: [--exit-zero]
 
 -   repo: https://github.com/pre-commit/mirrors-prettier
     rev: v2.5.1
