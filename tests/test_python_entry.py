@@ -2,7 +2,9 @@
 import os
 from pathlib import Path
 
-from python_entry import imagepathname, save_image
+import renderingpipeline.blender_tools as bt
+
+imagepathname = "render.png"
 
 
 def test_save_image():
@@ -14,5 +16,5 @@ def test_save_image():
         delete_png = path
         os.remove(delete_png)
 
-    save_image(imagepathname)
+    bt.save_image(imagepathname)
     assert Path(imagepathname).exists()

@@ -1,7 +1,7 @@
 """Executes adaptor.py"""
 import argparse
 
-from renderingpipline.adaptor import OutputParams
+from renderingpipeline.adaptor import OutputParams
 
 
 def main():

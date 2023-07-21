@@ -1,17 +1,24 @@
 """
-Reactor Class WIP - developing basic structure, plasma class and tf class working.
-Need to impliment proper structure to use Reactor class and tidy rendering functions.
+A file that stores the blender components of the reactor
 """
 import abc
 import math
-from inspect import getmembers
 
 import bpy
 import bmesh
 import numpy as np
 from matplotlib import patches
 
-import scripts.blender_tools as bt
+from renderingpipeline.blender_tools import (
+    camera_fix,
+    change_to_mesh,
+    delete_cube,
+    empty_obj,
+    join_obj,
+    make_face_from_vertices,
+    move_camera,
+    rect_blend,
+)
 
 
 def ellips_fill(a1=0, a2=0, b1=0, b2=0, x0=0, y0=0, ang1=0, ang2=np.pi / 2):
@@ -41,33 +48,6 @@ def ellips_fill(a1=0, a2=0, b1=0, b2=0, x0=0, y0=0, ang1=0, ang2=np.pi / 2):
     return verts
 
 
-class Reactor:
-    """Reactor class - methods for rendering whole reactor scenes (WIP)"""
-
-    def __init__(self, **components):
-        # Preset options, have default settings for reactor components here
-        for name, comp in components.items():
-            setattr(self, name, comp)
-
-    def render(self, view):
-        """Render whole reactor scene"""
-        to_render = dict(
-            mem for mem in getmembers(self, lambda m: isinstance(m, BlenderComponent))
-        )
-
-        blender_scene = bpy.context.scene
-        for mem in to_render.values():
-            mem.setup_scene(view)
-        # setup camera after scene
-        blender_scene.render()
-
-    @staticmethod
-    def save_image(file_name: str):
-        """Saves render as PNG"""
-        bt.save_image(file_name)
-        # possibly save .gltf as well in future
-
-
 class BlenderComponent(abc.ABC):
     """Stores default functions for blender setup and renderings"""
 
@@ -95,10 +75,10 @@ class BlenderComponent(abc.ABC):
 
     def scene(self, x, y, z):
         """Sets up camera for rendering"""
-        bt.delete_cube()
-        bt.empty_obj(x, y, 0)
-        bt.move_camera(x, y, z)
-        bt.camera_fix("Camera", "Empty")
+        delete_cube()
+        empty_obj(x, y, 0)
+        move_camera(x, y, z)
+        camera_fix("Camera", "Empty")
 
     def component_outline(self, coords):
         """Renders the spline of component (currently only used for tf coil)
@@ -160,27 +140,6 @@ class BlenderComponent(abc.ABC):
                 bpy.context.scene.view_layers.update()
             except AttributeError:
                 continue
-
-
-class ViewDefault(abc.ABC):
-    """Holds methods for default veiw"""
-
-    @abc.abstractclassmethod
-    def view(self):
-        """Set up default view"""
-        pass
-
-
-class View(ViewDefault):
-    """additional options for views"""
-
-    def view(self):
-        """Default view"""
-        bt.camera_fix("Camera", "Empty")
-
-    def add_light(self, x, y, z):
-        """Adds sunlight object to default view"""
-        bpy.ops.object.light_add(type="SUN", location=(x, y, z))
 
 
 class Plasma(BlenderComponent):
@@ -283,8 +242,8 @@ class Plasma(BlenderComponent):
             "line_object",
             "line_object.001",
         ]  # is there a way to automate naming of objects?
-        bt.join_obj(object_list)
-        bt.make_face_from_vertices("line_object")
+        join_obj(object_list)
+        make_face_from_vertices("line_object")
 
     def build(self):
         """Combines above functions to plot, track and render plasma"""
@@ -383,7 +342,7 @@ class TFCoil(BlenderComponent):
         rect = patches.Rectangle(
             [x5 - tfc_inleg, y5], tfc_inleg, (y1 - y5), lw=0, facecolor="cyan"
         )
-        centre_coords = bt.rect_blend(rect)
+        centre_coords = rect_blend(rect)
         self.component_outline(centre_coords)
 
     def setup_scene(self):
@@ -398,9 +357,9 @@ class TFCoil(BlenderComponent):
             "TestObject.004",
         ]
 
-        bt.change_to_mesh(object_names=object_list)
+        change_to_mesh(object_names=object_list)
         for i in object_list:
-            bt.make_face_from_vertices(str(i))
+            make_face_from_vertices(str(i))
 
         # print(dir(self))
 
@@ -409,6 +368,3 @@ class TFCoil(BlenderComponent):
         self.create_shape()
         self.setup_scene()
         self.default_colour(colour="#0072c2")
-
-
-# class Blanket(BlenderComponent):

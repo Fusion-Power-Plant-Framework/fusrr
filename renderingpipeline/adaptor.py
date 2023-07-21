@@ -11,7 +11,7 @@ from typing import Optional
 
 from process.io.mfile import MFile
 
-from renderingpipeline.dictionary_basic import bluemira_param, process_param
+from renderingpipeline.mapping import bluemira_param, process_param
 
 
 def process_file_adaptor(input_data, filepath):

@@ -1,5 +1,6 @@
 """Dictionary for generic params for adaptor"""
-
+# structure is key=renderingpipeline name
+# value= external program name
 process_param = dict(
     {
         "rmajor": "rmajor",
@@ -89,6 +90,64 @@ process_param = dict(
         "pfdz6": "pfdz06",
     }
 )
+
+"""
+From plot_proc.py. Build tools
+"""
+RADIAL_BUILD = [
+    "bore",
+    "ohcth",
+    "precomp",
+    "gapoh",
+    "tfcth",
+    "tftsgap",
+    "thshield_ib",
+    "gapds",
+    "d_vv_in",
+    "shldith",
+    "vvblgapi",
+    "blnkith",
+    "fwith",
+    "scrapli",
+    "rminori",
+    "rminoro",
+    "scraplo",
+    "fwoth",
+    "blnkoth",
+    "vvblgapo",
+    "shldoth",
+    "d_vv_out",
+    "gapsto",
+    "thshield_ob",
+    "tftsgap",
+    "tfthko",
+]
+
+vertical_upper = [
+    "rminor_kappa",
+    "vgaptop",
+    "fwtth",
+    "blnktth",
+    "vvblgap",
+    "shldtth",
+    "d_vv_top",
+    "vgap2",
+    "thshield_vb",
+    "tftsgap",
+    "tfcth",
+]
+
+vertical_lower = [
+    "rminor_kappa",
+    "vgap",
+    "divfix",
+    "shldlth",
+    "d_vv_bot",
+    "vgap2",
+    "thshield_vb",
+    "tftsgap",
+    "tfcth",
+]
 
 
 bluemira_param = dict(
