@@ -1,3 +1,11 @@
+"""Views placeholder script
+"""
+import abc
+
+import bpy
+import blender_tools as bt
+
+
 class ViewDefault(abc.ABC):
     """Holds methods for default veiw"""
 

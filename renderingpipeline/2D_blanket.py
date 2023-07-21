@@ -323,6 +323,7 @@ def plasma_render(x_coords, y_coords):
 
 
 def main():
+    """Main function"""
     blanket_shape = OutputParams.from_file(file_name="scripts/baseline_2018_MFILE.DAT")
 
     blanket_shape_dict: dict[str, str] = {
@@ -362,10 +363,10 @@ def main():
     added = list(zip(rs4[::-1], zs4[::-1]))
     verts2.extend(added)
 
-    verts3 = list(zip(osrs, oszs))
-    verts4 = list(zip(isrs, iszs))
+    # verts3 = list(zip(osrs, oszs))
+    # verts4 = list(zip(isrs, iszs))
 
-    verts5 = list(zip(rs, zs))
+    # verts5 = list(zip(rs, zs))
 
     # tf_coil_outline(verts) #lower end - does not join with verts5
     # tf_coil_outline(verts2) #overlapping other lines

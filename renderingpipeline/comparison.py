@@ -8,15 +8,11 @@ Currently set to 5 output params but can add any key from .DAT file
 """
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
-from pathlib import Path
-from typing import Optional
-
 from process.io.mfile import MFile
 from tabulate import tabulate
 
 
-def comparison(output_parameters: list[OutputParams]) -> str:
+def comparison(output_parameters) -> str:
     """Takes list of instances and formats them comparing keys in table
 
     Returns
