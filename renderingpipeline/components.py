@@ -1,6 +1,16 @@
 """
 A file that stores the blender components of the reactor
 """
+import abc
+import math
+from inspect import getmembers
+
+import bpy
+import blender_tools as bt
+import bmesh
+import components
+import numpy as np
+from matplotlib import patches
 
 
 class BlenderComponent(abc.ABC):
