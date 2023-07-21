@@ -5,8 +5,9 @@ Need to impliment proper structure to use Reactor class and tidy rendering funct
 from inspect import getmembers
 
 import bpy
-import blender_tools as bt
-from components import BlenderComponent
+
+from renderingpipeline.blender_tools import save_image
+from renderingpipeline.components import BlenderComponent
 
 
 class Reactor:
@@ -32,5 +33,5 @@ class Reactor:
     @staticmethod
     def save_image(file_name: str):
         """Saves render as PNG"""
-        bt.save_image(file_name)
+        save_image(file_name)
         # possibly save .gltf as well in future

@@ -3,7 +3,8 @@
 import abc
 
 import bpy
-import blender_tools as bt
+
+from renderingpipeline.blender_tools import camera_fix
 
 
 class ViewDefault(abc.ABC):
@@ -20,7 +21,7 @@ class View(ViewDefault):
 
     def view(self):
         """Default view"""
-        bt.camera_fix("Camera", "Empty")
+        camera_fix("Camera", "Empty")
 
     def add_light(self, x, y, z):
         """Adds sunlight object to default view"""

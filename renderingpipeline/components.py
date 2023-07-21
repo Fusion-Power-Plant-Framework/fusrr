@@ -5,10 +5,20 @@ import abc
 import math
 
 import bpy
-import blender_tools as bt
 import bmesh
 import numpy as np
 from matplotlib import patches
+
+from renderingpipeline.blender_tools import (
+    camera_fix,
+    change_to_mesh,
+    delete_cube,
+    empty_obj,
+    join_obj,
+    make_face_from_vertices,
+    move_camera,
+    rect_blend,
+)
 
 
 def ellips_fill(a1=0, a2=0, b1=0, b2=0, x0=0, y0=0, ang1=0, ang2=np.pi / 2):
@@ -65,10 +75,10 @@ class BlenderComponent(abc.ABC):
 
     def scene(self, x, y, z):
         """Sets up camera for rendering"""
-        bt.delete_cube()
-        bt.empty_obj(x, y, 0)
-        bt.move_camera(x, y, z)
-        bt.camera_fix("Camera", "Empty")
+        delete_cube()
+        empty_obj(x, y, 0)
+        move_camera(x, y, z)
+        camera_fix("Camera", "Empty")
 
     def component_outline(self, coords):
         """Renders the spline of component (currently only used for tf coil)
@@ -232,8 +242,8 @@ class Plasma(BlenderComponent):
             "line_object",
             "line_object.001",
         ]  # is there a way to automate naming of objects?
-        bt.join_obj(object_list)
-        bt.make_face_from_vertices("line_object")
+        join_obj(object_list)
+        make_face_from_vertices("line_object")
 
     def build(self):
         """Combines above functions to plot, track and render plasma"""
@@ -332,7 +342,7 @@ class TFCoil(BlenderComponent):
         rect = patches.Rectangle(
             [x5 - tfc_inleg, y5], tfc_inleg, (y1 - y5), lw=0, facecolor="cyan"
         )
-        centre_coords = bt.rect_blend(rect)
+        centre_coords = rect_blend(rect)
         self.component_outline(centre_coords)
 
     def setup_scene(self):
@@ -347,9 +357,9 @@ class TFCoil(BlenderComponent):
             "TestObject.004",
         ]
 
-        bt.change_to_mesh(object_names=object_list)
+        change_to_mesh(object_names=object_list)
         for i in object_list:
-            bt.make_face_from_vertices(str(i))
+            make_face_from_vertices(str(i))
 
         # print(dir(self))
 

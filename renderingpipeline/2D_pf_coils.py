@@ -9,10 +9,11 @@ blend file of pf coils
 from dataclasses import asdict
 
 import bpy
-import blender_tools as bt
 import bmesh
-from adaptor import OutputParams
 from matplotlib import patches
+
+from renderingpipeline.adaptor import OutputParams
+from renderingpipeline.blender_tools import delete_cube, faces_pf_coils, rect_blend_sep
 
 pf_coil_shape = OutputParams.from_file("baseline_2018_MFILE.DAT")
 pf_coil_shape_dict = {k: str(v) for k, v in asdict(pf_coil_shape).items()}
@@ -139,24 +140,24 @@ def plot_pf_coils(pf_coil_shape_dict):
 
         plasma_render(r_points, z_points)
         if i > 0:
-            bt.faces_pf_coils(f"line_object.00{i}")
+            faces_pf_coils(f"line_object.00{i}")
 
         else:
-            bt.faces_pf_coils("line_object")
+            faces_pf_coils("line_object")
 
     central_coil = patches.Rectangle([bore, (-ohdz / 2)], ohcth, ohdz)
     print(central_coil)
 
-    x_coords, y_coords = bt.rect_blend_sep(central_coil)
+    x_coords, y_coords = rect_blend_sep(central_coil)
 
     plasma_render(x_coords=x_coords, y_coords=y_coords)
-    bt.faces_pf_coils("line_object.006")
+    faces_pf_coils("line_object.006")
 
 
 plot_pf_coils(pf_coil_shape_dict=pf_coil_shape_dict)
 
 
-bt.delete_cube()
+delete_cube()
 
 # blend_file_path = "/home/miles/Downloads/test"
 # bpy.ops.export_scene.gltf(filepath=blend_file_path)

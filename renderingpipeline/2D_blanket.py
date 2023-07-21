@@ -10,11 +10,12 @@ Blanket shape blend file
 from dataclasses import asdict
 
 import bpy
-import blender_tools as bt
 import bmesh
 import numpy as np
-from adaptor import OutputParams
-from mapping import RADIAL_BUILD, vertical_lower, vertical_upper
+
+from renderingpipeline.adaptor import OutputParams
+from renderingpipeline.blender_tools import delete_cube
+from renderingpipeline.mapping import RADIAL_BUILD, vertical_lower, vertical_upper
 
 
 def cumul_setup(blanket_shape_dict):
@@ -380,7 +381,7 @@ def main():
     # plasma_render(osrs, oszs) #WRONG - more strange lines
     plasma_render(isrs, iszs)  # one of these is not being plotted
     # plasma_render(rs, zs) #same as above + strange line
-    bt.delete_cube()
+    delete_cube()
 
     # Save the Blender scene as a .blend file
     blend_file_path = "blanket_test"
