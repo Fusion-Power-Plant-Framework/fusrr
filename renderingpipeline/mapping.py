@@ -88,6 +88,9 @@ process_param = dict(
         "pfdz4": "pfdz04",
         "pfdz5": "pfdz05",
         "pfdz6": "pfdz06",
+        "rdewex": "rdewex",
+        "ddwex": "ddwex",
+        "zdewex": "zdewex",
     }
 )
 
