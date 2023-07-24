@@ -205,6 +205,50 @@ def change_to_mesh(object_names: list):
     bpy.ops.object.select_all(action="DESELECT")
 
 
+def component_outline(coords):
+    """Renders the spline of component
+
+    Parameters
+    ----------
+    x_coords : numpy array
+    y_coords : numpy array
+
+    """
+    curve = bpy.data.curves.new(name="Curve_test", type="CURVE")
+    curve.fill_mode = "NONE"
+
+    ob = bpy.data.objects.new(name="TestObject", object_data=curve)
+    scene = bpy.context.scene
+    scene.collection.objects.link(ob)
+    bpy.context.view_layer.objects.active = None
+
+    spline = curve.splines.new(type="POLY")
+    spline.points.add(len(coords) - 1)
+    for i, point in enumerate(spline.points):
+        point.co[0:2] = coords[i]
+
+    bpy.ops.object.select_all(action="DESELECT")
+    bpy.context.view_layer.objects.active = ob
+    ob.select_set(True)
+
+    return None
+
+
+def render_component_mesh():
+    """Set up + builds new mesh for component"""
+    scene = bpy.context.scene
+    bpy.context.view_layer.objects.active = None
+
+    mesh = bpy.data.meshes.new("line_mesh")
+    line_obj = bpy.data.objects.new("line_object", mesh)
+    scene.collection.objects.link(line_obj)
+    scene.view_layers.update()
+
+    bm = bmesh.new()
+
+    return scene, mesh, bm
+
+
 def spin_extrusion(face_mesh):
     """Spin extrudes around y axis in blender 2Pi radians
 

@@ -3,8 +3,7 @@ Reactor class - builds individual components and puts them in the same scene
 """
 from inspect import getmembers
 
-import blender_tools as bt
-
+import renderingpipeline.blender_tools as bt
 from renderingpipeline.components import BlenderComponent
 
 
