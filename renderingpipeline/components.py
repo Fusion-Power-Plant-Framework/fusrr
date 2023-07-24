@@ -368,3 +368,33 @@ class TFCoil(BlenderComponent):
         self.create_shape()
         self.setup_scene()
         self.default_colour(colour="#0072c2")
+
+
+class Cryostat(BlenderComponent):
+    def __init__(self, cryostat_shape):
+        self.cryostat_shape = cryostat_shape
+
+    def _cryo_outline(self):
+        rdewex = self.cryostat_shape.rdewex
+        ddwex = self.cryostat_shape.ddwex
+        zdewex = self.cryostat_shape.zdewex
+
+        rect = patches.Rectangle([rdewex, 0], ddwex, zdewex + ddwex, lw=0)
+        coords = rect_blend(rectangle=rect)
+        self.component_outline(coords)
+
+        rect = patches.Rectangle([rdewex, 0], ddwex, -(zdewex + ddwex), lw=0)
+        coords = rect_blend(rectangle=rect)
+        self.component_outline(coords)
+
+        rect = patches.Rectangle([0, zdewex], rdewex, ddwex, lw=0)
+        coords = rect_blend(rectangle=rect)
+        self.component_outline(coords)
+
+        rect = patches.Rectangle([0, -zdewex], rdewex, -ddwex, lw=0)
+        coords = rect_blend(rectangle=rect)
+        self.component_outline(coords)
+
+    def build(self):
+        self._cryo_outline()
+        self.scene(0, 0, 20)
