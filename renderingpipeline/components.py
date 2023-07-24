@@ -454,11 +454,13 @@ class PfCoils(BlenderComponent):
         scene = bpy.context.scene
         bpy.context.view_layer.objects.active = None
 
+        # Creates new line_mesh object
         mesh = bpy.data.meshes.new("line_mesh")
         line_obj = bpy.data.objects.new(str(coil_name), mesh)
         scene.collection.objects.link(line_obj)
         scene.view_layers.update()
 
+        # Using bmesh allows the editing of existing meshes to be updated
         bm = bmesh.new()
 
         for x, y in zip(x_coords, y_coords):
@@ -472,9 +474,8 @@ class PfCoils(BlenderComponent):
         return mesh
 
     def plot_pf_coils(self):
-        """Plots pf coils"""
+        """Plots pf coils from PROCESS' plot_proc file"""
         pf_coil_shape_dict = {k: str(v) for k, v in asdict(self.pf_coil_shape).items()}
-        print(pf_coil_shape_dict)
 
         coils_r = []
         coils_z = []
