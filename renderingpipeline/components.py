@@ -375,18 +375,18 @@ class Cryostat(BlenderComponent):
 
     Parameters
     ----------
-    BlenderComponent : Class
-        A class that inherits 'Component' methods
+    Params :
+        An instance of OutputParams dataclass
     """
 
-    def __init__(self, cryostat_shape):
-        self.cryostat_shape = cryostat_shape
+    def __init__(self, params):
+        self.params = params
 
     def _cryo_outline(self):
         """Makes the outline for each of the walls of the cryostat"""
-        rdewex = self.cryostat_shape.rdewex
-        ddwex = self.cryostat_shape.ddwex
-        zdewex = self.cryostat_shape.zdewex
+        rdewex = self.params.rdewex
+        ddwex = self.params.ddwex
+        zdewex = self.params.zdewex
         object_list = [
             "Upper_Outer_wall",
             "Lower_Outer_wall",
@@ -421,4 +421,4 @@ class Cryostat(BlenderComponent):
         """Build method to render the component"""
         self._cryo_outline()
         self.scene(0, 0, 100)
-        self.default_colour(colour="#FF4500")
+        self.default_colour(colour="#2e7ebc")
