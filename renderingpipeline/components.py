@@ -80,7 +80,7 @@ class BlenderComponent(abc.ABC):
         move_camera(x, y, z)
         camera_fix("Camera", "Empty")
 
-    def component_outline(self, coords):
+    def component_outline(self, coords, object_name):
         """Renders the spline of component (currently only used for tf coil)
 
         Parameters
@@ -92,7 +92,7 @@ class BlenderComponent(abc.ABC):
         curve = bpy.data.curves.new(name="Curve_test", type="CURVE")
         curve.fill_mode = "NONE"
 
-        ob = bpy.data.objects.new(name="TestObject", object_data=curve)
+        ob = bpy.data.objects.new(name=object_name, object_data=curve)
         scene = bpy.context.scene
         scene.collection.objects.link(ob)
         bpy.context.view_layer.objects.active = None
@@ -371,30 +371,54 @@ class TFCoil(BlenderComponent):
 
 
 class Cryostat(BlenderComponent):
+    """Cryostat Component
+
+    Parameters
+    ----------
+    BlenderComponent : Class
+        A class that inherits 'Component' methods
+    """
+
     def __init__(self, cryostat_shape):
         self.cryostat_shape = cryostat_shape
 
     def _cryo_outline(self):
+        """Makes the outline for each of the walls of the cryostat"""
         rdewex = self.cryostat_shape.rdewex
         ddwex = self.cryostat_shape.ddwex
         zdewex = self.cryostat_shape.zdewex
+        object_list = [
+            "Upper_Outer_wall",
+            "Lower_Outer_wall",
+            "Upper_wall",
+            "Lower_wall",
+        ]
 
+        # Taken from plot_proc.py plotting 2D cryostat function
         rect = patches.Rectangle([rdewex, 0], ddwex, zdewex + ddwex, lw=0)
         coords = rect_blend(rectangle=rect)
-        self.component_outline(coords)
+        self.component_outline(coords, object_name=object_list[0])
 
         rect = patches.Rectangle([rdewex, 0], ddwex, -(zdewex + ddwex), lw=0)
         coords = rect_blend(rectangle=rect)
-        self.component_outline(coords)
+        self.component_outline(coords, object_name=object_list[1])
 
         rect = patches.Rectangle([0, zdewex], rdewex, ddwex, lw=0)
         coords = rect_blend(rectangle=rect)
-        self.component_outline(coords)
+        self.component_outline(coords, object_name=object_list[2])
 
         rect = patches.Rectangle([0, -zdewex], rdewex, -ddwex, lw=0)
         coords = rect_blend(rectangle=rect)
-        self.component_outline(coords)
+        self.component_outline(coords, object_name=object_list[3])
+
+        change_to_mesh(object_names=object_list)
+
+        # Makes each wall into a filled shape
+        for i in object_list:
+            make_face_from_vertices(str(i))
 
     def build(self):
+        """Build method to render the component"""
         self._cryo_outline()
-        self.scene(0, 0, 20)
+        self.scene(0, 0, 100)
+        self.default_colour(colour="#FF4500")
