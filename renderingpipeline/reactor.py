@@ -3,8 +3,8 @@ Reactor class - builds individual components and puts them in the same scene
 """
 from inspect import getmembers
 
-import renderingpipeline.blender_tools as bt
-from renderingpipeline.components import BlenderComponent
+import blender_tools as bt
+from components import BlenderComponent
 
 
 class Reactor:
@@ -28,4 +28,4 @@ class Reactor:
     def save_image(file_name: str):
         """Saves render as PNG"""
         bt.save_image(file_name)
-        # could save .gltf and .blend if wanted
+        # save .gltf and .blend

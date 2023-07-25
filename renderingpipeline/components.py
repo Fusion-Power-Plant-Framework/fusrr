@@ -6,9 +6,7 @@ import math
 
 import bpy
 import numpy as np
-from matplotlib import patches
-
-from renderingpipeline.blender_tools import (  # camera_fix,; empty_obj,; move_camera,
+from blender_tools import (  # camera_fix,; empty_obj,; move_camera,
     change_to_mesh,
     component_outline,
     delete_cube,
@@ -17,6 +15,7 @@ from renderingpipeline.blender_tools import (  # camera_fix,; empty_obj,; move_c
     rect_blend,
     render_component_mesh,
 )
+from matplotlib import patches
 
 
 def ellips_fill(a1=0, a2=0, b1=0, b2=0, x0=0, y0=0, ang1=0, ang2=np.pi / 2):
@@ -60,11 +59,8 @@ class BlenderComponent(abc.ABC):
     def scene(self):
         """Sets up camera for rendering"""
         delete_cube()
-        # empty_obj(x, y, 0)
-        # move_camera(x, y, z)
-        # camera_fix("Camera", "Empty")
 
-    def hex_color_to_rgba(self, hex_color):
+    def hex_color_to_rgba(self, hex_color):  # checks needed as from git
         """Converts hex to blender's sRGB"""
         hex_color = hex_color[1:]
         red = int(hex_color[:2], 16)
