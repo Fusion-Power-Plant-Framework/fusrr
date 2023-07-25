@@ -262,6 +262,27 @@ def spin_extrusion(face_mesh):
     bpy.context.view_layer.objects.active = obj
     bpy.ops.object.mode_set(mode="EDIT")
     bpy.ops.mesh.select_all(action="SELECT")
-    bpy.ops.mesh.spin(angle=6.28319, steps=30, axis=(0.0, 1.0, 0.0))  # Polodial rotation
+    bpy.ops.mesh.spin(
+        angle=6.28319, steps=100, axis=(0.0, 1.0, 0.0)
+    )  # Polodial rotation
+    bpy.ops.object.mode_set(mode="OBJECT")
+    bpy.ops.object.select_all(action="DESELECT")
+
+
+def half_reactor(face_mesh):
+    """Spins Pi radians for a half reactor view
+
+    Args
+    ----
+        face_mesh (str): Name of object's mesh to be spun
+    """
+    obj = bpy.context.scene.objects.get(str(face_mesh))
+    obj.select_set(True)
+    bpy.context.view_layer.objects.active = obj
+    bpy.ops.object.mode_set(mode="EDIT")
+    bpy.ops.mesh.select_all(action="SELECT")
+    bpy.ops.mesh.spin(
+        angle=3.14159, steps=100, axis=(0.0, 1.0, 0.0)
+    )  # Polodial rotation
     bpy.ops.object.mode_set(mode="OBJECT")
     bpy.ops.object.select_all(action="DESELECT")

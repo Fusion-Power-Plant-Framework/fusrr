@@ -1,6 +1,6 @@
 """Views class - WIP - will produce tf + plasma
 """
-# import abc
+import abc
 
 import bpy
 import blender_tools as bt
@@ -38,19 +38,20 @@ def change_colour(colour):
         bpy.context.scene.view_layers.update()
 
 
-# class ViewDefault(abc.ABC):
-#     """Holds methods for default veiw"""
-#     @abc.abstractclassmethod
-#     def _init_(self):
-#         pass
+class ViewDefault(abc.ABC):
+    """Holds methods for default veiw"""
 
-#     @abc.abstractclassmethod
-#     def view(self):
-#         """Set up default view"""
-#         pass
+    @abc.abstractclassmethod
+    def __init__(self):
+        pass
+
+    @abc.abstractclassmethod
+    def _view(self):
+        """Set up default view"""
+        pass
 
 
-class View:
+class View(ViewDefault):
     """Set up for initial view + additional options"""
 
     def __init__(self, reactor):
@@ -112,12 +113,12 @@ class View:
     def make_3d(self):  # this works, but currenly only selecting plasma
         """Spins 2D render around an axis to make 3D - whole reactor"""
         bt.spin_extrusion("line_object")
-        self._view(2, 3, 40)
+        self._view(2, 0, 40)
 
-    def half_reactor(self, comp: str, angle, steps, axis):
+    def half_reactor(self):
         """Use spin_excursion to make a half reactor view -needs changes"""
-        bt.spin_extrusion(comp, angle, steps, axis)
-        self.view()
+        bt.half_reactor("line_object")
+        self._view(2, 0, 40)
 
     @staticmethod
     def export(filepath: str):  # this is not yet working
@@ -138,8 +139,8 @@ reactor1 = Reactor(plasma=plasma, tfcoils=tf)
 
 view = View(reactor1)
 # view.highlight_plasma( '#d85319')
-view.move_plasma(2, 3, 4)
-view.make_3d()
-# view.half_reactor('line_object', angle=3.2, steps=15, axis=(0, 1 ,0))
+view.move_plasma(2, 0, 1)
+# view.make_3d()
+view.half_reactor()
 # View.export("plasma_tf_view")
 bpy.ops.wm.save_as_mainfile(filepath="plasma")
