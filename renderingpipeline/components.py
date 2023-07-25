@@ -200,7 +200,7 @@ class Plasma(BlenderComponent):
         return None
 
     @staticmethod
-    def plasma_centre(x1, x2, y1, y2):  # may not be needed after View class
+    def plasma_centre(x1, x2, y1, y2):
         """Calculates centre of plasma for tracking"""
         half_arr = int(len(x1) / 2)
         half_x = x1[half_arr] - x2[half_arr]

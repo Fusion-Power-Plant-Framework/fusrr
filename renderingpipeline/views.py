@@ -4,10 +4,7 @@ import abc
 
 import bpy
 
-from renderingpipeline.adaptor import OutputParams
 from renderingpipeline.blender_tools import camera_fix, half_reactor, spin_extrusion
-from renderingpipeline.components import Plasma, TFCoil
-from renderingpipeline.reactor import Reactor
 
 
 def hex_color_to_rgba(hex_color):  # checks needed as from git
@@ -122,29 +119,12 @@ class View(ViewDefault):
         self._view(2, 0, 40)
 
     @staticmethod
-    def export(filepath: str):  # this is not yet working
+    def export(filepath: str):  # will not work in function, need to override context
         """Save as blender file
 
         Args
         ----
             filepath (str): destination for file
         """
-        override = bpy.context.copy()
-        override["selected_objects"] = list(bpy.context.scene.objects)
-        with bpy.context.temp_override(**override):
-            bpy.ops.wm.save_as_mainfile(filepath)
-
-
-input_file = OutputParams.from_file("examples/baseline_2018_MFILE.DAT")
-
-plasma = Plasma(input_file)
-tf = TFCoil(input_file)
-reactor1 = Reactor(plasma=plasma, tfcoils=tf)
-
-view = View(reactor1)
-# view.highlight_plasma( '#d85319')
-view.move_plasma(2, 0, 10)
-# view.make_3d()
-view.half_reactor()
-View.export("plasma_tf_view")
-# bpy.ops.wm.save_as_mainfile(filepath="plasma")
+        # out = bpy.ops.wm.save_as_mainfile(filepath)
+        bpy.ops.export_scene.gltf(filepath)
