@@ -6,7 +6,9 @@ import math
 
 import bpy
 import numpy as np
-from blender_tools import (  # camera_fix,; empty_obj,; move_camera,
+from matplotlib import patches
+
+from renderingpipeline.blender_tools import (  # camera_fix,; empty_obj,; move_camera,
     change_to_mesh,
     component_outline,
     delete_cube,
@@ -15,7 +17,6 @@ from blender_tools import (  # camera_fix,; empty_obj,; move_camera,
     rect_blend,
     render_component_mesh,
 )
-from matplotlib import patches
 
 
 def ellips_fill(a1=0, a2=0, b1=0, b2=0, x0=0, y0=0, ang1=0, ang2=np.pi / 2):

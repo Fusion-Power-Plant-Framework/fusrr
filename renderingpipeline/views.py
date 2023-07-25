@@ -3,10 +3,11 @@
 import abc
 
 import bpy
-import blender_tools as bt
-from adaptor import OutputParams
-from components import Plasma, TFCoil
-from reactor import Reactor
+
+from renderingpipeline.adaptor import OutputParams
+from renderingpipeline.blender_tools import camera_fix, half_reactor, spin_extrusion
+from renderingpipeline.components import Plasma, TFCoil
+from renderingpipeline.reactor import Reactor
 
 
 def hex_color_to_rgba(hex_color):  # checks needed as from git
@@ -72,7 +73,7 @@ class View(ViewDefault):
         Default view - working example - want to create bbetter method for tracking
         """
         bpy.ops.object.empty_add(location=(x, y, z))
-        bt.camera_fix("Camera", "Empty")
+        camera_fix("Camera", "Empty")
         camera = bpy.data.objects["Camera"]
         camera.location = (x, y, z + 55)
 
@@ -112,12 +113,12 @@ class View(ViewDefault):
 
     def make_3d(self):  # this works, but currenly only selecting plasma
         """Spins 2D render around an axis to make 3D - whole reactor"""
-        bt.spin_extrusion("line_object")
+        spin_extrusion("line_object")
         self._view(2, 0, 40)
 
     def half_reactor(self):
         """Use spin_excursion to make a half reactor view -needs changes"""
-        bt.half_reactor("line_object")
+        half_reactor("line_object")
         self._view(2, 0, 40)
 
     @staticmethod
@@ -128,7 +129,10 @@ class View(ViewDefault):
         ----
             filepath (str): destination for file
         """
-        bpy.ops.wm.save_as_mainfile(filepath)
+        override = bpy.context.copy()
+        override["selected_objects"] = list(bpy.context.scene.objects)
+        with bpy.context.temp_override(**override):
+            bpy.ops.wm.save_as_mainfile(filepath)
 
 
 input_file = OutputParams.from_file("examples/baseline_2018_MFILE.DAT")
@@ -139,8 +143,8 @@ reactor1 = Reactor(plasma=plasma, tfcoils=tf)
 
 view = View(reactor1)
 # view.highlight_plasma( '#d85319')
-view.move_plasma(2, 0, 1)
+view.move_plasma(2, 0, 10)
 # view.make_3d()
 view.half_reactor()
-# View.export("plasma_tf_view")
-bpy.ops.wm.save_as_mainfile(filepath="plasma")
+View.export("plasma_tf_view")
+# bpy.ops.wm.save_as_mainfile(filepath="plasma")
