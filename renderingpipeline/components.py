@@ -316,3 +316,57 @@ class TFCoil(BlenderComponent):
         self.create_shape()
         self.setup_scene()
         self.default_colour(colour="#0072c2")
+
+
+class Cryostat(BlenderComponent):
+    """Cryostat Component
+
+    Parameters
+    ----------
+    Params :
+        An instance of OutputParams dataclass
+    """
+
+    def __init__(self, params):
+        self.params = params
+
+    def _cryo_outline(self):
+        """Makes the outline for each of the walls of the cryostat"""
+        rdewex = self.params.rdewex
+        ddwex = self.params.ddwex
+        zdewex = self.params.zdewex
+        object_list = [
+            "Upper_Outer_wall",
+            "Lower_Outer_wall",
+            "Upper_wall",
+            "Lower_wall",
+        ]
+
+        # Taken from plot_proc.py plotting 2D cryostat function
+        rect = patches.Rectangle([rdewex, 0], ddwex, zdewex + ddwex, lw=0)
+        coords = rect_blend(rectangle=rect)
+        self.component_outline(coords, object_name=object_list[0])
+
+        rect = patches.Rectangle([rdewex, 0], ddwex, -(zdewex + ddwex), lw=0)
+        coords = rect_blend(rectangle=rect)
+        self.component_outline(coords, object_name=object_list[1])
+
+        rect = patches.Rectangle([0, zdewex], rdewex, ddwex, lw=0)
+        coords = rect_blend(rectangle=rect)
+        self.component_outline(coords, object_name=object_list[2])
+
+        rect = patches.Rectangle([0, -zdewex], rdewex, -ddwex, lw=0)
+        coords = rect_blend(rectangle=rect)
+        self.component_outline(coords, object_name=object_list[3])
+
+        change_to_mesh(object_names=object_list)
+
+        # Makes each wall into a filled shape
+        for i in object_list:
+            make_face_from_vertices(str(i))
+
+    def build(self):
+        """Build method to render the component"""
+        self._cryo_outline()
+        self.scene(0, 0, 100)
+        self.default_colour(colour="#2e7ebc")

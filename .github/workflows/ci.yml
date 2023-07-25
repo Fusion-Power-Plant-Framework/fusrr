@@ -28,6 +28,6 @@ jobs:
 
     - name: Check Code Quality
       run: |
-        SKIP=flake8,black pre-commit run --all-files
+        SKIP=black pre-commit run --all-files
         flake8 --count
         black --check .

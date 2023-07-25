@@ -145,6 +145,9 @@ class OutputParams:
     pfdz4: float
     pfdz5: float
     pfdz6: float
+    rdewex: float
+    ddwex: float
+    zdewex: float
 
     file_name: Optional[str] = None
 
