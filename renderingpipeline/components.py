@@ -3,12 +3,10 @@ A file that stores the blender components of the reactor
 """
 import abc
 import math
-
+from dataclasses import asdict
 
 import bpy
 import bmesh
-from dataclasses import asdict
-from inspect import getmembers
 import numpy as np
 from matplotlib import patches
 
@@ -17,10 +15,12 @@ from renderingpipeline.blender_tools import (
     change_to_mesh,
     delete_cube,
     empty_obj,
+    faces_pf_coils,
     join_obj,
     make_face_from_vertices,
     move_camera,
     rect_blend,
+    rect_blend_sep,
 )
 
 
@@ -350,7 +350,7 @@ class TFCoil(BlenderComponent):
 
     def setup_scene(self):
         """Sets up scene and objects for rendering"""
-        x, y, z = self.get_reactor_centre(self.tf_coil_shape)
+        x, y, z = self.tracking_centre(self.tf_coil_shape)
         self.frame(x, y, z)  # Tracking works but is wonky
         object_list = [
             "TestObject",
@@ -489,7 +489,7 @@ class PfCoils(BlenderComponent):
                 number_of_coils += 1
 
         bore = float(pf_coil_shape_dict["bore"])
-        ohcth = float(pf_coil_shape_dict["ohcth"])
+        cs_rad_th = float(pf_coil_shape_dict["cs_rad_th"])
         ohdz = float(pf_coil_shape_dict["ohdz"])
 
         # Check for Central Solenoid
@@ -530,20 +530,20 @@ class PfCoils(BlenderComponent):
 
             pf_coil_name = f"pf_coil{i}"
             self.pf_coil_render(r_points, z_points, pf_coil_name)
-            bt.faces_pf_coils(pf_coil_name)
+            faces_pf_coils(pf_coil_name)
 
-        central_coil = patches.Rectangle([bore, (-ohdz / 2)], ohcth, ohdz)
+        central_coil = patches.Rectangle([bore, (-ohdz / 2)], cs_rad_th, ohdz)
         central_coil_name = "central_coil"
-        x_coords, y_coords = bt.rect_blend_sep(central_coil)
+        x_coords, y_coords = rect_blend_sep(central_coil)
 
         self.pf_coil_render(
             x_coords=x_coords, y_coords=y_coords, coil_name=central_coil_name
         )
-        bt.faces_pf_coils(central_coil_name)
+        faces_pf_coils(central_coil_name)
 
     def setup_scene(self):
         """Sets up scene and objects for rendering"""
-        x, y, z = self.get_reactor_centre(self.pf_coil_shape)
+        x, y, z = self.tracking_centre(self.pf_coil_shape)
         self.frame(x, y, z)  # Tracking works but is wonky
 
     def build(self):
