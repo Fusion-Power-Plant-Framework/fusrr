@@ -6,6 +6,7 @@ import math
 from dataclasses import asdict
 
 import bpy
+import bmesh
 import numpy as np
 from matplotlib import patches
 
@@ -13,13 +14,12 @@ from renderingpipeline.blender_tools import (  # camera_fix,; empty_obj,; move_c
     change_to_mesh,
     component_outline,
     delete_cube,
-    empty_obj,
     faces_pf_coils,
     join_obj,
     make_face_from_vertices,
     rect_blend,
-    render_component_mesh,
     rect_blend_sep,
+    render_component_mesh,
 )
 
 
@@ -62,6 +62,8 @@ class BlenderComponent(abc.ABC):
     #     return x, y, z
 
     def scene(self):
+        """Sets up scene"""
+        scene = bpy.context.scene
         mesh = bpy.data.meshes.new("line_mesh")
         line_obj = bpy.data.objects.new("line_object", mesh)
         scene.collection.objects.link(line_obj)
@@ -208,7 +210,7 @@ class Plasma(BlenderComponent):
 
         return half_x, half_y
 
-    def setup_scene(self):
+    def setup_scene(self, x_coords, y_coords, z_coords):
         """Sets up cameras and objects for rendering"""
         self.frame(x_coords, y_coords, z_coords)
         object_list = [
