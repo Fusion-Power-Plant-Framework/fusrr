@@ -1,6 +1,6 @@
 """test for view/ reactor/ component classes"""
 
-import bpy
+# import bpy
 
 from renderingpipeline.adaptor import OutputParams
 from renderingpipeline.components import Cryostat, PfCoils, Plasma, TFCoil
@@ -16,19 +16,13 @@ cryo = Cryostat(input_file)
 reactor1 = Reactor(plasma=plasma, tfcoils=tf, pfcoils=pf, cryostat=cryo)
 
 view = View(reactor1)
-# view.highlight_plasma( '#d85319')
 view.move_plasma(2, 0, 10)
-view.make_3d()
-# view.half_reactor('plasma')
-# view.export('this')
 view.tf_thick()
-bpy.ops.wm.save_as_mainfile(filepath="Next")
-# bpy.ops.export_scene.gltf(filepath='exports')
 reactor1.save_image("View_test")
 
 
-# looking_direction = camera.location - mathutils.Vector((0.0, 0.0, 0.0))
-#     rot_quat = looking_direction.to_track_quat('Z', 'Y')
+# view.make_3d()
+# view.half_reactor('plasma')
 
-#     camera.rotation_euler = rot_quat.to_euler()
-#     camera.location = rot_quat @ mathutils.Vector((0.0, 0.0, component))
+# bpy.ops.wm.save_as_mainfile(filepath="Next")
+# bpy.ops.export_scene.gltf(filepath='exports')
