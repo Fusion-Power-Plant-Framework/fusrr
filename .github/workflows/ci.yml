@@ -6,6 +6,7 @@ on:
     branches:
       - develop
       - main
+      - blender-tests-on-ci
 
 jobs:
   build:
