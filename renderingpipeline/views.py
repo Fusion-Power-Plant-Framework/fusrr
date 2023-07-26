@@ -77,14 +77,13 @@ class View(ViewDefault):
         ...
         self._view(5, 1, 0)
 
-    def _view(self, x, y, z):  # Works, want to do better tracking
+    def _view(self):  # Works, want to make dist input -possibly using rmajor
         """
-        Default view - working example - want to create bbetter method for tracking
+        Default view
         """
-        camera_fix("Camera")
-        add_light(0, 0, 80)
-        # camera = bpy.data.objects["Camera"]
-        # camera.location = (x, y, z + 55)
+        dist = 90
+        camera_fix("Camera", "plasma", dist)
+        add_light(0, 0, dist + 30)
 
     def highlight_plasma(
         self, colour
@@ -130,16 +129,14 @@ class View(ViewDefault):
             spin_extrusion(component)
         self._view(2, 0, 40)
 
-    def half_reactor(self, face_mesh):
+    def half_reactor(self, face_mesh):  # naming of face_meshes needs improving
         """Use spin_excursion to make a half reactor view -needs changes"""
         half_reactor(face_mesh)
         self._view(2, 0, 40)
 
     def tf_thick(self):
-        """Add some depth"""
-        # thickness = self.tftort
-        # thickness into rads
-        tf_list = ("Tf.1", "Tf.2", "Tf.3", "Tf.4", "Tf.5")
+        """Add some depth - begining of making 3D TFcoils"""
+        tf_list = ("Tf.1", "Tf.2", "Tf.3", "Tf.4", "Tf.5")  # naming will change
         for sect in tf_list:
             obj = bpy.context.scene.objects.get(str(sect))
             obj.select_set(True)

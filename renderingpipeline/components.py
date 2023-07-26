@@ -10,7 +10,7 @@ import bmesh
 import numpy as np
 from matplotlib import patches
 
-from renderingpipeline.blender_tools import (  # camera_fix,; empty_obj,; move_camera,
+from renderingpipeline.blender_tools import (
     change_to_mesh,
     component_outline,
     delete_cube,

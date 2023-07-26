@@ -24,7 +24,7 @@ def move_camera(x, y, z):
     camera.location = (x, y, z)
 
 
-def camera_fix(camera: str, component: str):
+def camera_fix(camera: str, component: str, dist):
     """Fixes camera to look at target
     Parameters
     ----------
@@ -35,6 +35,7 @@ def camera_fix(camera: str, component: str):
     camera = bpy.data.objects[camera]
     constraint = camera.constraints.new(type="TRACK_TO")
     constraint.target = bpy.data.objects[component]
+    camera.location = (0, 0, dist)
     # looking_direction = camera.location - mathutils.Vector((0.0, 0.0, 0.0))
     # rot_quat = looking_direction.to_track_quat('-Z', 'Z')
     # camera.rotation_euler = rot_quat.to_euler('XYZ')
@@ -271,7 +272,7 @@ def spin_extrusion(face_mesh):
     bpy.ops.object.mode_set(mode="EDIT")
     bpy.ops.mesh.select_all(action="SELECT")
     bpy.ops.mesh.spin(
-        angle=6.28319, steps=100, axis=(0.0, 1.0, 0.0)
+        angle=6.28319, steps=400, axis=(0.0, 1.0, 0.0)
     )  # Polodial rotation
     bpy.ops.object.mode_set(mode="OBJECT")
     bpy.ops.object.select_all(action="DESELECT")
