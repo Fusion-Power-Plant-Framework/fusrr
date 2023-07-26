@@ -24,6 +24,7 @@ process_param = dict(
         "d_vv_in": "d_vv_in",
         "d_vv_out": "d_vv_out",
         "blnktth": "blnktth",
+        "tftort": "tftort",
         # Blanket use
         "bore": "bore",
         "cs_rad_th": "ohcth",

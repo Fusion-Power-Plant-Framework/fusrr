@@ -5,6 +5,8 @@
 import bpy
 import bmesh
 
+# import mathutils
+
 
 def empty_obj(x, y, z):
     """Empty object adder (for camera tracking purposes)"""
@@ -22,7 +24,7 @@ def move_camera(x, y, z):
     camera.location = (x, y, z)
 
 
-def camera_fix(camera: str, target: str):
+def camera_fix(camera: str, component: str):
     """Fixes camera to look at target
     Parameters
     ----------
@@ -30,8 +32,13 @@ def camera_fix(camera: str, target: str):
     target : bpy.data.object[""]
     """
     # *Will break if object "camera" or "target" doesn't exist.
-    constraint = bpy.data.objects[camera].constraints.new(type="TRACK_TO")
-    constraint.target = bpy.data.objects[target]
+    camera = bpy.data.objects[camera]
+    constraint = camera.constraints.new(type="TRACK_TO")
+    constraint.target = bpy.data.objects[component]
+    # looking_direction = camera.location - mathutils.Vector((0.0, 0.0, 0.0))
+    # rot_quat = looking_direction.to_track_quat('-Z', 'Z')
+    # camera.rotation_euler = rot_quat.to_euler('XYZ')
+    # camera.location = rot_quat @ mathutils.Vector((0.0, 0.0, 70))
 
 
 def delete_cube():
@@ -205,7 +212,7 @@ def change_to_mesh(object_names: list):
     bpy.ops.object.select_all(action="DESELECT")
 
 
-def component_outline(coords):
+def component_outline(coords, object_name: str):
     """Renders the spline of component
 
     Parameters
@@ -217,7 +224,7 @@ def component_outline(coords):
     curve = bpy.data.curves.new(name="Curve_test", type="CURVE")
     curve.fill_mode = "NONE"
 
-    ob = bpy.data.objects.new(name="TestObject", object_data=curve)
+    ob = bpy.data.objects.new(object_name, object_data=curve)
     scene = bpy.context.scene
     scene.collection.objects.link(ob)
     bpy.context.view_layer.objects.active = None
@@ -234,13 +241,13 @@ def component_outline(coords):
     return None
 
 
-def render_component_mesh():
+def render_component_mesh(name):
     """Set up + builds new mesh for component"""
     scene = bpy.context.scene
     bpy.context.view_layer.objects.active = None
 
-    mesh = bpy.data.meshes.new("line_mesh")
-    line_obj = bpy.data.objects.new("line_object", mesh)
+    mesh = bpy.data.meshes.new(name)
+    line_obj = bpy.data.objects.new(name, mesh)
     scene.collection.objects.link(line_obj)
     scene.view_layers.update()
 
@@ -258,6 +265,7 @@ def spin_extrusion(face_mesh):
         Name of face_mesh to be spun extruded
     """
     obj = bpy.context.scene.objects.get(str(face_mesh))
+    print("obj =", obj)
     obj.select_set(True)
     bpy.context.view_layer.objects.active = obj
     bpy.ops.object.mode_set(mode="EDIT")
@@ -277,6 +285,7 @@ def half_reactor(face_mesh):
         face_mesh (str): Name of object's mesh to be spun
     """
     obj = bpy.context.scene.objects.get(str(face_mesh))
+    print("obj =", obj)
     obj.select_set(True)
     bpy.context.view_layer.objects.active = obj
     bpy.ops.object.mode_set(mode="EDIT")

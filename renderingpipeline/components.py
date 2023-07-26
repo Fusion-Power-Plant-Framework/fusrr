@@ -53,14 +53,6 @@ def ellips_fill(a1=0, a2=0, b1=0, b2=0, x0=0, y0=0, ang1=0, ang2=np.pi / 2):
 class BlenderComponent(abc.ABC):
     """Stores default functions for blender setup and renderings"""
 
-    # def tracking_centre( ##Tracking will  likely be done in View
-    #     self, component_shape
-    # ):  # not great but gives a view that should include all components
-    #     """Uses rmajor to make coordinates - Can be useful for camera tracking"""
-    #     x, y = 0, component_shape.rmajor
-    #     z = 6 * component_shape.rmajor
-    #     return x, y, z
-
     def scene(self):
         """Sets up scene"""
         scene = bpy.context.scene
@@ -81,7 +73,7 @@ class BlenderComponent(abc.ABC):
         z = 6 * component_shape.rmajor
         return x, y, z
 
-    def frame(self, x, y, z):
+    def frame(self):
         """Sets up camera for rendering"""
         delete_cube()
 
@@ -96,8 +88,10 @@ class BlenderComponent(abc.ABC):
 
         blue = int(hex_color[4:6], 16)
         srgb_blue = blue / 255
+        colour = tuple([srgb_red, srgb_green, srgb_blue, 1.0])
 
-        return tuple([srgb_red, srgb_green, srgb_blue, 1.0])
+        # print(colour)
+        return colour
 
     def default_colour(self, colour):
         """Creates material to add colour to active objects(s)"""
@@ -190,7 +184,7 @@ class Plasma(BlenderComponent):
         y_coords : numpy array
 
         """
-        scene, mesh, bm = render_component_mesh()
+        scene, mesh, bm = render_component_mesh("plasma")
 
         for x, y in zip(x_coords, y_coords):
             bm.verts.new((x, y, 0))
@@ -210,15 +204,15 @@ class Plasma(BlenderComponent):
 
         return half_x, half_y
 
-    def setup_scene(self, x_coords, y_coords, z_coords):
+    def setup_scene(self):
         """Sets up cameras and objects for rendering"""
-        self.frame(x_coords, y_coords, z_coords)
+        self.frame()
         object_list = [
-            "line_object",
-            "line_object.001",
+            "plasma",
+            "plasma.001",
         ]  # is there a way to automate naming of objects?
         join_obj(object_list)
-        make_face_from_vertices("line_object")
+        make_face_from_vertices("plasma")
 
     def build(self):
         """Combines above functions to plot, track and render plasma"""
@@ -277,7 +271,7 @@ class TFCoil(BlenderComponent):
             ang1=rtangle,
             ang2=2 * rtangle,
         )
-        component_outline(verts)
+        component_outline(verts, "Tf.1")
         # Outboard upper arc
         x0 = x2
         y0 = 0
@@ -288,7 +282,7 @@ class TFCoil(BlenderComponent):
         verts = ellips_fill(
             a1=a1, a2=a2, b1=b1, b2=b2, x0=x0, y0=y0, ang1=0, ang2=rtangle
         )
-        component_outline(verts)
+        component_outline(verts, "Tf.2")
         # Inboard lower arc
         x0 = x4
         y0 = y5
@@ -299,7 +293,7 @@ class TFCoil(BlenderComponent):
         verts = ellips_fill(
             a1=a1, a2=a2, b1=b1, b2=b2, x0=x0, y0=y0, ang1=-rtangle, ang2=-2 * rtangle
         )
-        component_outline(verts)
+        component_outline(verts, "Tf.3")
         # Outboard lower arc
         x0 = x4
         y0 = 0
@@ -310,25 +304,25 @@ class TFCoil(BlenderComponent):
         verts = ellips_fill(
             a1=a1, a2=a2, b1=b1, b2=b2, x0=x0, y0=y0, ang1=0, ang2=-rtangle
         )
-        component_outline(verts)
+        component_outline(verts, "Tf.4")
         # Vertical leg
         # Bottom left corner
         rect = patches.Rectangle(
             [x5 - tfc_inleg, y5], tfc_inleg, (y1 - y5), lw=0, facecolor="cyan"
         )
         centre_coords = rect_blend(rect)
-        component_outline(centre_coords)
+        component_outline(centre_coords, "Tf.5")
 
     def setup_scene(self):
         """Sets up scene and objects for rendering"""
         x, y, z = self.tracking_centre(self.tf_coil_shape)
-        self.frame(x, y, z)  # Tracking works but is wonky
+        self.frame()
         object_list = [
-            "TestObject",
-            "TestObject.001",
-            "TestObject.002",
-            "TestObject.003",
-            "TestObject.004",
+            "Tf.1",
+            "Tf.2",
+            "Tf.3",
+            "Tf.4",
+            "Tf.5",
         ]
 
         change_to_mesh(object_names=object_list)
@@ -337,11 +331,17 @@ class TFCoil(BlenderComponent):
 
         # print(dir(self))
 
+        # @staticmethod
+        # def tf_thickness(tf_coil_shape):
+        #     """Uses params to calculate angle needed to extrude tf coils"""
+        #     thick = tf_coil_shape.tftort
+        #     numb = tf_coil_shape.n_tf
+
     def build(self):
         """Plots tracks and renders tf coils"""
         self.create_shape()
         self.setup_scene()
-        self.default_colour(colour="#0072c2")
+        self.default_colour(colour="#003688")
 
 
 class Cryostat(BlenderComponent):
@@ -371,19 +371,19 @@ class Cryostat(BlenderComponent):
         # Taken from plot_proc.py plotting 2D cryostat function
         rect = patches.Rectangle([rdewex, 0], ddwex, zdewex + ddwex, lw=0)
         coords = rect_blend(rectangle=rect)
-        self.component_outline(coords, object_name=object_list[0])
+        component_outline(coords, object_name=object_list[0])
 
         rect = patches.Rectangle([rdewex, 0], ddwex, -(zdewex + ddwex), lw=0)
         coords = rect_blend(rectangle=rect)
-        self.component_outline(coords, object_name=object_list[1])
+        component_outline(coords, object_name=object_list[1])
 
         rect = patches.Rectangle([0, zdewex], rdewex, ddwex, lw=0)
         coords = rect_blend(rectangle=rect)
-        self.component_outline(coords, object_name=object_list[2])
+        component_outline(coords, object_name=object_list[2])
 
         rect = patches.Rectangle([0, -zdewex], rdewex, -ddwex, lw=0)
         coords = rect_blend(rectangle=rect)
-        self.component_outline(coords, object_name=object_list[3])
+        component_outline(coords, object_name=object_list[3])
 
         change_to_mesh(object_names=object_list)
 
@@ -394,8 +394,8 @@ class Cryostat(BlenderComponent):
     def build(self):
         """Build method to render the component"""
         self._cryo_outline()
-        self.scene(0, 0, 100)
-        self.default_colour(colour="#2e7ebc")
+        self.scene()
+        self.default_colour(colour="#2e7ebc")  # was changing plasma colour too :(
 
 
 class PfCoils(BlenderComponent):
@@ -484,7 +484,7 @@ class PfCoils(BlenderComponent):
             coil_text.append(str(coil + 1))
 
         for i in range(len(coils_r)):
-            print(i)
+            # print(i)
             r_1 = float(coils_r[i]) - 0.5 * float(coils_dr[i])
             z_1 = float(coils_z[i]) - 0.5 * float(coils_dz[i])
             r_2 = float(coils_r[i]) - 0.5 * float(coils_dr[i])
@@ -515,7 +515,7 @@ class PfCoils(BlenderComponent):
     def setup_scene(self):
         """Sets up scene and objects for rendering"""
         x, y, z = self.tracking_centre(self.pf_coil_shape)
-        self.frame(x, y, z)  # Tracking works but is wonky
+        self.frame()  # Tracking works but is wonky
 
     def build(self):
         """Plots tracks and renders tf coils"""

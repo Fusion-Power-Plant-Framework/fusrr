@@ -4,7 +4,12 @@ import abc
 
 import bpy
 
-from renderingpipeline.blender_tools import camera_fix, half_reactor, spin_extrusion
+from renderingpipeline.blender_tools import (
+    add_light,
+    camera_fix,
+    half_reactor,
+    spin_extrusion,
+)
 
 
 def hex_color_to_rgba(hex_color):  # checks needed as from git
@@ -28,7 +33,6 @@ def change_colour(colour):
     """Creates material to add colour to active objects(s)"""
     active_objects = bpy.context.selected_objects
     colour = hex_color_to_rgba(colour)
-    print(colour)
     for object in active_objects:
         mat = bpy.data.materials.new(name="MatName")
         object.data.materials.append(mat)
@@ -58,8 +62,16 @@ class View(ViewDefault):
         print(self.reactor)
         reactor.render()
 
-        self.view_component = ("plasma", "tfcoils")
-        print(self.view_component)
+        self.view_component = (
+            "plasma",
+            "pf_coil0",
+            "pf_coil1",
+            "pf_coil2",
+            "pf_coil3",
+            "pf_coil4",
+            "pf_coil5",
+            "central_coil",
+        )
         # print(dir(self))
         # hide all components that are not plasma
         ...
@@ -69,10 +81,10 @@ class View(ViewDefault):
         """
         Default view - working example - want to create bbetter method for tracking
         """
-        bpy.ops.object.empty_add(location=(x, y, z))
-        camera_fix("Camera", "Empty")
-        camera = bpy.data.objects["Camera"]
-        camera.location = (x, y, z + 55)
+        camera_fix("Camera")
+        add_light(0, 0, 80)
+        # camera = bpy.data.objects["Camera"]
+        # camera.location = (x, y, z + 55)
 
     def highlight_plasma(
         self, colour
@@ -108,15 +120,37 @@ class View(ViewDefault):
         self.view()
         bpy.ops.object.light_add(type="SUN", location=(x, y, z))
 
-    def make_3d(self):  # this works, but currenly only selecting plasma
+    def make_3d(
+        self,
+    ):  # work for named comps. Need to be continuous (i.e plasma) or it is wierd
         """Spins 2D render around an axis to make 3D - whole reactor"""
-        spin_extrusion("line_object")
+        for components in self.view_component:
+            component = str(components)
+            print("component =", component)
+            spin_extrusion(component)
         self._view(2, 0, 40)
 
-    def half_reactor(self):
+    def half_reactor(self, face_mesh):
         """Use spin_excursion to make a half reactor view -needs changes"""
-        half_reactor("line_object")
+        half_reactor(face_mesh)
         self._view(2, 0, 40)
+
+    def tf_thick(self):
+        """Add some depth"""
+        # thickness = self.tftort
+        # thickness into rads
+        tf_list = ("Tf.1", "Tf.2", "Tf.3", "Tf.4", "Tf.5")
+        for sect in tf_list:
+            obj = bpy.context.scene.objects.get(str(sect))
+            obj.select_set(True)
+            bpy.context.view_layer.objects.active = obj
+            bpy.ops.object.mode_set(mode="EDIT")
+            bpy.ops.mesh.select_all(action="SELECT")
+            bpy.ops.mesh.spin(
+                angle=0.1, steps=100, axis=(0.0, 1.0, 0.0)
+            )  # Polodial rotation
+            bpy.ops.object.mode_set(mode="OBJECT")
+            bpy.ops.object.select_all(action="DESELECT")
 
     @staticmethod
     def export(filepath: str):  # will not work in function, need to override context
