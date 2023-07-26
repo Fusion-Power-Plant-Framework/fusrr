@@ -65,13 +65,8 @@ def camera_fix(camera: str, component: str, dist):
 
 def delete_cube():
     """Removes default cube if present"""
-    for o in bpy.context.scene.objects:
-        if o.name == "Cube":
-            bpy.ops.object.select_all(action="DESELECT")
-            bpy.data.objects["Cube"].select_set(True)
-            bpy.ops.object.delete()
-        else:
-            pass
+    objs = bpy.data.objects
+    objs.remove(objs["Cube"], do_unlink=True)
 
 
 def save_image(file_name: str):
@@ -315,3 +310,8 @@ def half_reactor(face_mesh):
     )  # Polodial rotation
     bpy.ops.object.mode_set(mode="OBJECT")
     bpy.ops.object.select_all(action="DESELECT")
+
+
+def import_gltf(filepath: str):
+    """Import from gltf"""
+    bpy.ops.import_scene.gltf(filepath=filepath)
