@@ -4,13 +4,15 @@ A file that stores the blender components of the reactor
 import abc
 import math
 from dataclasses import asdict
+from typing import Optional, Tuple
 
 import bpy
 import bmesh
 import numpy as np
 from matplotlib import patches
 
-from renderingpipeline.blender_tools import (
+from renderingpipeline.adaptor import OutputParams
+from renderingpipeline.blender_tools import (  # camera_fix,; empty_obj,; move_camera,
     change_to_mesh,
     component_outline,
     delete_cube,
@@ -68,17 +70,8 @@ def ellips_fill(a1=0, a2=0, b1=0, b2=0, x0=0, y0=0, ang1=0, ang2=np.pi / 2):
 class BlenderComponent(abc.ABC):
     """Stores default functions for blender setup and renderings"""
 
-    def scene(self):
-        """Sets up scene"""
-        scene = bpy.context.scene
-        mesh = bpy.data.meshes.new("line_mesh")
-        line_obj = bpy.data.objects.new("line_object", mesh)
-        scene.collection.objects.link(line_obj)
-        scene.view_layers.update()
-
-        bm = bmesh.new()
-
-        return scene, mesh, bm
+    def __init__(self, shapes):
+        self._shape_ref = shapes
 
     def tracking_centre(
         self, component_shape
@@ -87,6 +80,16 @@ class BlenderComponent(abc.ABC):
         x, y = 0, component_shape.rmajor
         z = 6 * component_shape.rmajor
         return x, y, z
+
+    @property
+    def shape(self) -> Tuple[bpy.data.objects]:
+        """Get the component shape references."""
+        return self._shape_ref
+
+    def _select_objects(self, prefix: str) -> Tuple[bpy.data.objects]:
+        bpy.ops.object.select_all(action="DESELECT")
+        bpy.ops.object.select_pattern(pattern=f"{prefix}*")
+        return tuple(bpy.context.selected_objects)
 
     def frame(self):
         """Sets up camera for rendering"""
@@ -107,7 +110,7 @@ class BlenderComponent(abc.ABC):
 
         return colour
 
-    def default_colour(self, colour):
+    def default_colour(self, colour: Optional[str] = None):
         """Creates material to add colour to active objects(s)"""
         bpy.ops.object.select_all(action="SELECT")
         active_objects = bpy.context.selected_objects
@@ -130,22 +133,32 @@ class BlenderComponent(abc.ABC):
 class Plasma(BlenderComponent):
     """Contains methods for plotting and rendering different parts of the plasma"""
 
-    def __init__(self, plasma_shape):
-        self.plasma_shape = plasma_shape
+    def __init__(
+        self, params: Optional[OutputParams] = None, colour: Optional[str] = None
+    ):
+        delete_cube()
+        if params is None:
+            self.params = params
+            xy = self.create_shape()
+            for _x, _y in zip(xy[:2], xy[2:]):
+                self.create_mesh(_x, _y, name="plasma")
+            join_obj(["plasma_object", "plasma_object.001"])
+            make_face_from_vertices(PLASMA)
+            name = "plasma"
+        else:
+            name = "LCFS"
 
-    @staticmethod
-    def create_shape(plasma_shape):
-        """Generates coordinates for the plasma boundary arcs
+        super().__init__(self._select_objects(name))
 
-        Arguments:
-        ---------
-            plasma_shape: input values for componets
-        """
-        r0 = plasma_shape.rmajor
-        a = plasma_shape.rminor
-        delta = 1.5 * plasma_shape.delta_95
-        kappa = (1.1 * plasma_shape.kappa95) + 0.04
-        i_single_null = plasma_shape.i_single_null
+        self.default_colour(colour)
+
+    def create_shape(self):
+        """Generates coordinates for the plasma boundary arcs"""
+        r0 = self.params.rmajor
+        a = self.params.rminor
+        delta = 1.5 * self.params.delta_95
+        kappa = (1.1 * self.params.kappa95) + 0.04
+        i_single_null = self.params.i_single_null
 
         x1 = (2.0 * r0 * (1.0 + delta) - a * (delta**2 + kappa**2 - 1.0)) / (
             2.0 * (1.0 + delta)
@@ -188,7 +201,7 @@ class Plasma(BlenderComponent):
 
         return xs1, xs2, ys1, ys2
 
-    def render(self, x_coords, y_coords):
+    def create_mesh(self, x_coords, y_coords, name="plasma"):
         """Renders the vertices of the plasma array for plasma mesh
 
         Parameters
@@ -206,7 +219,6 @@ class Plasma(BlenderComponent):
         bm.free()
 
         scene.view_layers.update()
-        return None
 
     @staticmethod
     def plasma_centre(x1, x2, y1, y2):
@@ -216,20 +228,6 @@ class Plasma(BlenderComponent):
         half_y = y1[half_arr] - y2[half_arr]
 
         return half_x, half_y
-
-    def setup_scene(self):
-        """Sets up cameras and objects for rendering"""
-        self.frame()
-        join_obj(plasma_list)
-        make_face_from_vertices(PLASMA)
-
-    def build(self):
-        """Combines above functions to plot, track and render plasma"""
-        xs1, xs2, ys1, ys2 = self.create_shape(self.plasma_shape)
-        self.render(xs1, ys1)
-        self.render(xs2, ys2)
-        self.setup_scene()
-        self.default_colour(colour=None)
 
 
 class TFCoil(BlenderComponent):
