@@ -8,6 +8,8 @@ import bpy
 import bmesh
 import numpy as np
 
+import numpy as np
+
 
 def empty_obj(x, y, z):
     """Empty object adder (for camera tracking purposes)"""
