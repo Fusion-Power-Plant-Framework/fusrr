@@ -3,6 +3,7 @@
 
 
 import bpy
+import bmesh
 
 
 def empty_obj(x, y, z):
@@ -204,6 +205,50 @@ def change_to_mesh(object_names: list):
     bpy.ops.object.select_all(action="DESELECT")
 
 
+def component_outline(coords):
+    """Renders the spline of component
+
+    Parameters
+    ----------
+    x_coords : numpy array
+    y_coords : numpy array
+
+    """
+    curve = bpy.data.curves.new(name="Curve_test", type="CURVE")
+    curve.fill_mode = "NONE"
+
+    ob = bpy.data.objects.new(name="TestObject", object_data=curve)
+    scene = bpy.context.scene
+    scene.collection.objects.link(ob)
+    bpy.context.view_layer.objects.active = None
+
+    spline = curve.splines.new(type="POLY")
+    spline.points.add(len(coords) - 1)
+    for i, point in enumerate(spline.points):
+        point.co[0:2] = coords[i]
+
+    bpy.ops.object.select_all(action="DESELECT")
+    bpy.context.view_layer.objects.active = ob
+    ob.select_set(True)
+
+    return None
+
+
+def render_component_mesh():
+    """Set up + builds new mesh for component"""
+    scene = bpy.context.scene
+    bpy.context.view_layer.objects.active = None
+
+    mesh = bpy.data.meshes.new("line_mesh")
+    line_obj = bpy.data.objects.new("line_object", mesh)
+    scene.collection.objects.link(line_obj)
+    scene.view_layers.update()
+
+    bm = bmesh.new()
+
+    return scene, mesh, bm
+
+
 def spin_extrusion(face_mesh):
     """Spin extrudes around y axis in blender 2Pi radians
 
@@ -217,6 +262,27 @@ def spin_extrusion(face_mesh):
     bpy.context.view_layer.objects.active = obj
     bpy.ops.object.mode_set(mode="EDIT")
     bpy.ops.mesh.select_all(action="SELECT")
-    bpy.ops.mesh.spin(angle=6.28319, steps=30, axis=(0.0, 1.0, 0.0))  # Polodial rotation
+    bpy.ops.mesh.spin(
+        angle=6.28319, steps=100, axis=(0.0, 1.0, 0.0)
+    )  # Polodial rotation
+    bpy.ops.object.mode_set(mode="OBJECT")
+    bpy.ops.object.select_all(action="DESELECT")
+
+
+def half_reactor(face_mesh):
+    """Spins Pi radians for a half reactor view
+
+    Args
+    ----
+        face_mesh (str): Name of object's mesh to be spun
+    """
+    obj = bpy.context.scene.objects.get(str(face_mesh))
+    obj.select_set(True)
+    bpy.context.view_layer.objects.active = obj
+    bpy.ops.object.mode_set(mode="EDIT")
+    bpy.ops.mesh.select_all(action="SELECT")
+    bpy.ops.mesh.spin(
+        angle=3.14159, steps=100, axis=(0.0, 1.0, 0.0)
+    )  # Polodial rotation
     bpy.ops.object.mode_set(mode="OBJECT")
     bpy.ops.object.select_all(action="DESELECT")

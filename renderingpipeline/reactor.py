@@ -1,10 +1,7 @@
 """
-Reactor Class WIP - developing basic structure, plasma class and tf class working.
-Need to impliment proper structure to use Reactor class and tidy rendering functions.
+Reactor class - builds individual components and puts them in the same scene
 """
 from inspect import getmembers
-
-import bpy
 
 from renderingpipeline.blender_tools import save_image
 from renderingpipeline.components import BlenderComponent
@@ -18,20 +15,17 @@ class Reactor:
         for name, comp in components.items():
             setattr(self, name, comp)
 
-    def render(self, view):
-        """Render whole reactor scene"""
+    def render(self):
+        """Render reactor scene for each component"""
         to_render = dict(
             mem for mem in getmembers(self, lambda m: isinstance(m, BlenderComponent))
         )
 
-        blender_scene = bpy.context.scene
         for mem in to_render.values():
-            mem.setup_scene(view)
-        # setup camera after scene
-        blender_scene.render()
+            mem.build()  # component class has build func
 
     @staticmethod
     def save_image(file_name: str):
         """Saves render as PNG"""
         save_image(file_name)
-        # possibly save .gltf as well in future
+        # save .gltf and .blend
