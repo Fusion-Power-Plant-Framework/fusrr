@@ -75,7 +75,7 @@ class View(ViewDefault):
         # print(dir(self))
         # hide all components that are not plasma
         ...
-        self._view(5, 1, 0)
+        self._view()
 
     def _view(self):  # Works, want to make dist input -possibly using rmajor
         """
