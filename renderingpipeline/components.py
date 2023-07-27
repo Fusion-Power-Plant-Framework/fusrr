@@ -312,6 +312,20 @@ class Plasma(BlenderComponent):
 
         return half_x, half_y
 
+    def setup_scene(self):
+        """Sets up cameras and objects for rendering"""
+        self.frame(self.plasma_shape)
+        join_obj(plasma_list)
+        make_face_from_vertices(PLASMA)
+
+    def build(self):
+        """Combines above functions to plot, track and render plasma"""
+        xs1, xs2, ys1, ys2 = self.create_shape(self.plasma_shape)
+        self.render(xs1, ys1)
+        self.render(xs2, ys2)
+        self.setup_scene()
+        self.default_colour(colour=None)
+
 
 class TFCoil(BlenderComponent):
     """TF Coil component"""
@@ -380,6 +394,11 @@ class TFCoil(BlenderComponent):
             patches.Rectangle([x5 - tf_il, y5], tf_il, (y1 - y5), lw=0, facecolor="cyan")
         )
         component_outline(centre_coords, tf_list[4])
+
+    def setup_scene(self):
+        """Sets up scene and objects for rendering"""
+        x, y, z = self.tracking_centre(self.tf_coil_shape)
+        self.frame(self.tf_coil_shape)
 
         change_to_mesh(object_names=tf_list)
         for i in tf_list:

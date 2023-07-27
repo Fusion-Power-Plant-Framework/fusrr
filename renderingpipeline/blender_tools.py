@@ -73,11 +73,7 @@ def camera_fix(camera: str, target: bpy_types.Collection, dist):
     """Fixes camera to look at target
     Parameters
     ----------
-<<<<<<< HEAD
-    camera : bpy.data.objects[""]
-=======
     camera : bpy.data.objects[""]  Most likely: ["Camera"]
->>>>>>> b2aa079 (Changes to camera tracking)
     component : bpy.data.object[""]
     dist (int) : distance
     """
@@ -94,8 +90,8 @@ def camera_frame():  # looks good for 3D, can cut off some of 2D
     """
     for area in bpy.context.screen.areas:
         if area.type == "VIEW_3D":
-            ctx = bpy.context.copy()
-            ctx["area"] = area
+            ctx = bpy.context.copy()  # ctx provides right context for blender
+            ctx["area"] = area  # - makes a copy of data and then throws it away
             ctx["region"] = area.regions[-1]
             bpy.ops.view3d.view_selected(ctx)  # points view
     bpy.ops.view3d.camera_to_view_selected(ctx)  # points camera
@@ -308,8 +304,18 @@ def component_outline(coords: Iterable[float], name: str = "component"):
     ob.select_set(True)
 
 
-def render_component_mesh(name: str = "line"):
-    """Set up + builds new mesh for component"""
+
+def render_component_mesh(name):
+    """Set up + builds new mesh for component
+
+    Args
+    ----
+        name (str): name of mesh
+
+    Returns
+    -------
+        blender information for new mesh
+    """
     scene = bpy.context.scene
     bpy.context.view_layer.objects.active = None
 
