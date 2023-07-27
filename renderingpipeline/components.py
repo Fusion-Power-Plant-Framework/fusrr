@@ -22,6 +22,21 @@ from renderingpipeline.blender_tools import (
     render_component_mesh,
 )
 
+tf_list = ["Tf.1", "Tf.2", "Tf.3", "Tf.4", "Tf.5"]
+plasma_list = ["plasma", "plasma.001"]
+cryo_list = [
+    "Upper_Outer_wall",
+    "Lower_Outer_wall",
+    "Upper_wall",
+    "Lower_wall",
+]
+PLASMA = "plasma"
+
+PURPLE = "#7d2f8e"  # plasma purple
+BLUE = "#003688"  # tf blue
+CRYO_BLUE = "#2e7ebc"
+PF_BLUE = "#0072c2"
+
 
 def ellips_fill(a1=0, a2=0, b1=0, b2=0, x0=0, y0=0, ang1=0, ang2=np.pi / 2):
     """Fills the space between two concentric ellipse sectors.
@@ -90,7 +105,6 @@ class BlenderComponent(abc.ABC):
         srgb_blue = blue / 255
         colour = tuple([srgb_red, srgb_green, srgb_blue, 1.0])
 
-        # print(colour)
         return colour
 
     def default_colour(self, colour):
@@ -100,7 +114,7 @@ class BlenderComponent(abc.ABC):
         # h = input('Enter hex: ').lstrip('#')
         # RGB = (tuple(int(h[i:i+2], 16) for i in (0, 2, 4)))
         if colour is None:
-            colour = self.hex_color_to_rgba("#7d2f8e")
+            colour = self.hex_color_to_rgba(PURPLE)
         else:
             colour = self.hex_color_to_rgba(colour)
         for object in active_objects:
@@ -118,7 +132,6 @@ class Plasma(BlenderComponent):
 
     def __init__(self, plasma_shape):
         self.plasma_shape = plasma_shape
-        # print(dir(self))
 
     @staticmethod
     def create_shape(plasma_shape):
@@ -184,7 +197,7 @@ class Plasma(BlenderComponent):
         y_coords : numpy array
 
         """
-        scene, mesh, bm = render_component_mesh("plasma")
+        scene, mesh, bm = render_component_mesh(PLASMA)
 
         for x, y in zip(x_coords, y_coords):
             bm.verts.new((x, y, 0))
@@ -207,12 +220,8 @@ class Plasma(BlenderComponent):
     def setup_scene(self):
         """Sets up cameras and objects for rendering"""
         self.frame()
-        object_list = [
-            "plasma",
-            "plasma.001",
-        ]  # is there a way to automate naming of objects?
-        join_obj(object_list)
-        make_face_from_vertices("plasma")
+        join_obj(plasma_list)
+        make_face_from_vertices(PLASMA)
 
     def build(self):
         """Combines above functions to plot, track and render plasma"""
@@ -271,7 +280,7 @@ class TFCoil(BlenderComponent):
             ang1=rtangle,
             ang2=2 * rtangle,
         )
-        component_outline(verts, "Tf.1")
+        component_outline(verts, tf_list[0])
         # Outboard upper arc
         x0 = x2
         y0 = 0
@@ -282,7 +291,7 @@ class TFCoil(BlenderComponent):
         verts = ellips_fill(
             a1=a1, a2=a2, b1=b1, b2=b2, x0=x0, y0=y0, ang1=0, ang2=rtangle
         )
-        component_outline(verts, "Tf.2")
+        component_outline(verts, tf_list[1])
         # Inboard lower arc
         x0 = x4
         y0 = y5
@@ -293,7 +302,7 @@ class TFCoil(BlenderComponent):
         verts = ellips_fill(
             a1=a1, a2=a2, b1=b1, b2=b2, x0=x0, y0=y0, ang1=-rtangle, ang2=-2 * rtangle
         )
-        component_outline(verts, "Tf.3")
+        component_outline(verts, tf_list[2])
         # Outboard lower arc
         x0 = x4
         y0 = 0
@@ -304,44 +313,29 @@ class TFCoil(BlenderComponent):
         verts = ellips_fill(
             a1=a1, a2=a2, b1=b1, b2=b2, x0=x0, y0=y0, ang1=0, ang2=-rtangle
         )
-        component_outline(verts, "Tf.4")
+        component_outline(verts, tf_list[3])
         # Vertical leg
         # Bottom left corner
         rect = patches.Rectangle(
             [x5 - tfc_inleg, y5], tfc_inleg, (y1 - y5), lw=0, facecolor="cyan"
         )
         centre_coords = rect_blend(rect)
-        component_outline(centre_coords, "Tf.5")
+        component_outline(centre_coords, tf_list[4])
 
     def setup_scene(self):
         """Sets up scene and objects for rendering"""
         x, y, z = self.tracking_centre(self.tf_coil_shape)
         self.frame()
-        object_list = [
-            "Tf.1",
-            "Tf.2",
-            "Tf.3",
-            "Tf.4",
-            "Tf.5",
-        ]
 
-        change_to_mesh(object_names=object_list)
-        for i in object_list:
+        change_to_mesh(object_names=tf_list)
+        for i in tf_list:
             make_face_from_vertices(str(i))
-
-        # print(dir(self))
-
-        # @staticmethod
-        # def tf_thickness(tf_coil_shape):
-        #     """Uses params to calculate angle needed to extrude tf coils"""
-        #     thick = tf_coil_shape.tftort
-        #     numb = tf_coil_shape.n_tf
 
     def build(self):
         """Plots tracks and renders tf coils"""
         self.create_shape()
         self.setup_scene()
-        self.default_colour(colour="#003688")
+        self.default_colour(colour=BLUE)
 
 
 class Cryostat(BlenderComponent):
@@ -361,41 +355,35 @@ class Cryostat(BlenderComponent):
         rdewex = self.params.rdewex
         ddwex = self.params.ddwex
         zdewex = self.params.zdewex
-        object_list = [
-            "Upper_Outer_wall",
-            "Lower_Outer_wall",
-            "Upper_wall",
-            "Lower_wall",
-        ]
 
         # Taken from plot_proc.py plotting 2D cryostat function
         rect = patches.Rectangle([rdewex, 0], ddwex, zdewex + ddwex, lw=0)
         coords = rect_blend(rectangle=rect)
-        component_outline(coords, object_name=object_list[0])
+        component_outline(coords, object_name=cryo_list[0])
 
         rect = patches.Rectangle([rdewex, 0], ddwex, -(zdewex + ddwex), lw=0)
         coords = rect_blend(rectangle=rect)
-        component_outline(coords, object_name=object_list[1])
+        component_outline(coords, object_name=cryo_list[1])
 
         rect = patches.Rectangle([0, zdewex], rdewex, ddwex, lw=0)
         coords = rect_blend(rectangle=rect)
-        component_outline(coords, object_name=object_list[2])
+        component_outline(coords, object_name=cryo_list[2])
 
         rect = patches.Rectangle([0, -zdewex], rdewex, -ddwex, lw=0)
         coords = rect_blend(rectangle=rect)
-        component_outline(coords, object_name=object_list[3])
+        component_outline(coords, object_name=cryo_list[3])
 
-        change_to_mesh(object_names=object_list)
+        change_to_mesh(object_names=cryo_list)
 
         # Makes each wall into a filled shape
-        for i in object_list:
+        for i in cryo_list:
             make_face_from_vertices(str(i))
 
     def build(self):
         """Build method to render the component"""
         self._cryo_outline()
         self.scene()
-        self.default_colour(colour="#2e7ebc")  # was changing plasma colour too :(
+        self.default_colour(colour=CRYO_BLUE)
 
 
 class PfCoils(BlenderComponent):
@@ -484,7 +472,6 @@ class PfCoils(BlenderComponent):
             coil_text.append(str(coil + 1))
 
         for i in range(len(coils_r)):
-            # print(i)
             r_1 = float(coils_r[i]) - 0.5 * float(coils_dr[i])
             z_1 = float(coils_z[i]) - 0.5 * float(coils_dz[i])
             r_2 = float(coils_r[i]) - 0.5 * float(coils_dr[i])
@@ -521,7 +508,7 @@ class PfCoils(BlenderComponent):
         """Plots tracks and renders tf coils"""
         self.plot_pf_coils()
         self.setup_scene()
-        self.default_colour(colour="#0072c2")
+        self.default_colour(colour=PF_BLUE)
 
 
 # class Blanket(BlenderComponent):

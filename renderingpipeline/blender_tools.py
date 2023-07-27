@@ -1,11 +1,8 @@
 """Useful combination of blender tools
 """
 
-
 import bpy
 import bmesh
-
-# import mathutils
 
 
 def empty_obj(x, y, z):
@@ -29,17 +26,13 @@ def camera_fix(camera: str, component: str, dist):
     Parameters
     ----------
     camera : bpy.data.objects[""]
-    target : bpy.data.object[""]
+    component : bpy.data.object[""]
+    dist (int) : distance
     """
-    # *Will break if object "camera" or "target" doesn't exist.
     camera = bpy.data.objects[camera]
     constraint = camera.constraints.new(type="TRACK_TO")
     constraint.target = bpy.data.objects[component]
     camera.location = (0, 0, dist)
-    # looking_direction = camera.location - mathutils.Vector((0.0, 0.0, 0.0))
-    # rot_quat = looking_direction.to_track_quat('-Z', 'Z')
-    # camera.rotation_euler = rot_quat.to_euler('XYZ')
-    # camera.location = rot_quat @ mathutils.Vector((0.0, 0.0, 70))
 
 
 def delete_cube():
@@ -247,7 +240,7 @@ def render_component_mesh(name):
     scene = bpy.context.scene
     bpy.context.view_layer.objects.active = None
 
-    mesh = bpy.data.meshes.new(name)
+    mesh = bpy.data.meshes.new(str(name))
     line_obj = bpy.data.objects.new(name, mesh)
     scene.collection.objects.link(line_obj)
     scene.view_layers.update()
@@ -266,7 +259,6 @@ def spin_extrusion(face_mesh):
         Name of face_mesh to be spun extruded
     """
     obj = bpy.context.scene.objects.get(str(face_mesh))
-    print("obj =", obj)
     obj.select_set(True)
     bpy.context.view_layer.objects.active = obj
     bpy.ops.object.mode_set(mode="EDIT")
@@ -286,7 +278,6 @@ def half_reactor(face_mesh):
         face_mesh (str): Name of object's mesh to be spun
     """
     obj = bpy.context.scene.objects.get(str(face_mesh))
-    print("obj =", obj)
     obj.select_set(True)
     bpy.context.view_layer.objects.active = obj
     bpy.ops.object.mode_set(mode="EDIT")
