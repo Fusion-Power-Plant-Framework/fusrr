@@ -177,6 +177,46 @@ class BlenderComponent(abc.ABC):
         z = 6 * component_shape.rmajor
         return x, y, z
 
+    def frame(self, component_shape):
+        """Sets up camera for rendering"""
+        delete_cube()
+        dist = component_shape.rmajor
+        return dist
+
+    def hex_color_to_rgba(self, hex_color):  # checks needed as from git
+        """Converts hex to blender's sRGB"""
+        hex_color = hex_color[1:]
+        red = int(hex_color[:2], 16)
+        srgb_red = red / 255
+
+        green = int(hex_color[2:4], 16)
+        srgb_green = green / 255
+
+        blue = int(hex_color[4:6], 16)
+        srgb_blue = blue / 255
+        colour = tuple([srgb_red, srgb_green, srgb_blue, 1.0])
+
+        return colour
+
+    def default_colour(self, colour):
+        """Creates material to add colour to active objects(s)"""
+        bpy.ops.object.select_all(action="SELECT")
+        active_objects = bpy.context.selected_objects
+        # h = input('Enter hex: ').lstrip('#')
+        # RGB = (tuple(int(h[i:i+2], 16) for i in (0, 2, 4)))
+        if colour is None:
+            colour = self.hex_color_to_rgba(PURPLE)
+        else:
+            colour = self.hex_color_to_rgba(colour)
+        for object in active_objects:
+            try:
+                mat = bpy.data.materials.new(name="MatName")
+                object.data.materials.append(mat)
+                mat.diffuse_color = colour
+                bpy.context.scene.view_layers.update()
+            except AttributeError:
+                continue
+
 
 class Plasma(BlenderComponent):
     """Plasma component."""
@@ -482,6 +522,10 @@ class PFCoil(BlenderComponent):
         )
         faces_pf_coils(central_coil_name)
 
+    def setup_scene(self):
+        """Sets up scene and objects for rendering"""
+        x, y, z = self.tracking_centre(self.pf_coil_shape)
+        self.frame(self.pf_coil_shape)  # Tracking works but is wonky
 
 class Blanket(BlenderComponent):
     """Blanket Component."""
