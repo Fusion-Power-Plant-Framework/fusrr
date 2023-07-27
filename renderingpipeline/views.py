@@ -11,6 +11,19 @@ from renderingpipeline.blender_tools import (
     spin_extrusion,
 )
 
+component_list = [
+    "plasma",
+    "pf_coil0",
+    "pf_coil1",
+    "pf_coil2",
+    "pf_coil3",
+    "pf_coil4",
+    "pf_coil5",
+    "central_coil",
+]
+
+tf_list = ("Tf.1", "Tf.2", "Tf.3", "Tf.4", "Tf.5")
+
 
 def hex_color_to_rgba(hex_color):  # checks needed as from git
     """Converts hex to blender's sRGB"""
@@ -62,17 +75,7 @@ class View(ViewDefault):
         print(self.reactor)
         reactor.render()
 
-        self.view_component = (
-            "plasma",
-            "pf_coil0",
-            "pf_coil1",
-            "pf_coil2",
-            "pf_coil3",
-            "pf_coil4",
-            "pf_coil5",
-            "central_coil",
-        )
-        # print(dir(self))
+        self.view_component = component_list
         # hide all components that are not plasma
         ...
         self._view()
@@ -82,7 +85,7 @@ class View(ViewDefault):
         Default view
         """
         dist = 90
-        camera_fix("Camera", "plasma", dist)
+        camera_fix("Camera", component_list[0], dist)
         add_light(0, 0, dist + 30)
 
     def highlight_plasma(
@@ -95,7 +98,7 @@ class View(ViewDefault):
             colour (str): hex number for colour
         """
         bpy.ops.object.select_all(action="DESELECT")
-        bpy.data.objects["line_object"].select_set(True)
+        bpy.data.objects[component_list[0]].select_set(True)
         bpy.ops.object.mode_set(mode="EDIT")  # blender likes 'EDIT' VScode does not
         bpy.ops.mesh.delete(type="FACE")
         bpy.ops.object.mode_set(mode="OBJECT")
@@ -111,7 +114,7 @@ class View(ViewDefault):
             z : coords
         """
         bpy.ops.object.select_all(action="DESELECT")
-        plasma = bpy.data.objects["line_object"]
+        plasma = bpy.data.objects[component_list[0]]
         plasma.location = (x, y, z)
 
     def add_light(self, x, y, z):
@@ -125,18 +128,20 @@ class View(ViewDefault):
         """Spins 2D render around an axis to make 3D - whole reactor"""
         for components in self.view_component:
             component = str(components)
-            print("component =", component)
             spin_extrusion(component)
         self._view(2, 0, 40)
 
-    def half_reactor(self, face_mesh):  # naming of face_meshes needs improving
-        """Use spin_excursion to make a half reactor view -needs changes"""
+    def half_reactor(self, face_mesh):
+        """Use spin_extrusion to make 'half-doughnut' reactor
+            naming of face_mesh should change to match make_3d funct
+        Args:
+            face_mesh (_type_): _description_
+        """
         half_reactor(face_mesh)
         self._view(2, 0, 40)
 
     def tf_thick(self):
         """Add some depth - begining of making 3D TFcoils"""
-        tf_list = ("Tf.1", "Tf.2", "Tf.3", "Tf.4", "Tf.5")  # naming will change
         for sect in tf_list:
             obj = bpy.context.scene.objects.get(str(sect))
             obj.select_set(True)
@@ -145,7 +150,7 @@ class View(ViewDefault):
             bpy.ops.mesh.select_all(action="SELECT")
             bpy.ops.mesh.spin(
                 angle=0.1, steps=100, axis=(0.0, 1.0, 0.0)
-            )  # Polodial rotation
+            )  # Currently angle/ thickness hard-coded want to become input from MFILE
             bpy.ops.object.mode_set(mode="OBJECT")
             bpy.ops.object.select_all(action="DESELECT")
 
