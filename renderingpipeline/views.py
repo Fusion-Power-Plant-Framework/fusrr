@@ -3,6 +3,8 @@
 import abc
 
 import bpy
+import numpy as np
+from mathutils import Vector
 
 from renderingpipeline.blender_tools import (
     add_cube,
@@ -75,9 +77,11 @@ class View(ViewBase):
         self.reactor = reactor
 
         print(self.reactor)
-        reactor.render()
+        # reactor.render()
 
-        self.view_component = component_list
+        self.view_component = ("plasma",)  # , "tfcoils")
+        print(self.view_component)
+        # print(dir(self))
         # hide all components that are not plasma
         ...
         self._view()
@@ -86,11 +90,21 @@ class View(ViewBase):
         """
         Default view
         """
-        bpy.ops.object.select_all(action="DESELECT")
-        plasma = bpy.data.objects["plasma"]
-        dist = plasma.dimensions.y
+        dist = self.reactor.plasma.shape.objects['LCFS_1'].dimensions.y
         camera_fix("Camera", "plasma", dist * 8)
         add_light(0, 0, dist * 10)
+
+        a = self.reactor.plasma.shape.values()
+        for o in bpy.context.view_layer.objects:
+            if o not in a:
+                o.hide_render = True
+
+        # there is probably a better way of reshowing things?
+        self.reactor.plasma.shape.hide_render = False
+        for view_comp in self.view_component:
+            comp = getattr(self.reactor, view_comp).shape
+            for ob in comp.objects.values():
+                ob.hide_render = False
 
     def highlight_plasma(
         self, colour
@@ -117,9 +131,17 @@ class View(ViewBase):
             y : coords
             z : coords
         """
-        bpy.ops.object.select_all(action="DESELECT")
-        plasma = bpy.data.objects[component_list[0]]
-        plasma.location = (x, y, z)
+        objs = list(self.reactor.plasma.shape.objects.values())
+        bb_max = np.array(objs[0].bound_box)
+        objs_bbs = [objs[0].bound_box]
+        for ob_ind in range(len(objs) - 1):
+            objs_bbs.append(np.array(objs[ob_ind + 1].bound_box))
+            bb_max = np.maximum(bb_max, objs_bbs[-1])
+        centre = np.mean(bb_max, axis=0)
+
+        shift = np.ptp(np.stack([centre, np.array([x, y, z])]), axis=0)
+        for ob in objs:
+            ob.location = Vector(shift) + ob.location
 
     def add_light(self, x, y, z):
         """Adds sunlight object to default view"""
