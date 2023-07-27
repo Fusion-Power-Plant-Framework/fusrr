@@ -4,10 +4,11 @@ A file that stores the blender components of the reactor
 import abc
 import math
 from dataclasses import asdict
-from typing import Optional, Tuple
+from typing import Iterable, Optional, Tuple
 
 import bpy
 import bmesh
+import bpy_types
 import numpy as np
 from matplotlib import patches
 
@@ -71,7 +72,7 @@ class BlenderComponent(abc.ABC):
     """Stores default functions for blender setup and renderings"""
 
     def __init__(self, shapes):
-        self._shape_ref = shapes
+        self._shape_ref = self._create_collection(type(self).__name__, shapes)
 
     def tracking_centre(
         self, component_shape
@@ -82,11 +83,25 @@ class BlenderComponent(abc.ABC):
         return x, y, z
 
     @property
-    def shape(self) -> Tuple[bpy.data.objects]:
+    def shape(self) -> bpy_types.Collection:
         """Get the component shape references."""
         return self._shape_ref
 
-    def _select_objects(self, prefix: str) -> Tuple[bpy.data.objects]:
+    def _create_collection(
+        self, name: str, objects: Iterable[bpy_types.Object]
+    ) -> bpy_types.Collection:
+        bpy.ops.object.select_all(action="DESELECT")
+        group = bpy.data.collections.new(name)
+        for ob in objects:
+            group.objects.link(ob)
+            ob.select_set(True)
+        # bpy.context.view_layer.objects.active = bpy.context.scene.objects[
+        #     objects[0].name
+        # ]
+        # bpy.ops.object.join()
+        return group
+
+    def _select_objects(self, prefix: str) -> Tuple[bpy_types.Object]:
         bpy.ops.object.select_all(action="DESELECT")
         bpy.ops.object.select_pattern(pattern=f"{prefix}*")
         return tuple(bpy.context.selected_objects)
@@ -95,7 +110,7 @@ class BlenderComponent(abc.ABC):
         """Sets up camera for rendering"""
         delete_cube()
 
-    def hex_color_to_rgba(self, hex_color):  # checks needed as from git
+    def hex_color_to_rgba(self, hex_color: str):  # checks needed as from git
         """Converts hex to blender's sRGB"""
         hex_color = hex_color[1:]
         red = int(hex_color[:2], 16)
@@ -112,18 +127,11 @@ class BlenderComponent(abc.ABC):
 
     def default_colour(self, colour: Optional[str] = None):
         """Creates material to add colour to active objects(s)"""
-        bpy.ops.object.select_all(action="SELECT")
-        active_objects = bpy.context.selected_objects
-        # h = input('Enter hex: ').lstrip('#')
-        # RGB = (tuple(int(h[i:i+2], 16) for i in (0, 2, 4)))
-        if colour is None:
-            colour = self.hex_color_to_rgba(PURPLE)
-        else:
-            colour = self.hex_color_to_rgba(colour)
-        for object in active_objects:
+        colour = self.hex_color_to_rgba(colour or PURPLE)
+        for ob in self.shape.objects.values():
             try:
-                mat = bpy.data.materials.new(name="MatName")
-                object.data.materials.append(mat)
+                mat = bpy.data.materials.new(name=type(self).__name__)
+                ob.data.materials.append(mat)
                 mat.diffuse_color = colour
                 bpy.context.scene.view_layers.update()
             except AttributeError:
@@ -138,6 +146,8 @@ class Plasma(BlenderComponent):
     ):
         delete_cube()
         if params is None:
+            name = "LCFS"
+        else:
             self.params = params
             xy = self.create_shape()
             for _x, _y in zip(xy[:2], xy[2:]):
@@ -145,8 +155,6 @@ class Plasma(BlenderComponent):
             join_obj(["plasma_object", "plasma_object.001"])
             make_face_from_vertices(PLASMA)
             name = "plasma"
-        else:
-            name = "LCFS"
 
         super().__init__(self._select_objects(name))
 
