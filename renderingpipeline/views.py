@@ -158,6 +158,7 @@ class View(ViewBase):
         """Spins 2D render around an axis to make 3D - whole reactor"""
         for components in self.components:
             component = str(components)
+            print("component =", component)
             spin_extrusion(component)
         self._view()
 
