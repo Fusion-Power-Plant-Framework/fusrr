@@ -83,6 +83,17 @@ def camera_fix(camera: str, target: bpy_types.Collection, dist):
     camera.location = (0, 0, dist)
 
 
+def camera_frame():
+    """Frames the 3D object in the camera - to change angle use camera tracking"""
+    for area in bpy.context.screen.areas:
+        if area.type == "VIEW_3D":
+            ctx = bpy.context.copy()
+            ctx["area"] = area
+            ctx["region"] = area.regions[-1]
+            bpy.ops.view3d.view_selected(ctx)  # points view
+    bpy.ops.view3d.camera_to_view_selected(ctx)  # points camera
+
+
 def delete_cube():
     """Removes default cube if present"""
     objs = bpy.data.objects
