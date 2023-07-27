@@ -1,4 +1,4 @@
-"""Views class - WIP - Gives 2D/ half reactor view ad default
+"""Views class - WIP - Gives 2D/ half reactor view as default
 """
 import abc
 

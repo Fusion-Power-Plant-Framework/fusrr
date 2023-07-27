@@ -73,7 +73,11 @@ def camera_fix(camera: str, target: bpy_types.Collection, dist):
     """Fixes camera to look at target
     Parameters
     ----------
+<<<<<<< HEAD
     camera : bpy.data.objects[""]
+=======
+    camera : bpy.data.objects[""]  Most likely: ["Camera"]
+>>>>>>> b2aa079 (Changes to camera tracking)
     component : bpy.data.object[""]
     dist (int) : distance
     """
@@ -83,8 +87,11 @@ def camera_fix(camera: str, target: bpy_types.Collection, dist):
     camera.location = (0, 0, dist)
 
 
-def camera_frame():
-    """Frames the 3D object in the camera - to change angle use camera tracking"""
+def camera_frame():  # looks good for 3D, can cut off some of 2D
+    """
+    Frames the 3D object in the camera
+    - to change angle use camera tracking + location
+    """
     for area in bpy.context.screen.areas:
         if area.type == "VIEW_3D":
             ctx = bpy.context.copy()
