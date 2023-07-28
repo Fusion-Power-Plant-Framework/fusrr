@@ -125,7 +125,7 @@ class View(ViewBase):
         bpy.ops.object.mode_set(mode="OBJECT")
         change_colour(colour)
 
-    def move_plasma(self, x, y, z):  # this works, not sure how useful it is
+    def move_plasma(self, x, y, z):
         """Selects and moves plasma
 
         Args
