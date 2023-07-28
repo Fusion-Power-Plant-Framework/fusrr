@@ -5,13 +5,15 @@ import abc
 import bpy
 
 from renderingpipeline.blender_tools import (
+    add_cube,
     add_light,
+    add_text,
     camera_fix,
     half_reactor,
     spin_extrusion,
 )
 
-component_list = [
+component_list = [  # better naming practice incoming
     "plasma",
     "pf_coil0",
     "pf_coil1",
@@ -23,6 +25,19 @@ component_list = [
 ]
 
 tf_list = ("Tf.1", "Tf.2", "Tf.3", "Tf.4", "Tf.5")
+
+# naming may change to become less hard-coded, currently working for key
+key_list = ["Plasma", "PF Coil", "Central Coil", "TF Coil", "Cryostat"]
+
+colour_dict = dict(
+    {
+        "Plasma": "#7d2f8e",
+        "PF Coil": "#0072c2",
+        "Central Coil": "#0072c2",
+        "TF Coil": "#003688",
+        "Cryostat": "#2e7ebc",
+    }
+)
 
 
 def hex_color_to_rgba(hex_color):  # checks needed as from git
@@ -84,9 +99,11 @@ class View(ViewDefault):
         """
         Default view
         """
-        dist = 90
-        camera_fix("Camera", component_list[0], dist)
-        add_light(0, 0, dist + 30)
+        bpy.ops.object.select_all(action="DESELECT")
+        plasma = bpy.data.objects["plasma"]
+        dist = plasma.dimensions.y
+        camera_fix("Camera", "plasma", dist * 8)
+        add_light(0, 0, dist * 10)
 
     def highlight_plasma(
         self, colour
@@ -129,7 +146,7 @@ class View(ViewDefault):
         for components in self.view_component:
             component = str(components)
             spin_extrusion(component)
-        self._view(2, 0, 40)
+        self._view()
 
     def half_reactor(self, face_mesh):
         """Use spin_extrusion to make 'half-doughnut' reactor
@@ -153,6 +170,21 @@ class View(ViewDefault):
             )  # Currently angle/ thickness hard-coded want to become input from MFILE
             bpy.ops.object.mode_set(mode="OBJECT")
             bpy.ops.object.select_all(action="DESELECT")
+
+    def key(self):
+        """Adds 'cube key' - setup for 2D render"""
+        bpy.ops.object.select_all(action="DESELECT")
+        plasma = bpy.data.objects["plasma"]
+        dist = plasma.dimensions.y
+        bpy.ops.object.select_all(action="DESELECT")
+        y = 16
+        for object in key_list:
+            y += -4
+            add_cube(-dist * 2, y, 0)
+            change_colour(colour=colour_dict[object])
+            add_text(-dist * 1.8, y, 0, rad=2, text=str(object))
+            change_colour(colour=colour_dict[object])
+        bpy.ops.object.select_all(action="DESELECT")  # may not be needed but safer
 
     @staticmethod
     def export(filepath: str):  # will not work in function, need to override context

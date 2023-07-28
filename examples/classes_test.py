@@ -16,7 +16,7 @@ reactor1 = Reactor(plasma=plasma, tfcoils=tf, pfcoils=pf, cryostat=cryo)
 
 view = View(reactor1)
 view.tf_thick()
-
+view.key()
 reactor1.save_image("View_test")
 
 # view.make_3d()
