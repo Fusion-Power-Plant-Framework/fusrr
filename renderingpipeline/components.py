@@ -17,6 +17,7 @@ from renderingpipeline.blender_tools import (
     component_outline,
     delete_cube,
     faces_pf_coils,
+    hex_color_to_rgba,
     join_obj,
     make_face_from_vertices,
     rect_blend,
@@ -37,6 +38,7 @@ PLASMA = "plasma"
 PURPLE = "#7d2f8e"  # plasma purple
 BLUE = "#003688"  # tf blue
 CRYO_BLUE = "#2e7ebc"
+cyan = "#4cbdf0"
 PF_BLUE = "#0072c2"
 BLANKET = "#4a98c9"
 DIVERTOR = "#d0e1f2"
@@ -404,6 +406,11 @@ class Cryostat(BlenderComponent):
         for i in cryo_list:
             make_face_from_vertices(str(i))
 
+    def build(self):
+        """Build method to render the component"""
+        self._cryo_outline()
+        self.scene()
+        self.default_colour(colour=cyan)  # CRYO_BLUE)
 
 class PFCoil(BlenderComponent):
     """PF Coil Component."""
