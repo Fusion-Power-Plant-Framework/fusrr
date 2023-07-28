@@ -9,6 +9,7 @@ import bmesh
 import bpy_types
 import mathutils
 import numpy as np
+import mathutils
 
 
 def empty_obj(x, y, z):
@@ -347,7 +348,7 @@ def half_reactor():
     bpy.ops.object.mode_set(mode="EDIT")
     bpy.ops.mesh.select_all(action="SELECT")
     bpy.ops.mesh.spin(
-        angle=-3.1415926, steps=100, axis=(0.0, 1.0, 0.0)
+        angle=-4.14159, steps=100, axis=(0.0, 1.0, 0.0)
     )  # Polodial rotation
     bpy.ops.object.mode_set(mode="OBJECT")
     bpy.ops.object.shade_smooth()
@@ -403,6 +404,15 @@ def import_gltf(filepath: str):
     bpy.ops.import_scene.gltf(filepath=filepath)
 
 
-def export_gltf(filepath: str):
-    """Export to gltf"""
-    bpy.ops.export_scene.gltf(filepath)
+def pi_rotation(set_comp: str):
+    """Moves camera about a fixed point by 180 degrees
+
+    Args
+    ----
+        set_comp (str): setup component i.e. Camera, Sun, Light
+    """
+    object = bpy.data.objects[str(set_comp)]
+    looking_direction = object.location - mathutils.Vector((0.0, 0.0, 0.0))
+    rot_quat = looking_direction.to_track_quat("-Z", "Z")
+    object.rotation_euler = rot_quat.to_euler("XYZ")
+    object.location = rot_quat @ mathutils.Vector((0.0, 0.0, 80))
