@@ -10,9 +10,37 @@ def empty_obj(x, y, z):
     bpy.ops.object.empty_add(location=(x, y, z))
 
 
+def add_cube(x, y, z):
+    """Adds cube to scene - used in 2D key
+
+    Args
+    ----
+        x (int): x coord
+        y (int): y coord
+        z (int): z coord
+    """
+    bpy.ops.mesh.primitive_cube_add(location=(x, y, z))
+
+
 def add_light(x, y, z):
     """Adds sunlight object"""
     bpy.ops.object.light_add(type="SUN", location=(x, y, z))
+
+
+def add_text(x, y, z, rad, text: str):
+    """Adds text to blender scene
+
+    Args
+    ----
+        x (int): x coordinate
+        y (int): y coordinate
+        z (int): z coordinate
+        rad (int): font radius/ size
+        text (str): word/ component
+    """
+    bpy.ops.object.text_add(radius=rad, location=(x, y, z))
+    ob = bpy.context.object
+    ob.data.body = text
 
 
 def move_camera(x, y, z):
