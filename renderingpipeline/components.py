@@ -141,9 +141,7 @@ class BlenderComponent(abc.ABC):
 class Plasma(BlenderComponent):
     """Contains methods for plotting and rendering different parts of the plasma"""
 
-    def __init__(
-        self, params: Optional[OutputParams] = None, colour: Optional[str] = None
-    ):
+    def __init__(self, params: Optional[OutputParams] = None, colour: str = "#7d2f8e"):
         delete_cube()
         if params is None:
             name = "LCFS"
@@ -241,8 +239,25 @@ class Plasma(BlenderComponent):
 class TFCoil(BlenderComponent):
     """Contains method for plotting and rendering tf coils"""
 
-    def __init__(self, tf_coil_shape):
-        self.tf_coil_shape = tf_coil_shape
+    def __init__(self, params: Optional[OutputParams] = None, colour: str = "#0072c2"):
+        delete_cube()
+        if params is None:
+            shapes = []
+            for name in ["Casing_1_", "Insulation_1", "Winding_Pack_1_", "TF"]:
+                shapes.extend(self._select_objects(name))
+            super().__init__(shapes)
+        else:
+            self.params = params
+            self._name = type(self).__name__
+            xy = self.create_shape()
+            for _x, _y in zip(xy[:2], xy[2:]):
+                self.create_mesh(_x, _y, name="plasma")
+            join_obj(["plasma_object", "plasma_object.001"])
+            make_face_from_vertices("plasma_object")
+
+            self._shape_ref = self._params_shape
+
+        self.default_colour(colour)
 
     def create_shape(self):  # was plot_tf_coils
         """Function to plot TF coils
@@ -255,18 +270,18 @@ class TFCoil(BlenderComponent):
         # Arc points
         # MDK Only 4 points now required for elliptical arcs
 
-        tfc_inleg = self.tf_coil_shape.tfc_inleg
+        tfc_inleg = self.params.tfc_inleg
         rtangle = np.pi / 2
-        x1 = self.tf_coil_shape.x1
-        y1 = self.tf_coil_shape.y1
-        x2 = self.tf_coil_shape.x2
-        y2 = self.tf_coil_shape.y2
-        x3 = self.tf_coil_shape.x3
-        y3 = self.tf_coil_shape.y3
-        x4 = self.tf_coil_shape.x4
-        y4 = self.tf_coil_shape.y4
-        x5 = self.tf_coil_shape.x5
-        y5 = self.tf_coil_shape.y5
+        x1 = self.params.x1
+        y1 = self.params.y1
+        x2 = self.params.x2
+        y2 = self.params.y2
+        x3 = self.params.x3
+        y3 = self.params.y3
+        x4 = self.params.x4
+        y4 = self.params.y4
+        x5 = self.params.x5
+        y5 = self.params.y5
         if y3 != 0:
             print("TF coil geometry: The value of yarc(3) is not zero, but should be.")
 
@@ -330,7 +345,7 @@ class TFCoil(BlenderComponent):
 
     def setup_scene(self):
         """Sets up scene and objects for rendering"""
-        x, y, z = self.tracking_centre(self.tf_coil_shape)
+        x, y, z = self.tracking_centre(self.params)
         self.frame()
 
         change_to_mesh(object_names=tf_list)
