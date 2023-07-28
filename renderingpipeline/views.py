@@ -1,4 +1,4 @@
-"""Views class - WIP - Gives 2D/ half reactor view as default
+"""Views class - WIP - will produce 1 tf, plasma, pf coils, cryostat
 """
 import abc
 
@@ -12,6 +12,8 @@ from renderingpipeline.blender_tools import (
     add_text,
     camera_fix,
     half_reactor,
+    hex_color_to_rgba,
+    pi_rotation,
     spin_extrusion,
 )
 from renderingpipeline.reactor import Reactor
@@ -25,6 +27,10 @@ component_list = [  # better naming practice incoming
     "pf_coil4",
     "pf_coil5",
     "central_coil",
+    "Upper_wall",
+    "Upper_Outer_wall",
+    "Lower_wall",
+    "Lower_Outer_wall",
 ]
 
 tf_list = ("Tf.1", "Tf.2", "Tf.3", "Tf.4", "Tf.5")
@@ -41,15 +47,6 @@ colour_dict = dict(
         "Cryostat": "#2e7ebc",
     }
 )
-
-
-def hex_color_to_rgba(hex_color):  # checks needed as from git
-    """Converts hex to blender's sRGB"""
-    hex_color = hex_color.strip("#")
-    srgb_red = int(hex_color[:2], 16) / 255
-    srgb_green = int(hex_color[2:4], 16) / 255
-    srgb_blue = int(hex_color[4:6], 16) / 255
-    return tuple([srgb_red, srgb_green, srgb_blue, 1.0])
 
 
 def change_colour(colour):
@@ -163,13 +160,13 @@ class View(ViewBase):
             spin_extrusion(component)
         self._view()
 
-    def half_reactor(self, face_mesh):
-        """Use spin_extrusion to make 'half-doughnut' reactor
-            naming of face_mesh should change to match make_3d funct
-        Args:
-            face_mesh (_type_): _description_
-        """
-        half_reactor(face_mesh)
+    def cutaway(self):  # fine for PROCESS extruded comp, BLUEMIRA will need hide_render
+        """3D cutaway view"""
+        for components in self.view_component:
+            third_spin = str(components)
+            half_reactor(third_spin)
+        pi_rotation("Camera")
+        pi_rotation("Sun")
 
     def tf_thick(self):
         """Add some depth - begining of making 3D TFcoils"""
