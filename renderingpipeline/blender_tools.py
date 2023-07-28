@@ -8,8 +8,6 @@ import bpy
 import bmesh
 import numpy as np
 
-import numpy as np
-
 
 def empty_obj(x, y, z):
     """Empty object adder (for camera tracking purposes)"""
@@ -70,7 +68,7 @@ def move_camera(x, y, z):
     camera.location = (x, y, z)
 
 
-def camera_fix(camera: str, component: str, dist):
+def camera_fix(camera: str, target: str, dist):
     """Fixes camera to look at target
     Parameters
     ----------
@@ -80,7 +78,7 @@ def camera_fix(camera: str, component: str, dist):
     """
     camera = bpy.data.objects[camera]
     constraint = camera.constraints.new(type="TRACK_TO")
-    constraint.target = bpy.data.objects[component]
+    constraint.target = list(target.objects.values())[0]
     camera.location = (0, 0, dist)
 
 

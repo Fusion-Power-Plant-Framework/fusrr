@@ -79,7 +79,7 @@ class View(ViewBase):
         print(self.reactor)
         # reactor.render()
 
-        self.view_component = ("plasma",)  # , "tfcoils")
+        self.view_component = ("plasma", "tfcoils")
         print(self.view_component)
         # print(dir(self))
         # hide all components that are not plasma
@@ -91,7 +91,7 @@ class View(ViewBase):
         Default view
         """
         dist = self.reactor.plasma.shape.objects['LCFS_1'].dimensions.y
-        camera_fix("Camera", "plasma", dist * 8)
+        camera_fix("Camera", self.reactor.plasma.shape, dist * 8 )
         add_light(0, 0, dist * 10)
 
         a = self.reactor.plasma.shape.values()
@@ -133,20 +133,19 @@ class View(ViewBase):
         """
         objs = list(self.reactor.plasma.shape.objects.values())
         bb_max = np.array(objs[0].bound_box)
-        objs_bbs = [objs[0].bound_box]
         for ob_ind in range(len(objs) - 1):
-            objs_bbs.append(np.array(objs[ob_ind + 1].bound_box))
-            bb_max = np.maximum(bb_max, objs_bbs[-1])
-        centre = np.mean(bb_max, axis=0)
+            bb_max = np.maximum(bb_max, np.array(objs[ob_ind + 1].bound_box))
 
+        centre = np.mean(bb_max, axis=0)
         shift = np.ptp(np.stack([centre, np.array([x, y, z])]), axis=0)
+
         for ob in objs:
             ob.location = Vector(shift) + ob.location
 
     def add_light(self, x, y, z):
         """Adds sunlight object to default view"""
-        self.view()
-        bpy.ops.object.light_add(type="SUN", location=(x, y, z))
+        self._view()
+        bpy.ops.object.light_add(type="SUN", location=(x, y, z), radius=10)
 
     def make_3d(
         self,
@@ -164,7 +163,6 @@ class View(ViewBase):
             face_mesh (_type_): _description_
         """
         half_reactor(face_mesh)
-        self._view(2, 0, 40)
 
     def tf_thick(self):
         """Add some depth - begining of making 3D TFcoils"""
