@@ -2,8 +2,9 @@ from dataclasses import asdict
 from pathlib import Path
 
 import pytest
-from renderingpipeline.adaptor import OutputParams
 from process.io.mfile import MFile
+
+from renderingpipeline.adaptor import OutputParams
 
 
 @pytest.mark.skip("OutputParams test requires fixing.")

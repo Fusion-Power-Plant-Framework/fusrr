@@ -1,10 +1,10 @@
 """Regression tests for entire rendering pipeline."""
+from pathlib import Path
+
 from renderingpipeline.adaptor import OutputParams
-from renderingpipeline.components import Plasma, TFCoil, PfCoils, Cryostat
+from renderingpipeline.components import Cryostat, PfCoils, Plasma, TFCoil
 from renderingpipeline.reactor import Reactor
 from renderingpipeline.views import View
-from pathlib import Path
-import pytest
 
 
 def test_pipelines(tmp_path):
