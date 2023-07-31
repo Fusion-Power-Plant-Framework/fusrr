@@ -85,7 +85,9 @@ def camera_fix(camera: str, component: str, dist):
 def delete_cube():
     """Removes default cube if present"""
     objs = bpy.data.objects
-    objs.remove(objs["Cube"], do_unlink=True)
+    cube = objs.get("Cube", None)
+    if cube:
+        objs.remove(cube, do_unlink=True)
 
 
 def save_image(file_name: str):
