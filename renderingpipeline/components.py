@@ -286,77 +286,48 @@ class TFCoil(BlenderComponent):
         # Arc points
         # MDK Only 4 points now required for elliptical arcs
 
-        tfc_inleg = self.params.tfc_inleg
-        rtangle = np.pi / 2
-        x1 = self.params.x1
-        y1 = self.params.y1
-        x2 = self.params.x2
-        y2 = self.params.y2
-        x3 = self.params.x3
-        y3 = self.params.y3
-        x4 = self.params.x4
-        y4 = self.params.y4
-        x5 = self.params.x5
-        y5 = self.params.y5
+        tf_il = self.params.tfc_inleg
+        rt = np.pi / 2
+        rt2 = 2 * rt
+        x1, x2, x3, x4, x5 = (
+            getattr(self.params, x) for x in ("x1", "x2", "x3", "x4", "x5")
+        )
+        y1, y2, y3, y4, y5 = (
+            getattr(self.params, y) for y in ("y1", "y2", "y3", "y4", "y5")
+        )
         if y3 != 0:
             print("TF coil geometry: The value of yarc(3) is not zero, but should be.")
 
-        x0 = x2
-        y0 = y1
         a1 = x2 - x1
         b1 = y2 - y1
-        a2 = a1 + tfc_inleg
-        b2 = b1 + tfc_inleg
         verts = ellips_fill(
-            a1=a1,
-            a2=a2,
-            b1=b1,
-            b2=b2,
-            x0=x0,
-            y0=y0,
-            ang1=rtangle,
-            ang2=2 * rtangle,
+            a1=a1, a2=a1 + tf_il, b1=b1, b2=b1 + tf_il, x0=x2, y0=y1, ang1=rt, ang2=rt2
         )
         component_outline(verts, tf_list[0])
         # Outboard upper arc
-        x0 = x2
-        y0 = 0
         a1 = x3 - x2
-        b1 = y2
-        a2 = a1 + tfc_inleg
-        b2 = b1 + tfc_inleg
         verts = ellips_fill(
-            a1=a1, a2=a2, b1=b1, b2=b2, x0=x0, y0=y0, ang1=0, ang2=rtangle
+            a1=a1, a2=a1 + tf_il, b1=y2, b2=y2 + tf_il, x0=x2, y0=0, ang1=0, ang2=rt
         )
         component_outline(verts, tf_list[1])
         # Inboard lower arc
-        x0 = x4
-        y0 = y5
         a1 = x4 - x5
         b1 = y5 - y4
-        a2 = a1 + tfc_inleg
-        b2 = b1 + tfc_inleg
         verts = ellips_fill(
-            a1=a1, a2=a2, b1=b1, b2=b2, x0=x0, y0=y0, ang1=-rtangle, ang2=-2 * rtangle
+            a1=a1, a2=a1 + tf_il, b1=b1, b2=b1 + tf_il, x0=x4, y0=y5, ang1=-rt, ang2=-rt2
         )
         component_outline(verts, tf_list[2])
         # Outboard lower arc
-        x0 = x4
-        y0 = 0
         a1 = x3 - x2
-        b1 = -y4
-        a2 = a1 + tfc_inleg
-        b2 = b1 + tfc_inleg
         verts = ellips_fill(
-            a1=a1, a2=a2, b1=b1, b2=b2, x0=x0, y0=y0, ang1=0, ang2=-rtangle
+            a1=a1, a2=a1 + tf_il, b1=-y4, b2=tf_il - y4, x0=x4, y0=0, ang1=0, ang2=-rt
         )
         component_outline(verts, tf_list[3])
         # Vertical leg
         # Bottom left corner
-        rect = patches.Rectangle(
-            [x5 - tfc_inleg, y5], tfc_inleg, (y1 - y5), lw=0, facecolor="cyan"
+        centre_coords = rect_blend(
+            patches.Rectangle([x5 - tf_il, y5], tf_il, (y1 - y5), lw=0, facecolor="cyan")
         )
-        centre_coords = rect_blend(rect)
         component_outline(centre_coords, tf_list[4])
 
         change_to_mesh(object_names=tf_list)
@@ -466,10 +437,7 @@ class PFCoil(BlenderComponent):
 
         # If Central Solenoid present, ignore last entry in for loop
         # The last entry will be the OH coil in this case
-        if iohcl == 0:
-            noc = number_of_coils + 1
-        else:
-            noc = number_of_coils
+        noc = number_of_coils + 1 if iohcl == 0 else number_of_coils
 
         for coil in range(1, noc + 1):
             coils_r.append(params_dict[f"rpf{coil:01}"])
@@ -480,17 +448,11 @@ class PFCoil(BlenderComponent):
         for i in range(len(coils_r)):
             r_1 = float(coils_r[i]) - 0.5 * float(coils_dr[i])
             z_1 = float(coils_z[i]) - 0.5 * float(coils_dz[i])
-            r_2 = float(coils_r[i]) - 0.5 * float(coils_dr[i])
             z_2 = float(coils_z[i]) + 0.5 * float(coils_dz[i])
-            r_3 = float(coils_r[i]) + 0.5 * float(coils_dr[i])
-            z_3 = float(coils_z[i]) + 0.5 * float(coils_dz[i])
-            r_4 = float(coils_r[i]) + 0.5 * float(coils_dr[i])
-            z_4 = float(coils_z[i]) - 0.5 * float(coils_dz[i])
-            r_5 = float(coils_r[i]) - 0.5 * float(coils_dr[i])
-            z_5 = float(coils_z[i]) - 0.5 * float(coils_dz[i])
+            r_2 = float(coils_r[i]) + 0.5 * float(coils_dr[i])
 
-            r_points = [r_1, r_2, r_3, r_4, r_5]
-            z_points = [z_1, z_2, z_3, z_4, z_5]
+            r_points = [r_1, r_1, r_2, r_2, r_1]
+            z_points = [z_1, z_2, z_2, z_1, z_1]
 
             pf_coil_name = f"pf_coil{i}"
             self.create_mesh(r_points, z_points, pf_coil_name)
