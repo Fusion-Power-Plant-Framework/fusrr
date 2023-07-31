@@ -267,36 +267,22 @@ class Plasma(BlenderComponent):
 
 
 class TFCoil(BlenderComponent):
-    """Contains method for plotting and rendering tf coils"""
+    """TF Coil component"""
 
-    def __init__(self, params: Optional[OutputParams] = None, colour: str = "#0072c2"):
-        delete_cube()
+    def __init__(self, params: Optional[OutputParams] = None, colour: str = BLUE):
+        self.params = params
+
+        shapes = []
         if params is None:
-            shapes = []
-            for name in ["Casing_1_", "Insulation_1", "Winding_Pack_1_", "TF"]:
-                shapes.extend(self._select_objects(name))
-            super().__init__(shapes)
+            shapes.extend(self._get_bluemira_comps())
         else:
-            self.params = params
-            self._name = type(self).__name__
-            xy = self.create_shape()
-            for _x, _y in zip(xy[:2], xy[2:]):
-                self.create_mesh(_x, _y, name="plasma")
-            join_obj(["plasma_object", "plasma_object.001"])
-            make_face_from_vertices("plasma_object")
+            self.create_shape()
+            shapes.extend(self._select_objects("Tf"))
 
-            self._shape_ref = self._params_shape
-
-        self.default_colour(colour)
+        super().__init__(shapes, colour)
 
     def create_shape(self):  # was plot_tf_coils
-        """Function to plot TF coils
-        Arguments:
-        --------
-            axis --> axis object to plot to
-            mfile_data --> MFILE.DAT object
-            scan --> scan number to use
-        """
+        """Create TF coils."""
         # Arc points
         # MDK Only 4 points now required for elliptical arcs
 
@@ -373,20 +359,9 @@ class TFCoil(BlenderComponent):
         centre_coords = rect_blend(rect)
         component_outline(centre_coords, tf_list[4])
 
-    def setup_scene(self):
-        """Sets up scene and objects for rendering"""
-        x, y, z = self.tracking_centre(self.params)
-        self.frame()
-
         change_to_mesh(object_names=tf_list)
         for i in tf_list:
-            make_face_from_vertices(str(i))
-
-    def build(self):
-        """Plots tracks and renders tf coils"""
-        self.create_shape()
-        self.setup_scene()
-        self.default_colour(colour=BLUE)
+            make_face_from_vertices(i)
 
 
 class Cryostat(BlenderComponent):
