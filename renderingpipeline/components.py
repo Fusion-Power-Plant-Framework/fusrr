@@ -365,19 +365,23 @@ class TFCoil(BlenderComponent):
 
 
 class Cryostat(BlenderComponent):
-    """Cryostat Component
+    """Cryostat Component."""
 
-    Parameters
-    ----------
-    Params :
-        An instance of OutputParams dataclass
-    """
-
-    def __init__(self, params):
+    def __init__(self, params: Optional[OutputParams] = None, colour: str = CRYO_BLUE):
         self.params = params
 
-    def _cryo_outline(self):
-        """Makes the outline for each of the walls of the cryostat"""
+        shapes = []
+        if params is None:
+            shapes.extend(self._get_bluemira_comps())
+        else:
+            self.create_shape()
+            for name in cryo_list:
+                shapes.extend(self._select_objects(name))
+
+        super().__init__(shapes, colour)
+
+    def create_shape(self):
+        """Make the outline for each of the walls of the cryostat."""
         rdewex = self.params.rdewex
         ddwex = self.params.ddwex
         zdewex = self.params.zdewex
@@ -385,19 +389,19 @@ class Cryostat(BlenderComponent):
         # Taken from plot_proc.py plotting 2D cryostat function
         rect = patches.Rectangle([rdewex, 0], ddwex, zdewex + ddwex, lw=0)
         coords = rect_blend(rectangle=rect)
-        component_outline(coords, object_name=cryo_list[0])
+        component_outline(coords, cryo_list[0])
 
         rect = patches.Rectangle([rdewex, 0], ddwex, -(zdewex + ddwex), lw=0)
         coords = rect_blend(rectangle=rect)
-        component_outline(coords, object_name=cryo_list[1])
+        component_outline(coords, cryo_list[1])
 
         rect = patches.Rectangle([0, zdewex], rdewex, ddwex, lw=0)
         coords = rect_blend(rectangle=rect)
-        component_outline(coords, object_name=cryo_list[2])
+        component_outline(coords, cryo_list[2])
 
         rect = patches.Rectangle([0, -zdewex], rdewex, -ddwex, lw=0)
         coords = rect_blend(rectangle=rect)
-        component_outline(coords, object_name=cryo_list[3])
+        component_outline(coords, cryo_list[3])
 
         change_to_mesh(object_names=cryo_list)
 
@@ -405,11 +409,6 @@ class Cryostat(BlenderComponent):
         for i in cryo_list:
             make_face_from_vertices(str(i))
 
-    def build(self):
-        """Build method to render the component"""
-        self._cryo_outline()
-        self.scene()
-        self.default_colour(colour=CRYO_BLUE)
 
 
 class PfCoils(BlenderComponent):
