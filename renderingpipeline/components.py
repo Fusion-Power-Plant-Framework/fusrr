@@ -7,7 +7,6 @@ from dataclasses import asdict
 from typing import Iterable, List, Optional, Tuple
 
 import bpy
-import bmesh
 import bpy_types
 import numpy as np
 from matplotlib import patches
