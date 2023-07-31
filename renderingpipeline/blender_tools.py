@@ -306,7 +306,6 @@ def component_outline(coords: Iterable[float], name: str = "component"):
     ob.select_set(True)
 
 
-
 def render_component_mesh(name):
     """Set up + builds new mesh for component
 
