@@ -9,17 +9,20 @@ Currently set to 5 output params but can add any key from .DAT file
 from __future__ import annotations
 
 from dataclasses import asdict
+from typing import Iterable
 
 from tabulate import tabulate
 
+from renderingpipeline.adaptor import OutputParams
 
-def comparison(output_parameters) -> str:
+
+def comparison(output_parameters: Iterable[OutputParams]) -> str:
     """Takes list of instances and formats them comparing keys in table
 
     Returns
     -------
     str
-        Ready to be tabulated by tabulate module
+        Tabulated string
     """
     # Takes a list of instances of dataclass and makes them into dictionaries
     output_parameters = [asdict(o_p) for o_p in output_parameters]
