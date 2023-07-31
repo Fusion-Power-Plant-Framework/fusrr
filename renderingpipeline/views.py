@@ -42,46 +42,33 @@ colour_dict = dict(
 
 def hex_color_to_rgba(hex_color):  # checks needed as from git
     """Converts hex to blender's sRGB"""
-    hex_color = hex_color[1:]
-    red = int(hex_color[:2], 16)
-    srgb_red = red / 255
-
-    green = int(hex_color[2:4], 16)
-    srgb_green = green / 255
-
-    blue = int(hex_color[4:6], 16)
-    srgb_blue = blue / 255
-
-    tup = tuple([srgb_red, srgb_green, srgb_blue, 1.0])
-
-    return tup
+    hex_color = hex_color.strip("#")
+    srgb_red = int(hex_color[:2], 16) / 255
+    srgb_green = int(hex_color[2:4], 16) / 255
+    srgb_blue = int(hex_color[4:6], 16) / 255
+    return tuple([srgb_red, srgb_green, srgb_blue, 1.0])
 
 
 def change_colour(colour):
     """Creates material to add colour to active objects(s)"""
     active_objects = bpy.context.selected_objects
     colour = hex_color_to_rgba(colour)
-    for object in active_objects:
-        mat = bpy.data.materials.new(name="MatName")
-        object.data.materials.append(mat)
+    for obj in active_objects:
+        mat = bpy.data.materials.new(name=f"{obj.name} Material")
+        obj.data.materials.append(mat)
         mat.diffuse_color = colour
         bpy.context.scene.view_layers.update()
 
 
-class ViewDefault(abc.ABC):
-    """Holds methods for default veiw"""
+class ViewBase(abc.ABC):
+    """AbstractBaseClass for Views"""
 
-    @abc.abstractclassmethod
-    def __init__(self):
-        pass
-
-    @abc.abstractclassmethod
+    @abc.abstractmethod
     def _view(self):
         """Set up default view"""
-        pass
 
 
-class View(ViewDefault):
+class View(ViewBase):
     """Set up for initial view + additional options"""
 
     def __init__(self, reactor):
