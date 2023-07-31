@@ -126,7 +126,11 @@ class BlenderComponent(abc.ABC):
 
     @abc.abstractmethod
     def create_shape(self):
-        """Create the PROCESS shape."""
+        """Create the PROCESS shape.
+
+        This is an artistic take on the output PROCESS produces to make a 3D model.
+        It is our best guess at what the full component would look like.
+        """
 
     def _get_bluemira_comps(self) -> List[bpy_types.Object]:
         shapes = []
@@ -190,7 +194,11 @@ class Plasma(BlenderComponent):
         super().__init__(shapes, colour)
 
     def create_shape(self):
-        """Generate coordinates for the plasma boundary arcs."""
+        """Generate coordinates for the plasma boundary arcs.
+
+        This is an artistic take on the output PROCESS produces to make a 3D model.
+        It is our best guess at what the full component would look like.
+        """
         r0 = self.params.rmajor
         a = self.params.rminor
         delta = 1.5 * self.params.delta_95
@@ -281,7 +289,11 @@ class TFCoil(BlenderComponent):
         super().__init__(shapes, colour)
 
     def create_shape(self):  # was plot_tf_coils
-        """Create TF coils."""
+        """Create TF coils.
+
+        This is an artistic take on the output PROCESS produces to make a 3D model.
+        It is our best guess at what the full component would look like.
+        """
         # Arc points
         # MDK Only 4 points now required for elliptical arcs
 
@@ -351,7 +363,11 @@ class Cryostat(BlenderComponent):
         super().__init__(shapes, colour)
 
     def create_shape(self):
-        """Make the outline for each of the walls of the cryostat."""
+        """Make the outline for each of the walls of the cryostat.
+
+        This is an artistic take on the output PROCESS produces to make a 3D model.
+        It is our best guess at what the full component would look like.
+        """
         rdewex = self.params.rdewex
         ddwex = self.params.ddwex
         zdewex = self.params.zdewex
@@ -484,7 +500,11 @@ class Blanket(BlenderComponent):
         super().__init__(shapes, colour)
 
     def create_shape(self):
-        """Create blanket shape."""
+        """Create blanket shape.
+
+        This is an artistic take on the output PROCESS produces to make a 3D model.
+        It is our best guess at what the full component would look like.
+        """
         raise NotImplementedError("TODO")
 
 
@@ -505,7 +525,11 @@ class Divertor(BlenderComponent):
         super().__init__(shapes, colour)
 
     def create_shape(self):
-        """Create divertor shape."""
+        """Create divertor shape.
+
+        This is an artistic take on the output PROCESS produces to make a 3D model.
+        It is our best guess at what the full component would look like.
+        """
         raise NotImplementedError("TODO")
 
 
@@ -528,7 +552,11 @@ class VacuumVessel(BlenderComponent):
         super().__init__(shapes, colour)
 
     def create_shape(self):
-        """Create vacuum vessel shape."""
+        """Create vacuum vessel shape.
+
+        This is an artistic take on the output PROCESS produces to make a 3D model.
+        It is our best guess at what the full component would look like.
+        """
         raise NotImplementedError("TODO")
 
 
@@ -549,5 +577,9 @@ class RadiationShield(BlenderComponent):
         super().__init__(shapes, colour)
 
     def create_shape(self):
-        """Create radiation shield shape."""
+        """Create radiation shield shape.
+
+        This is an artistic take on the output PROCESS produces to make a 3D model.
+        It is our best guess at what the full component would look like.
+        """
         raise NotImplementedError("TODO")
