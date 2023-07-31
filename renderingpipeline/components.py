@@ -4,7 +4,7 @@ A file that stores the blender components of the reactor
 import abc
 import math
 from dataclasses import asdict
-from typing import Iterable, Optional, Tuple
+from typing import Iterable, List, Optional, Tuple
 
 import bpy
 import bmesh
@@ -13,7 +13,7 @@ import numpy as np
 from matplotlib import patches
 
 from renderingpipeline.adaptor import OutputParams
-from renderingpipeline.blender_tools import (  # camera_fix,; empty_obj,; move_camera,
+from renderingpipeline.blender_tools import (
     change_to_mesh,
     component_outline,
     delete_cube,
@@ -39,9 +39,53 @@ PURPLE = "#7d2f8e"  # plasma purple
 BLUE = "#003688"  # tf blue
 CRYO_BLUE = "#2e7ebc"
 PF_BLUE = "#0072c2"
+BLANKET = "#4a98c9"
+DIVERTOR = "#d0e1f2"
+VACUUMVESSEL = "#b7d4ea"
+RADSHIELD = "#94c4df"
+
+BLUEMIRA_COMP_NAMES = {
+    "Plasma": (("LCFS", "*"),),
+    "TFCoil": (
+        ("Casing_1_", "*"),
+        ("Insulation_1", "*"),
+        ("Winding_Pack_1_", "*"),
+        ("TF", "*"),
+        ("ITER_like_gravity_support", "*"),
+    ),
+    "Cryostat": (("Cryostat", "*"),),  # VVCryo, cryostatTS and the VV Cryo plugs
+    "PFCoil": (  # PF and CS coils
+        ("Ground_Insulation", "*"),
+        ("PFCoilSupport", "*"),
+        ("Winding_Pack_", "[0-9]"),
+        ("Winding_Pack_", "[0-9][!_]*"),
+        ("Casing_", "[0-9]"),
+        ("Casing_", "[0-9][!_]*"),
+    ),
+    "Blanket": (("IBS", "*"), ("OBS", "*")),
+    "Divertor": (("segment", "*"),),
+    "RadiationShield": (  # radiation shield and port plug
+        ("Body_1_", "*"),
+        ("RadiationPortPlug", "*"),
+    ),
+    "VacuumVessel": (  # Vacuum Vessel and VVTS
+        ("Body_", "[0-9]"),
+        ("Body_", "[0-9][!_]*"),
+        ("VVTS_1", "*"),
+    ),
+}
 
 
-def ellips_fill(a1=0, a2=0, b1=0, b2=0, x0=0, y0=0, ang1=0, ang2=np.pi / 2):
+def ellips_fill(
+    a1: float = 0,
+    a2: float = 0,
+    b1: float = 0,
+    b2: float = 0,
+    x0: float = 0,
+    y0: float = 0,
+    ang1: float = 0,
+    ang2: float = np.pi / 2,
+) -> List[float]:
     """Fills the space between two concentric ellipse sectors.
 
     Arguments
