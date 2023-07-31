@@ -11,9 +11,12 @@ from renderingpipeline.blender_tools import (
     add_light,
     add_text,
     camera_fix,
+    export_gltf,
     half_reactor,
+    save_blender_file,
     spin_extrusion,
 )
+from renderingpipeline.reactor import Reactor
 
 component_list = [  # better naming practice incoming
     "plasma",
@@ -73,41 +76,45 @@ class ViewBase(abc.ABC):
 class View(ViewBase):
     """Set up for initial view + additional options"""
 
-    def __init__(self, reactor):
+    components = (
+        "blanket",
+        "cryostat",
+        "divertor",
+        "pfcoil",
+        "plasma",
+        "radiationshield",
+        "tfcoil",
+        "vacuumvessel",
+    )
+
+    def __init__(self, reactor: Reactor):
         self.reactor = reactor
-
-        print(self.reactor)
-        # reactor.render()
-
-        self.view_component = ("plasma", "tfcoils")
-        print(self.view_component)
-        # print(dir(self))
-        # hide all components that are not plasma
-        ...
         self._view()
 
     def _view(self):  # Works, want to make dist input -possibly using rmajor
-        """
-        Default view
-        """
-        dist = self.reactor.plasma.shape.objects['LCFS_1'].dimensions.y
-        camera_fix("Camera", self.reactor.plasma.shape, dist * 8 )
-        add_light(0, 0, dist * 10)
-
-        a = self.reactor.plasma.shape.values()
+        """Setup view"""
+        dist = self.reactor.plasma.shape.objects[:][0].dimensions.y
+        camera_fix("Camera", self.reactor.plasma.shape, dist * 8)
+        self.add_light(dist)
+        # Hide everything from render
         for o in bpy.context.view_layer.objects:
-            if o not in a:
-                o.hide_render = True
+            o.hide_render = True
 
         # there is probably a better way of reshowing things?
-        self.reactor.plasma.shape.hide_render = False
-        for view_comp in self.view_component:
-            comp = getattr(self.reactor, view_comp).shape
-            for ob in comp.objects.values():
+        for view_comp in self.components:
+            try:
+                comp = getattr(self.reactor, view_comp).shape
+            except AttributeError:
+                # Component doesnt exist on reactor
+                continue
+            comp.hide_render = False
+            for ob in comp.objects[:]:
                 ob.hide_render = False
 
+        bpy.data.objects["Sun"].hide_render = False
+
     def highlight_plasma(
-        self, colour
+        self, colour: str
     ):  # Not working yet, issues w/ selection and meshes
         """Selects and changes colour of plasma
 
@@ -116,7 +123,8 @@ class View(ViewBase):
             colour (str): hex number for colour
         """
         bpy.ops.object.select_all(action="DESELECT")
-        bpy.data.objects[component_list[0]].select_set(True)
+        comp = self.reactor.plasma.shape.objects[:][0]
+        comp.select_set(True)
         bpy.ops.object.mode_set(mode="EDIT")  # blender likes 'EDIT' VScode does not
         bpy.ops.mesh.delete(type="FACE")
         bpy.ops.object.mode_set(mode="OBJECT")
@@ -131,7 +139,7 @@ class View(ViewBase):
             y : coords
             z : coords
         """
-        objs = list(self.reactor.plasma.shape.objects.values())
+        objs = self.reactor.plasma.shape.objects[:]
         bb_max = np.array(objs[0].bound_box)
         for ob_ind in range(len(objs) - 1):
             bb_max = np.maximum(bb_max, np.array(objs[ob_ind + 1].bound_box))
@@ -142,16 +150,15 @@ class View(ViewBase):
         for ob in objs:
             ob.location = Vector(shift) + ob.location
 
-    def add_light(self, x, y, z):
+    def add_light(self, dist: float):
         """Adds sunlight object to default view"""
-        self._view()
-        bpy.ops.object.light_add(type="SUN", location=(x, y, z), radius=10)
+        add_light(0, 0, dist * 10)
 
     def make_3d(
         self,
     ):  # work for named comps. Need to be continuous (i.e plasma) or it is wierd
         """Spins 2D render around an axis to make 3D - whole reactor"""
-        for components in self.view_component:
+        for components in self.components:
             component = str(components)
             spin_extrusion(component)
         self._view()
@@ -166,8 +173,7 @@ class View(ViewBase):
 
     def tf_thick(self):
         """Add some depth - begining of making 3D TFcoils"""
-        for sect in tf_list:
-            obj = bpy.context.scene.objects.get(str(sect))
+        for obj in self.reactor.tfcoils.shape.objects[:]:
             obj.select_set(True)
             bpy.context.view_layer.objects.active = obj
             bpy.ops.object.mode_set(mode="EDIT")
@@ -180,26 +186,14 @@ class View(ViewBase):
 
     def key(self):
         """Adds 'cube key' - setup for 2D render"""
-        bpy.ops.object.select_all(action="DESELECT")
-        plasma = bpy.data.objects["plasma"]
+        plasma = self.reactor.plasma.shape.objects[:][0]
         dist = plasma.dimensions.y
         bpy.ops.object.select_all(action="DESELECT")
         y = 16
-        for object in key_list:
+        for obj in key_list:
             y += -4
             add_cube(-dist * 2, y, 0)
-            change_colour(colour=colour_dict[object])
-            add_text(-dist * 1.8, y, 0, rad=2, text=str(object))
-            change_colour(colour=colour_dict[object])
+            change_colour(colour=colour_dict[obj])
+            add_text(-dist * 1.8, y, 0, rad=2, text=str(obj))
+            change_colour(colour=colour_dict[obj])
         bpy.ops.object.select_all(action="DESELECT")  # may not be needed but safer
-
-    @staticmethod
-    def export(filepath: str):  # will not work in function, need to override context
-        """Save as blender file
-
-        Args
-        ----
-            filepath (str): destination for file
-        """
-        # out = bpy.ops.wm.save_as_mainfile(filepath)
-        bpy.ops.export_scene.gltf(filepath)
