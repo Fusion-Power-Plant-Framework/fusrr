@@ -12,6 +12,7 @@ from renderingpipeline.blender_tools import (
     add_text,
     camera_fix,
     half_reactor,
+    save_image,
     spin_extrusion,
 )
 from renderingpipeline.reactor import Reactor
@@ -196,3 +197,20 @@ class View(ViewBase):
             add_text(-dist * 1.8, y, 0, rad=2, text=str(obj))
             change_colour(colour=colour_dict[obj])
         bpy.ops.object.select_all(action="DESELECT")  # may not be needed but safer
+
+    @staticmethod
+    def export(filepath: str):  # will not work in function, need to override context
+        """Save as blender file
+
+        Args
+        ----
+            filepath (str): destination for file
+        """
+        # out = bpy.ops.wm.save_as_mainfile(filepath)
+        bpy.ops.export_scene.gltf(filepath)
+
+    @staticmethod
+    def save_image(file_name: str):
+        """Saves render as PNG"""
+        save_image(file_name)
+        # save .gltf and .blend
