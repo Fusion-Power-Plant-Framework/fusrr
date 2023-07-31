@@ -506,11 +506,87 @@ class PFCoil(BlenderComponent):
         faces_pf_coils(central_coil_name)
 
 
-    def build(self):
-        """Plots tracks and renders tf coils"""
-        self.plot_pf_coils()
-        self.setup_scene()
-        self.default_colour(colour=PF_BLUE)
+class Blanket(BlenderComponent):
+    """Blanket Component."""
+
+    def __init__(self, params: Optional[OutputParams] = None, colour: str = BLANKET):
+        self.params = params
+
+        shapes = []
+        if params is None:
+            shapes.extend(self._get_bluemira_comps())
+        else:
+            self.create_shape()
+            # for name in ["pf_coil", "central_coil"]:
+            #     shapes.extend(self._select_objects(name))
+
+        super().__init__(shapes, colour)
+
+    def create_shape(self):
+        """Create blanket shape."""
+        raise NotImplementedError("TODO")
 
 
-# class Blanket(BlenderComponent):
+class Divertor(BlenderComponent):
+    """Divertor Component."""
+
+    def __init__(self, params: Optional[OutputParams] = None, colour: str = DIVERTOR):
+        self.params = params
+
+        shapes = []
+        if params is None:
+            shapes.extend(self._get_bluemira_comps())
+        else:
+            self.create_shape()
+            # for name in ["pf_coil", "central_coil"]:
+            #    shapes.extend(self._select_objects(name))
+
+        super().__init__(shapes, colour)
+
+    def create_shape(self):
+        """Create divertor shape."""
+        raise NotImplementedError("TODO")
+
+
+class VacuumVessel(BlenderComponent):
+    """VacuumVessel Component."""
+
+    def __init__(
+        self, params: Optional[OutputParams] = None, colour: str = VACUUMVESSEL
+    ):
+        self.params = params
+
+        shapes = []
+        if params is None:
+            shapes.extend(self._get_bluemira_comps())
+        else:
+            self.create_shape()
+            # for name in ["pf_coil", "central_coil"]:
+            #     shapes.extend(self._select_objects(name))
+
+        super().__init__(shapes, colour)
+
+    def create_shape(self):
+        """Create vacuum vessel shape."""
+        raise NotImplementedError("TODO")
+
+
+class RadiationShield(BlenderComponent):
+    """Radiation shield Component."""
+
+    def __init__(self, params: Optional[OutputParams] = None, colour: str = RADSHIELD):
+        self.params = params
+
+        shapes = []
+        if params is None:
+            shapes.extend(self._get_bluemira_comps())
+        else:
+            self.create_shape()
+            # for name in ["pf_coil", "central_coil"]:
+            #     shapes.extend(self._select_objects(name))
+
+        super().__init__(shapes, colour)
+
+    def create_shape(self):
+        """Create radiation shield shape."""
+        raise NotImplementedError("TODO")
