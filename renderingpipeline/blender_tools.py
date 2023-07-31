@@ -6,6 +6,7 @@ from typing import Iterable
 
 import bpy
 import bmesh
+import bpy_types
 import numpy as np
 
 
@@ -68,7 +69,7 @@ def move_camera(x, y, z):
     camera.location = (x, y, z)
 
 
-def camera_fix(camera: str, target: str, dist):
+def camera_fix(camera: str, target: bpy_types.Collection, dist):
     """Fixes camera to look at target
     Parameters
     ----------
@@ -78,7 +79,7 @@ def camera_fix(camera: str, target: str, dist):
     """
     camera = bpy.data.objects[camera]
     constraint = camera.constraints.new(type="TRACK_TO")
-    constraint.target = list(target.objects.values())[0]
+    constraint.target = target.objects[:][0]
     camera.location = (0, 0, dist)
 
 
