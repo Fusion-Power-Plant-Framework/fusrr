@@ -2,7 +2,7 @@
 from pathlib import Path
 
 from renderingpipeline.adaptor import OutputParams
-from renderingpipeline.components import Cryostat, PfCoils, Plasma, TFCoil
+from renderingpipeline.components import Cryostat, PFCoil, Plasma, TFCoil
 from renderingpipeline.reactor import Reactor
 from renderingpipeline.views import View
 
@@ -24,7 +24,7 @@ def test_pipelines(tmp_path):
     reactor1 = Reactor(
         plasma=Plasma(input_file),
         tfcoils=TFCoil(input_file),
-        pfcoils=PfCoils(input_file),
+        pfcoils=PFCoil(input_file),
         cryostat=Cryostat(input_file),
     )
 
