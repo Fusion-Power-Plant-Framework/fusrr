@@ -1,8 +1,12 @@
 """Useful combination of blender tools
 """
 
+from pathlib import Path
+from typing import Iterable
+
 import bpy
 import bmesh
+import numpy as np
 
 
 def empty_obj(x, y, z):
@@ -22,9 +26,24 @@ def add_cube(x, y, z):
     bpy.ops.mesh.primitive_cube_add(location=(x, y, z))
 
 
-def add_light(x, y, z):
+def add_light(x, y, z, name="Sun", remove_lights=True):
     """Adds sunlight object"""
-    bpy.ops.object.light_add(type="SUN", location=(x, y, z))
+    if remove_lights:
+        bpy.ops.object.select_by_type(type="LIGHT")
+        for ob in bpy.context.selected_objects:
+            bpy.data.objects.remove(ob, do_unlink=True)
+        bpy.ops.object.select_all(action="DESELECT")
+
+    # Create light datablock
+    light_data = bpy.data.lights.new(name="light-data", type="SUN")
+    light_data.energy = 1
+
+    # Create new object, pass the light data
+    light_object = bpy.data.objects.new(name=name, object_data=light_data)
+    light_object.location = (x, y, z)
+
+    # Link object to collection in context
+    bpy.data.collections["Collection"].objects.link(light_object)
 
 
 def add_text(x, y, z, rad, text: str):
@@ -73,6 +92,18 @@ def save_image(file_name: str):
     """Saves render as PNG"""
     bpy.context.scene.render.filepath = str(file_name)
     bpy.ops.render.render(write_still=True, use_viewport=True)
+
+
+def save_blender_file(filepath: Path | str):
+    """Save blender file"""
+    filepath = Path(filepath)
+
+    if filepath.suffix != ".blend":
+        filepath = Path(f"{filepath}.blend")
+
+    if not filepath.is_absolute():
+        filepath = Path(Path.cwd() / filepath)
+    bpy.ops.wm.save_as_mainfile(filepath=filepath.as_posix())
 
 
 def join_obj(names: list):
@@ -229,7 +260,7 @@ def change_to_mesh(object_names: list):
     bpy.ops.object.select_all(action="DESELECT")
 
 
-def component_outline(coords, object_name: str):
+def component_outline(coords: Iterable[float], name: str = "component"):
     """Renders the spline of component
 
     Parameters
@@ -238,10 +269,10 @@ def component_outline(coords, object_name: str):
     y_coords : numpy array
 
     """
-    curve = bpy.data.curves.new(name="Curve_test", type="CURVE")
+    curve = bpy.data.curves.new(name=f"{name}_curve", type="CURVE")
     curve.fill_mode = "NONE"
 
-    ob = bpy.data.objects.new(object_name, object_data=curve)
+    ob = bpy.data.objects.new(name, object_data=curve)
     scene = bpy.context.scene
     scene.collection.objects.link(ob)
     bpy.context.view_layer.objects.active = None
@@ -255,15 +286,13 @@ def component_outline(coords, object_name: str):
     bpy.context.view_layer.objects.active = ob
     ob.select_set(True)
 
-    return None
 
-
-def render_component_mesh(name):
+def render_component_mesh(name: str = "line"):
     """Set up + builds new mesh for component"""
     scene = bpy.context.scene
     bpy.context.view_layer.objects.active = None
 
-    mesh = bpy.data.meshes.new(str(name))
+    mesh = bpy.data.meshes.new(name)
     line_obj = bpy.data.objects.new(name, mesh)
     scene.collection.objects.link(line_obj)
     scene.view_layers.update()
@@ -287,8 +316,9 @@ def spin_extrusion(face_mesh):
     bpy.ops.object.mode_set(mode="EDIT")
     bpy.ops.mesh.select_all(action="SELECT")
     bpy.ops.mesh.spin(
-        angle=6.28319, steps=400, axis=(0.0, 1.0, 0.0)
+        angle=2 * np.pi, steps=400, axis=(0.0, 1.0, 0.0)
     )  # Polodial rotation
+    bpy.ops.object.shade_smooth()
     bpy.ops.object.mode_set(mode="OBJECT")
     bpy.ops.object.select_all(action="DESELECT")
 
@@ -305,9 +335,8 @@ def half_reactor(face_mesh):
     bpy.context.view_layer.objects.active = obj
     bpy.ops.object.mode_set(mode="EDIT")
     bpy.ops.mesh.select_all(action="SELECT")
-    bpy.ops.mesh.spin(
-        angle=3.14159, steps=100, axis=(0.0, 1.0, 0.0)
-    )  # Polodial rotation
+    bpy.ops.mesh.spin(angle=np.pi, steps=100, axis=(0.0, 1.0, 0.0))  # Polodial rotation
+    bpy.ops.object.shade_smooth()
     bpy.ops.object.mode_set(mode="OBJECT")
     bpy.ops.object.select_all(action="DESELECT")
 
@@ -315,3 +344,8 @@ def half_reactor(face_mesh):
 def import_gltf(filepath: str):
     """Import from gltf"""
     bpy.ops.import_scene.gltf(filepath=filepath)
+
+
+def export_gltf(filepath: str):
+    """Export to gltf"""
+    bpy.ops.export_scene.gltf(filepath)
