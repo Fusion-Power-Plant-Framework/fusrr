@@ -113,10 +113,58 @@ def ellips_fill(
 
 
 class BlenderComponent(abc.ABC):
-    """Stores default functions for blender setup and renderings"""
+    """Base class to setup components"""
 
-    def __init__(self, shapes):
+    def __init__(self, shapes: Iterable[bpy_types.Object], colour: str = PURPLE):
+        delete_cube()
         self._shape_ref = self._create_collection(type(self).__name__, shapes)
+        self.default_colour(colour)
+
+    @property
+    def shape(self) -> bpy_types.Collection:
+        """Get the component shape references."""
+        return self._shape_ref
+
+    @abc.abstractmethod
+    def create_shape(self):
+        """Create the PROCESS shape."""
+
+    def _get_bluemira_comps(self) -> List[bpy_types.Object]:
+        shapes = []
+        for prefix, regex in BLUEMIRA_COMP_NAMES[type(self).__name__]:
+            shapes.extend(self._select_objects(prefix, regex))
+        return shapes
+
+    def _create_collection(
+        self, name: str, objects: Iterable[bpy_types.Object]
+    ) -> bpy_types.Collection:
+        group = bpy.data.collections.new(name)
+        for ob in objects:
+            group.objects.link(ob)
+        bpy.context.scene.collection.children.link(group)
+        return group
+
+    def _select_objects(self, prefix: str, regex: str = "*") -> Tuple[bpy_types.Object]:
+        bpy.ops.object.select_all(action="DESELECT")
+        bpy.ops.object.select_pattern(pattern=f"{prefix}{regex}")
+        return tuple(bpy.context.selected_objects)
+
+    def hex_color_to_rgba(self, hex_color: str) -> Tuple[float, ...]:
+        """Convert hex to blender's sRGB."""
+        hex_color = hex_color.strip("#")
+        srgb_red = int(hex_color[:2], 16) / 255
+        srgb_green = int(hex_color[2:4], 16) / 255
+        srgb_blue = int(hex_color[4:6], 16) / 255
+        return tuple([srgb_red, srgb_green, srgb_blue, 1.0])
+
+    def default_colour(self, colour: Optional[str] = None):
+        """Create material and adds colour to shape."""
+        colour_rgb = self.hex_color_to_rgba(colour or PURPLE)
+        for ob in self.shape.objects.values():
+            mat = bpy.data.materials.new(name=type(self).__name__)
+            ob.data.materials.append(mat)
+            mat.diffuse_color = colour_rgb
+            bpy.context.scene.view_layers.update()
 
     def tracking_centre(
         self, component_shape
@@ -125,61 +173,6 @@ class BlenderComponent(abc.ABC):
         x, y = 0, component_shape.rmajor
         z = 6 * component_shape.rmajor
         return x, y, z
-
-    @property
-    def shape(self) -> bpy_types.Collection:
-        """Get the component shape references."""
-        return self._shape_ref
-
-    def _create_collection(
-        self, name: str, objects: Iterable[bpy_types.Object]
-    ) -> bpy_types.Collection:
-        bpy.ops.object.select_all(action="DESELECT")
-        group = bpy.data.collections.new(name)
-        for ob in objects:
-            group.objects.link(ob)
-            ob.select_set(True)
-        # bpy.context.view_layer.objects.active = bpy.context.scene.objects[
-        #     objects[0].name
-        # ]
-        # bpy.ops.object.join()
-        return group
-
-    def _select_objects(self, prefix: str) -> Tuple[bpy_types.Object]:
-        bpy.ops.object.select_all(action="DESELECT")
-        bpy.ops.object.select_pattern(pattern=f"{prefix}*")
-        return tuple(bpy.context.selected_objects)
-
-    def frame(self):
-        """Sets up camera for rendering"""
-        delete_cube()
-
-    def hex_color_to_rgba(self, hex_color: str):  # checks needed as from git
-        """Converts hex to blender's sRGB"""
-        hex_color = hex_color[1:]
-        red = int(hex_color[:2], 16)
-        srgb_red = red / 255
-
-        green = int(hex_color[2:4], 16)
-        srgb_green = green / 255
-
-        blue = int(hex_color[4:6], 16)
-        srgb_blue = blue / 255
-        colour = tuple([srgb_red, srgb_green, srgb_blue, 1.0])
-
-        return colour
-
-    def default_colour(self, colour: Optional[str] = None):
-        """Creates material to add colour to active objects(s)"""
-        colour = self.hex_color_to_rgba(colour or PURPLE)
-        for ob in self.shape.objects.values():
-            try:
-                mat = bpy.data.materials.new(name=type(self).__name__)
-                ob.data.materials.append(mat)
-                mat.diffuse_color = colour
-                bpy.context.scene.view_layers.update()
-            except AttributeError:
-                continue
 
 
 class Plasma(BlenderComponent):
