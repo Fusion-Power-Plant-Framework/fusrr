@@ -94,6 +94,8 @@ def camera_frame():  # looks good for 3D, can cut off some of 2D
             ctx["area"] = area  # - makes a copy of data and then throws it away
             ctx["region"] = area.regions[-1]
             bpy.ops.view3d.view_selected(ctx)  # points view
+        else:
+            raise Exception("Blender area is not setup for this camera frame")
     bpy.ops.view3d.camera_to_view_selected(ctx)  # points camera
 
 
