@@ -176,27 +176,22 @@ class BlenderComponent(abc.ABC):
 
 
 class Plasma(BlenderComponent):
-    """Contains methods for plotting and rendering different parts of the plasma"""
+    """Plasma component."""
 
-    def __init__(self, params: Optional[OutputParams] = None, colour: str = "#7d2f8e"):
-        delete_cube()
+    def __init__(self, params: Optional[OutputParams] = None, colour: str = PURPLE):
+        self.params = params
+
+        shapes = []
         if params is None:
-            name = "LCFS"
+            shapes.extend(self._get_bluemira_comps())
         else:
-            self.params = params
-            xy = self.create_shape()
-            for _x, _y in zip(xy[:2], xy[2:]):
-                self.create_mesh(_x, _y, name="plasma")
-            join_obj(["plasma_object", "plasma_object.001"])
-            make_face_from_vertices(PLASMA)
-            name = "plasma"
+            self.create_shape()
+            shapes.extend(self._select_objects(PLASMA))
 
-        super().__init__(self._select_objects(name))
-
-        self.default_colour(colour)
+        super().__init__(shapes, colour)
 
     def create_shape(self):
-        """Generates coordinates for the plasma boundary arcs"""
+        """Generate coordinates for the plasma boundary arcs."""
         r0 = self.params.rmajor
         a = self.params.rminor
         delta = 1.5 * self.params.delta_95
@@ -242,18 +237,16 @@ class Plasma(BlenderComponent):
         xs2 = -(r2 * np.cos(angs2) - x2)
         ys2 = r2 * np.sin(angs2)
 
-        return xs1, xs2, ys1, ys2
+        for _x, _y in zip((xs1, xs2), (ys1, ys2)):
+            self.create_mesh(_x, _y, name=PLASMA)
+        join_obj(plasma_list)
+        make_face_from_vertices(PLASMA)
 
-    def create_mesh(self, x_coords, y_coords, name="plasma"):
-        """Renders the vertices of the plasma array for plasma mesh
-
-        Parameters
-        ----------
-        x_coords : numpy array
-        y_coords : numpy array
-
-        """
-        scene, mesh, bm = render_component_mesh(PLASMA)
+    def create_mesh(
+        self, x_coords: Iterable[float], y_coords: Iterable[float], name: str = "plasma"
+    ):
+        """Create the vertices of the plasma array for plasma mesh."""
+        scene, mesh, bm = render_component_mesh(name)
 
         for x, y in zip(x_coords, y_coords):
             bm.verts.new((x, y, 0))
