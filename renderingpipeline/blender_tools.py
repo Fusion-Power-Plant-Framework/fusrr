@@ -331,16 +331,7 @@ def render_component_mesh(name):
 
 
 def spin_extrusion():
-    """Spin extrudes around y axis in blender 2Pi radians
-
-    Parameters
-    ----------
-    face_mesh : str
-        Name of face_mesh to be spun extruded
-    """
-    # obj = bpy.context.scene.objects.get(str(face_mesh))
-    # obj.select_set(True)
-    # bpy.context.view_layer.objects.active = obj
+    """Spin extrudes around y axis in blender 2Pi radians"""
     bpy.ops.object.mode_set(mode="EDIT")
     bpy.ops.mesh.select_all(action="SELECT")
     bpy.ops.mesh.spin(
@@ -358,6 +349,9 @@ def half_reactor():
     ----
         face_mesh (str): Name of object's mesh to be spun
     """
+    # obj = bpy.context.scene.objects.get(str(face_mesh))
+    # obj.select_set(True)
+    # bpy.context.view_layer.objects.active = obj
     bpy.ops.object.mode_set(mode="EDIT")
     bpy.ops.mesh.select_all(action="SELECT")
     bpy.ops.mesh.spin(

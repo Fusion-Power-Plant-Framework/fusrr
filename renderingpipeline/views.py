@@ -15,6 +15,7 @@ from renderingpipeline.blender_tools import (
     hex_colour_to_rgba,
     orthographic_view,
     spin_extrusion,
+    half_reactor
 )
 from renderingpipeline.reactor import Reactor
 
@@ -183,7 +184,7 @@ class PlasmaOptions(View):
 class View2D(View):
     """Cross section view of reactor"""
 
-    def half_reactor(self):
+    def half_reactor(self):  # cuts out section of reactor
         """2D segment view"""
         bpy.ops.object.select_all(action="DESELECT")
         objects = bpy.context.scene.objects
