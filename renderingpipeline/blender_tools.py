@@ -347,7 +347,7 @@ def spin_extrusion(face_mesh):
 
 
 def half_reactor(face_mesh):
-    """Spins Pi radians for a half reactor view
+    """Spins radians for a cut away reactor view
 
     Args
     ----
@@ -387,3 +387,15 @@ def pi_rotation(set_comp: str):
     rot_quat = looking_direction.to_track_quat("-Z", "Z")
     object.rotation_euler = rot_quat.to_euler("XYZ")
     object.location = rot_quat @ mathutils.Vector((0.0, 0.0, 80))
+
+
+def focal_length(camera: str, length):
+    """Changes the camera focal length
+        note: longer fl = smaller FOV (i.e. more zoom)
+
+    Args
+    ----
+        camera (str): name of the camera
+        length (int): focal length in mm
+    """
+    bpy.data.cameras[camera].lens = length

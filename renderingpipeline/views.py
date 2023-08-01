@@ -11,9 +11,9 @@ from renderingpipeline.blender_tools import (
     add_light,
     add_text,
     camera_fix,
+    focal_length,
     half_reactor,
     hex_color_to_rgba,
-    pi_rotation,
     spin_extrusion,
 )
 from renderingpipeline.reactor import Reactor
@@ -165,8 +165,6 @@ class View(ViewBase):
         for components in self.view_component:
             third_spin = str(components)
             half_reactor(third_spin)
-        pi_rotation("Camera")
-        pi_rotation("Sun")
 
     def tf_thick(self):
         """Add some depth - begining of making 3D TFcoils"""
@@ -181,7 +179,7 @@ class View(ViewBase):
             bpy.ops.object.mode_set(mode="OBJECT")
             bpy.ops.object.select_all(action="DESELECT")
 
-    def key(self):
+    def key_2d(self):
         """Adds 'cube key' - setup for 2D render"""
         plasma = self.reactor.plasma.shape.objects[:][0]
         dist = plasma.dimensions.y
@@ -194,6 +192,24 @@ class View(ViewBase):
             add_text(-dist * 1.8, y, 0, rad=2, text=str(obj))
             change_colour(colour=colour_dict[obj])
         bpy.ops.object.select_all(action="DESELECT")  # may not be needed but safer
+
+    def key_3d(self):  # bit messy, trial and error but looks nice in the end
+        """Adds 'cube key' and sets framing"""
+        bpy.ops.object.select_all(action="DESELECT")
+        plasma = bpy.data.objects["plasma"]
+        dist = plasma.dimensions.y
+        bpy.ops.object.select_all(action="DESELECT")
+        y = 16
+        for object in key_list:
+            y += -4
+            add_cube(dist * 2, y, 0)
+            change_colour(colour=colour_dict[object])
+            add_text(dist * 2.2, y, 0, rad=1.8, text=str(object))
+            change_colour(colour=colour_dict[object])
+        bpy.ops.object.select_all(action="DESELECT")
+        camera_fix("Camera", "plasma", 78)
+        camera_fix("Sun", "plasma", 110)
+        focal_length("Camera", 35)
 
     @staticmethod
     def export(filepath: str):  # will not work in function, need to override context
