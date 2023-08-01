@@ -351,7 +351,7 @@ class TFCoil(BlenderComponent):
         """Add some depth - beginning of making 3D TFcoils"""
         casthi = self.params.casthi
         # casths = self.params.casths
-
+        simplified_thickness = 2 * casthi + 0.8
         self._select_objects("Tf")
         bpy.ops.object.mode_set(mode="EDIT")
         bpy.ops.mesh.face_split_by_edges()
@@ -359,7 +359,7 @@ class TFCoil(BlenderComponent):
         self._select_objects("Tf")
         bpy.ops.object.join()
         bpy.ops.object.mode_set(mode="EDIT")
-        bpy.ops.mesh.extrude_repeat(steps=1, offset=(0, 0, casthi))
+        bpy.ops.mesh.extrude_repeat(steps=1, offset=(0, 0, simplified_thickness))
         bpy.ops.object.mode_set(mode="OBJECT")
 
 
