@@ -1,4 +1,4 @@
-"""Views class - WIP - will produce tf + plasma
+"""Views class - WIP - Gives 2D/ half reactor view as default
 """
 import abc
 

@@ -171,8 +171,17 @@ class BlenderComponent(abc.ABC):
 
     def tracking_centre(
         self, component_shape
-    ):  # not great but gives a view that should include all components
-        """Uses rmajor to make set of coordinates - Can be useful for camera tracking"""
+    ):  # rough estimation of distance based on rmajor
+        """Uses rmajor to create rough placement for camera
+
+        Args
+        ----
+            component_shape : data from named component
+
+        Returns
+        -------
+            x, y, z : coordinates
+        """
         x, y = 0, component_shape.rmajor
         z = 6 * component_shape.rmajor
         return x, y, z
