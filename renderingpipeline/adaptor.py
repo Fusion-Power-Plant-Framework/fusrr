@@ -149,7 +149,12 @@ class OutputParams:
     rdewex: float
     ddwex: float
     zdewex: float
-
+    casthi: float
+    casths: float
+    dhecoil: float
+    thkcas: float
+    thwcndut: float
+    tinstf: float
     file_name: Optional[str] = None
 
     @classmethod

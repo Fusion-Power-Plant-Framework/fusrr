@@ -61,6 +61,12 @@ process_param = {
     "d_vv_bot": "d_vv_bot",
     "tftsgap": "tftsgap",
     "triang": "triang",
+    "casthi": "casthi",
+    "casths": "casths",
+    "dhecoil": "dhecoil",
+    "thkcas": "thkcas",
+    "thwcndut": "thwcndut",
+    "tinstf": "tinstf",
     # PF coil use
     "ohdz": "ohdz",
     "iohcl": "iohcl",
