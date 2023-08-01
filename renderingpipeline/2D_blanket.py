@@ -14,8 +14,13 @@ import bmesh
 import numpy as np
 
 from renderingpipeline.adaptor import OutputParams
-from renderingpipeline.blender_tools import delete_cube
-from renderingpipeline.mapping import RADIAL_BUILD, vertical_lower, vertical_upper
+from renderingpipeline.blender_tools import delete_cube, save_blender_file
+from renderingpipeline.mapping import (
+    RADIAL_BUILD,
+    vertical_lower,
+    vertical_upper,
+    process_param,
+)
 
 
 def cumul_setup(blanket_shape_dict):
@@ -31,11 +36,12 @@ def cumul_setup(blanket_shape_dict):
     Two dictionaries
         Upper and lower builds of blanket
     """
+    proc_dict = {v: k for k, v in process_param.items()}
     upper = dict()
     cumulative_upper = dict()
     subtotal = 0
     for item in vertical_upper:
-        upper[item] = blanket_shape_dict[item]
+        upper[item] = blanket_shape_dict[proc_dict[item]]
         subtotal += float(upper[item])
         cumulative_upper[item] = subtotal
 
@@ -43,7 +49,7 @@ def cumul_setup(blanket_shape_dict):
     cumulative_lower = dict()
     subtotal = 0
     for item in vertical_lower:
-        lower[item] = blanket_shape_dict[item]
+        lower[item] = blanket_shape_dict[proc_dict[item]]
         subtotal -= float(lower[item])
         cumulative_lower[item] = subtotal
 
@@ -202,6 +208,14 @@ def plot_blanket(blanket_shape, cumulative_upper, cumulative_lower):
         rs = np.concatenate([point_array[0], point_array[2][::-1]])
         zs = np.concatenate([point_array[1], point_array[3][::-1]])
 
+    import matplotlib.pyplot as plt
+
+    plt.plot(rs, zs)
+    plt.show()
+
+    import ipdb
+
+    ipdb.set_trace()
     # Lower blanket
     blnktth = blanket_shape.blnktth
     c_shldith = cumulative_radial_build("shldith", blanket_shape)
@@ -323,9 +337,14 @@ def plasma_render(x_coords, y_coords):
     return None
 
 
+from pathlib import Path
+
+
 def main():
     """Main function"""
-    blanket_shape = OutputParams.from_file(file_name="scripts/baseline_2018_MFILE.DAT")
+    blanket_shape = OutputParams.from_file(
+        file_name=Path("tests/regression/data/EUDEMO_MFILE.DAT").resolve().as_posix()
+    )
 
     blanket_shape_dict: dict[str, str] = {
         k: str(v) for k, v in asdict(blanket_shape).items()
@@ -374,6 +393,9 @@ def main():
     # tf_coil_outline(verts3) #produces point
     # tf_coil_outline(verts4) #line connecting with 5 and 1
     # tf_coil_outline(verts5) #converges to point on either side
+    import ipdb
+
+    ipdb.set_trace()
     plasma_render(rs1, zs1)
     plasma_render(rs2, zs2)
     plasma_render(rs3, zs3)  # plotting in wrong place? - straight(ish) line
@@ -385,5 +407,4 @@ def main():
 
     # Save the Blender scene as a .blend file
     blend_file_path = "blanket_test"
-    bpy.ops.wm.save_as_mainfile(filepath=blend_file_path)
-    # bpy.ops.export_scene.gltf(filepath=blend_file_path)
+    save_blender_file(blend_file_path)

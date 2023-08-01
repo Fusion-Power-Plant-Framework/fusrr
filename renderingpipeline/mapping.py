@@ -126,7 +126,7 @@ RADIAL_BUILD = [
 ]
 
 vertical_upper = [
-    "rminor_kappa",
+    "rminor*kappa",
     "vgaptop",
     "fwtth",
     "blnktth",
@@ -140,7 +140,7 @@ vertical_upper = [
 ]
 
 vertical_lower = [
-    "rminor_kappa",
+    "rminor*kappa",
     "vgap",
     "divfix",
     "shldlth",
