@@ -340,10 +340,9 @@ class TFCoil(BlenderComponent):
             patches.Rectangle([x5 - tf_il, y5], tf_il, (y1 - y5), lw=0, facecolor="cyan")
         )
         component_outline(centre_coords, tf_list[4])
-
-        change_to_mesh(object_names=tf_list)
-        for i in tf_list:
-            make_face_from_vertices(str(i))
+        for obj in tf_list:
+            change_to_mesh(obj=obj)
+            make_face_from_vertices(obj)
 
         self.tf_coil_thickness()
 

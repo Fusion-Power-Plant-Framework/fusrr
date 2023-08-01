@@ -133,7 +133,7 @@ def make_face_from_vertices(vertex_obj: str):
         name of object where vertices are
     """
     bpy.ops.object.select_all(action="DESELECT")
-    bpy.data.objects[str(vertex_obj)].select_set(True)
+    bpy.data.objects[vertex_obj].select_set(True)
     bpy.ops.object.mode_set(mode="EDIT")
     bpy.ops.mesh.select_all(action="SELECT")
     bpy.ops.mesh.edge_face_add()
@@ -243,22 +243,17 @@ def rect_blend_sep(rectangle: object):
     return x_coords, y_coords
 
 
-def change_to_mesh(object_names: list):
+def change_to_mesh(obj: object):
     """Changes spline object to mesh
 
     Parameters
     ----------
-    object_names : list
-        objects in blender scene
+    object_names : object
+        object in blender scene
     """
     bpy.ops.object.select_all(action="DESELECT")
-
-    for i in object_names:
-        bpy.data.objects[str(i)].select_set(True)
-    # ! Selects object 0 to be active object, must change soon
-    bpy.context.view_layer.objects.active = bpy.context.scene.objects[
-        str(object_names[0])
-    ]
+    bpy.data.objects[obj].select_set(True)
+    bpy.context.view_layer.objects.active = bpy.context.scene.objects[str(obj)]
     bpy.ops.object.convert(target="MESH")
     bpy.ops.object.select_all(action="DESELECT")
 
