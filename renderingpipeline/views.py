@@ -18,23 +18,6 @@ from renderingpipeline.blender_tools import (
 )
 from renderingpipeline.reactor import Reactor
 
-component_list = [  # better naming practice incoming
-    "plasma",
-    "pf_coil0",
-    "pf_coil1",
-    "pf_coil2",
-    "pf_coil3",
-    "pf_coil4",
-    "pf_coil5",
-    "central_coil",
-    "Upper_wall",
-    "Upper_Outer_wall",
-    "Lower_wall",
-    "Lower_Outer_wall",
-]
-
-tf_list = ("Tf.1", "Tf.2", "Tf.3", "Tf.4", "Tf.5")
-
 # naming may change to become less hard-coded, currently working for key
 key_list = ["Plasma", "PF Coil", "Central Coil", "TF Coil", "Cryostat"]
 
@@ -86,7 +69,7 @@ class View(ViewBase):
         self.reactor = reactor
         self._view()
 
-    def _view(self):  # Works, want to make dist input -possibly using rmajor
+    def _view(self):
         """Setup view"""
         dist = self.reactor.plasma.shape.objects[:][0].dimensions.y
         camera_fix("Camera", self.reactor.plasma.shape, dist * 8)
@@ -146,25 +129,39 @@ class View(ViewBase):
             ob.location = Vector(shift) + ob.location
 
     def add_light(self, dist: float):
-        """Adds sunlight object to default view"""
+        """Adds sunlight object to view
+
+        Args
+        ----
+            dist (float): distance
+        """
         add_light(0, 0, dist * 10)
 
-    def make_3d(
-        self,
-    ):  # work for named comps. Need to be continuous (i.e plasma) or it is wierd
+    def make_3d(self):
         """Spins 2D render around an axis to make 3D - whole reactor"""
-        for components in self.components:
-            component = str(components)
-            # Informs user what is rendering into 3D
-            print("component =", component)
-            spin_extrusion(component)
-        self._view()
+        no = ["tfcoil", "cryostat", "blanket"]  # Upper_Outer_wall still extruding
+        for seen in filter(lambda n: n not in no, self.components):
+            try:
+                comp = getattr(self.reactor, seen).shape
+            except AttributeError:
+                # Component doesnt exist on reactor
+                continue
+            for names in comp.objects[:]:
+                names.select_set(True)
+        spin_extrusion()
 
-    def cutaway(self):  # fine for PROCESS extruded comp, BLUEMIRA will need hide_render
+    def cutaway(self):  # fine for PROCESS extruded components
         """3D cutaway view"""
-        for components in self.view_component:
-            third_spin = str(components)
-            half_reactor(third_spin)
+        no = "tfcoil"
+        for seen in filter(lambda n: n not in no, self.components):
+            try:
+                comp = getattr(self.reactor, seen).shape
+            except AttributeError:
+                # Component doesnt exist on reactor
+                continue
+            for names in comp.objects[:]:
+                names.select_set(True)
+        half_reactor()
 
     def tf_thick(self):
         """Add some depth - begining of making 3D TFcoils"""

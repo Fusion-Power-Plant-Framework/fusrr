@@ -325,21 +325,12 @@ def render_component_mesh(name):
     return scene, mesh, bm
 
 
-def spin_extrusion(face_mesh):
-    """Spin extrudes around y axis in blender 2Pi radians
-
-    Parameters
-    ----------
-    face_mesh : str
-        Name of face_mesh to be spun extruded
-    """
-    obj = bpy.context.scene.objects.get(str(face_mesh))
-    obj.select_set(True)
-    bpy.context.view_layer.objects.active = obj
+def spin_extrusion():
+    """Spin extrudes around y axis in blender 2Pi radians"""
     bpy.ops.object.mode_set(mode="EDIT")
     bpy.ops.mesh.select_all(action="SELECT")
     bpy.ops.mesh.spin(
-        angle=2 * np.pi, steps=400, axis=(0.0, 1.0, 0.0)
+        angle=2 * np.pi, steps=100, axis=(0.0, 1.0, 0.0)
     )  # Polodial rotation
     bpy.ops.object.mode_set(mode="OBJECT")
     bpy.ops.object.shade_smooth()
@@ -353,9 +344,6 @@ def half_reactor(face_mesh):
     ----
         face_mesh (str): Name of object's mesh to be spun
     """
-    obj = bpy.context.scene.objects.get(str(face_mesh))
-    obj.select_set(True)
-    bpy.context.view_layer.objects.active = obj
     bpy.ops.object.mode_set(mode="EDIT")
     bpy.ops.mesh.select_all(action="SELECT")
     bpy.ops.mesh.spin(
@@ -367,7 +355,16 @@ def half_reactor(face_mesh):
 
 
 def hex_color_to_rgba(hex_color):
-    """Converts hex to blender's sRGB"""
+    """Converts hex to blender's sRGB
+
+    Args
+    ----
+        hex_color (str): hex colour code
+
+    Returns
+    -------
+        blender colour code
+    """
     hex_color = hex_color.strip("#")
     srgb_red = int(hex_color[:2], 16) / 255
     srgb_green = int(hex_color[2:4], 16) / 255
