@@ -17,7 +17,6 @@ from renderingpipeline.blender_tools import (
     component_outline,
     delete_cube,
     faces_pf_coils,
-    hex_color_to_rgba,
     join_obj,
     make_face_from_vertices,
     rect_blend,
@@ -411,6 +410,7 @@ class Cryostat(BlenderComponent):
         self._cryo_outline()
         self.scene()
         self.default_colour(colour=cyan)  # CRYO_BLUE)
+
 
 class PFCoil(BlenderComponent):
     """PF Coil Component."""
