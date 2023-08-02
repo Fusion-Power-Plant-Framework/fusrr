@@ -150,22 +150,22 @@ class OutputParams:
     ddwex: float
     zdewex: float
 
-    file_name: Optional[str] = None
+    file_path: Optional[Path] = None
 
     @classmethod
-    def from_file(cls, file_name: str) -> OutputParams:
+    def from_file(cls, file_path: str) -> OutputParams:
         """
         Makes instance of class from file name
         and assigns values to generic parameters
         """
-        file_path = Path(file_name)
+        # file_path = Path(file_name)
         output_names = list(cls.__annotations__.keys())
         output_names.pop(output_names.index("file_name"))
 
-        if file_name.endswith(".DAT"):
+        if file_path.suffix == ".DAT":
             parameters = process_file_adaptor(output_names, file_path)
 
-        elif file_name.endswith(".json"):
+        elif file_path.suffix == ".json":
             parameters = bluemira_file_adaptor(output_names, file_path)
 
-        return cls(file_name=file_name, **parameters)
+        return cls(file_path=file_path, **parameters)
