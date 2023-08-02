@@ -347,7 +347,7 @@ def half_reactor():
     bpy.ops.object.mode_set(mode="EDIT")
     bpy.ops.mesh.select_all(action="SELECT")
     bpy.ops.mesh.spin(
-        angle=-4.14159, steps=100, axis=(0.0, 1.0, 0.0)
+        angle=-3.1415926, steps=100, axis=(0.0, 1.0, 0.0)
     )  # Polodial rotation
     bpy.ops.object.mode_set(mode="OBJECT")
     bpy.ops.object.shade_smooth()
