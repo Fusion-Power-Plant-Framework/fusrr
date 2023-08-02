@@ -384,8 +384,11 @@ class Cryostat(BlenderComponent):
             shapes.extend(self._get_bluemira_comps())
         else:
             self.create_shape()
+            self.select_spin("Upper_Outer_wall")  # better way for multiple
+            # self.select_spin('Upper_wall')             #components in a class?
+            # self.select_spin('Lower_wall')
+            self.select_spin("Lower_Outer_wall")  # will kill if more than two
             for name in cryo_list:
-                self.select_spin(name)
                 shapes.extend(self._select_objects(name))
 
         super().__init__(shapes, colour)
@@ -441,8 +444,9 @@ class PFCoil(BlenderComponent):
             shapes.extend(self._get_bluemira_comps())
         else:
             self.create_shape()
+            self.select_spin("pf_coil")
+            self.select_spin("central_coil")
             for name in ["pf_coil", "central_coil"]:
-                self.select_spin(name)
                 shapes.extend(self._select_objects(name))
 
         super().__init__(shapes, colour)
