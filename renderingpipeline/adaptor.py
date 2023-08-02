@@ -153,14 +153,14 @@ class OutputParams:
     file_path: Optional[Path] = None
 
     @classmethod
-    def from_file(cls, file_path: str) -> OutputParams:
+    def from_file(cls, file_path: Path) -> OutputParams:
         """
         Makes instance of class from file name
         and assigns values to generic parameters
         """
-        # file_path = Path(file_name)
+        file_path = Path(file_path)
         output_names = list(cls.__annotations__.keys())
-        output_names.pop(output_names.index("file_name"))
+        output_names.pop(output_names.index("file_path"))
 
         if file_path.suffix == ".DAT":
             parameters = process_file_adaptor(output_names, file_path)

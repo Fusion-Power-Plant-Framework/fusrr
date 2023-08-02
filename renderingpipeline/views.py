@@ -174,7 +174,7 @@ class View(ViewBase):
 
     def tf_thick(self):
         """Add some depth - begining of making 3D TFcoils"""
-        for obj in self.reactor.tfcoils.shape.objects[:]:
+        for obj in self.reactor.tfcoil.shape.objects[:]:
             obj.select_set(True)
             bpy.context.view_layer.objects.active = obj
             bpy.ops.object.mode_set(mode="EDIT")
