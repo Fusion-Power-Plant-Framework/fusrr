@@ -11,12 +11,11 @@ The rendering pipeline is still in the early stages of development and therefore
 
 ## Installation
 
-With a python environment active you will need to first install `PROCESS`. Then, once you have cloned the repository, change into the directory and run `pip install -e./` to install **renderingpipeline** in your python environment.
+With a python environment active you will need to first install `PROCESS`. Then, once you have cloned the repository, change into the directory and run `pip install -e ./` to install **renderingpipeline** in your python environment.
 
 If you want to run the tests you will also need to install the develop dependencies:
 
-```
-bash
+```bash
 
 > pip install -e "./[dev]"
 > pytest
