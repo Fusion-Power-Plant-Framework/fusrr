@@ -163,6 +163,9 @@ class View(ViewBase):
             for names in comp.objects[:]:
                 names.select_set(True)
         half_reactor()
+        camera_fix("Camera", self.reactor.plasma.shape, 78)
+        camera_fix("Sun", self.reactor.plasma.shape, 110)
+        focal_length("Camera", 38)
 
     def tf_thick(self):
         """Add some depth - begining of making 3D TFcoils"""
