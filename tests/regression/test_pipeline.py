@@ -1,8 +1,6 @@
 """Regression tests for entire rendering pipeline."""
 from pathlib import Path
 
-from renderingpipeline.adaptor import OutputParams
-from renderingpipeline.components import Cryostat, PFCoil, Plasma, TFCoil
 from renderingpipeline.reactor import Reactor
 from renderingpipeline.views import View
 
@@ -19,14 +17,7 @@ def test_pipelines(tmp_path):
     data_dir = Path(__file__).parent / "data"
     input_file_path = data_dir / "EUDEMO_MFILE.DAT"
 
-    input_file = OutputParams.from_file(str(input_file_path))
-
-    reactor1 = Reactor(
-        plasma=Plasma(input_file),
-        tfcoils=TFCoil(input_file),
-        pfcoils=PFCoil(input_file),
-        cryostat=Cryostat(input_file),
-    )
+    reactor1 = Reactor.reactor_from_file(input_file=input_file_path)
 
     view = View(reactor1)
     view.tf_thick()
