@@ -7,8 +7,8 @@ from typing import Iterable
 import bpy
 import bmesh
 import bpy_types
-import numpy as np
 import mathutils
+import numpy as np
 
 
 def empty_obj(x, y, z):
