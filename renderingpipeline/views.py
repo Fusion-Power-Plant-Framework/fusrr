@@ -14,6 +14,7 @@ from renderingpipeline.blender_tools import (
     focal_length,
     half_reactor,
     hex_color_to_rgba,
+    save_image,
     spin_extrusion,
 )
 from renderingpipeline.reactor import Reactor
@@ -192,8 +193,7 @@ class View(ViewBase):
 
     def key_3d(self):  # bit messy, trial and error but looks nice in the end
         """Adds 'cube key' and sets framing"""
-        bpy.ops.object.select_all(action="DESELECT")
-        plasma = bpy.data.objects["plasma"]
+        plasma = self.reactor.plasma.shape.objects[:][0]
         dist = plasma.dimensions.y
         bpy.ops.object.select_all(action="DESELECT")
         y = 16
@@ -204,8 +204,8 @@ class View(ViewBase):
             add_text(dist * 2.2, y, 0, rad=1.8, text=str(object))
             change_colour(colour=colour_dict[object])
         bpy.ops.object.select_all(action="DESELECT")
-        camera_fix("Camera", "plasma", 78)
-        camera_fix("Sun", "plasma", 110)
+        camera_fix("Camera", self.reactor.plasma.shape, 78)
+        camera_fix("Sun", self.reactor.plasma.shape, 110)
         focal_length("Camera", 35)
 
     @staticmethod

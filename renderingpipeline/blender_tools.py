@@ -337,7 +337,7 @@ def spin_extrusion():
     bpy.ops.object.select_all(action="DESELECT")
 
 
-def half_reactor(face_mesh):
+def half_reactor():
     """Spins radians for a cut away reactor view
 
     Args
