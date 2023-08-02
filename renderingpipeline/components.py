@@ -22,6 +22,7 @@ from renderingpipeline.blender_tools import (
     rect_blend,
     rect_blend_sep,
     render_component_mesh,
+    spin_extrusion,
 )
 
 tf_list = ["Tf.1", "Tf.2", "Tf.3", "Tf.4", "Tf.5"]
@@ -153,6 +154,21 @@ class BlenderComponent(abc.ABC):
         bpy.ops.object.select_pattern(pattern=f"{prefix}{regex}")
         return tuple(bpy.context.selected_objects)
 
+    def select_spin(self, prefix: str, regex: str = "*"):
+        """Selects component and extrudes to make 3d
+
+        Args
+        ----
+            prefix (str): nabe of component
+            regex (str, optional): Defaults to "*".
+        """
+        bpy.ops.object.select_all(action="DESELECT")
+        bpy.ops.object.select_pattern(pattern=f"{prefix}{regex}")
+        obj = bpy.context.selected_objects
+        for comp in obj:
+            comp.select_set(True)
+        spin_extrusion()
+
     def hex_color_to_rgba(self, hex_color: str) -> Tuple[float, ...]:
         """Convert hex to blender's sRGB."""
         hex_color = hex_color.strip("#")
@@ -199,6 +215,7 @@ class Plasma(BlenderComponent):
             shapes.extend(self._get_bluemira_comps())
         else:
             self.create_shape()
+            self.select_spin(PLASMA)
             shapes.extend(self._select_objects(PLASMA))
 
         super().__init__(shapes, colour)
@@ -368,6 +385,7 @@ class Cryostat(BlenderComponent):
         else:
             self.create_shape()
             for name in cryo_list:
+                self.select_spin(name)
                 shapes.extend(self._select_objects(name))
 
         super().__init__(shapes, colour)
@@ -424,6 +442,7 @@ class PFCoil(BlenderComponent):
         else:
             self.create_shape()
             for name in ["pf_coil", "central_coil"]:
+                self.select_spin(name)
                 shapes.extend(self._select_objects(name))
 
         super().__init__(shapes, colour)
