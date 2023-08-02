@@ -27,7 +27,10 @@ class Reactor:
         reactor_params = OutputParams.from_file(input_file_path)
         cdict = {}
         for component in BlenderComponent.__subclasses__():
-            cdict[component.__name__.lower()] = component(reactor_params)
+            try:
+                cdict[component.__name__.lower()] = component(reactor_params)
+            except NotImplementedError:
+                continue
 
         return cls(**cdict)
 
