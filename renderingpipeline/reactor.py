@@ -3,6 +3,8 @@ Reactor class - builds individual components and puts them in the same scene
 """
 from inspect import getmembers
 
+import bpy
+
 from renderingpipeline.adaptor import OutputParams
 from renderingpipeline.components import BlenderComponent
 
@@ -41,4 +43,10 @@ class Reactor:
         )
 
         for mem in to_render.values():
-            mem.build()  # component class has build func
+            existing = bpy.context.scene.objects.keys()
+            if len(existing) > 2:
+                mem.build()  # component class has build func
+
+                # select all and move it
+            else:
+                mem.build()

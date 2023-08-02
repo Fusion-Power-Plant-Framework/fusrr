@@ -389,6 +389,23 @@ class TFCoil(BlenderComponent):
             change_to_mesh(object_names=obj)
             make_face_from_vertices(obj)
 
+        self.tf_coil_thickness()
+
+    def tf_coil_thickness(self):
+        """Add some depth - beginning of making 3D TFcoils"""
+        casthi = self.params.casthi
+        # casths = self.params.casths
+        simplified_thickness = 2 * casthi + 0.8
+        self._select_objects("Tf")
+        bpy.ops.object.mode_set(mode="EDIT")
+        bpy.ops.mesh.face_split_by_edges()
+        bpy.ops.object.mode_set(mode="OBJECT")
+        self._select_objects("Tf")
+        bpy.ops.object.join()
+        bpy.ops.object.mode_set(mode="EDIT")
+        bpy.ops.mesh.extrude_repeat(steps=1, offset=(0, 0, simplified_thickness))
+        bpy.ops.object.mode_set(mode="OBJECT")
+
 
 class Cryostat(BlenderComponent):
     """Cryostat Component."""
