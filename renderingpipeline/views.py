@@ -12,7 +12,6 @@ from renderingpipeline.blender_tools import (
     add_text,
     camera_fix,
     focal_length,
-    half_reactor,
     hex_color_to_rgba,
     save_image,
     spin_extrusion,
@@ -153,16 +152,7 @@ class View(ViewBase):
 
     def cutaway(self):  # fine for PROCESS extruded components
         """3D cutaway view"""
-        no = "tfcoil"
-        for seen in filter(lambda n: n not in no, self.components):
-            try:
-                comp = getattr(self.reactor, seen).shape
-            except AttributeError:
-                # Component doesnt exist on reactor
-                continue
-            for names in comp.objects[:]:
-                names.select_set(True)
-        half_reactor()
+        bpy.ops.mesh.bisect()
         camera_fix("Camera", self.reactor.plasma.shape, 78)
         camera_fix("Sun", self.reactor.plasma.shape, 110)
         focal_length("Camera", 38)
