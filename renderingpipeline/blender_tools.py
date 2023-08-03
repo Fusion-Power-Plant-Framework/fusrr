@@ -396,3 +396,13 @@ def focal_length(camera: str, length):
         length (int): focal length in mm
     """
     bpy.data.cameras[camera].lens = length
+
+
+def import_gltf(filepath: str):
+    """Import from gltf"""
+    bpy.ops.import_scene.gltf(filepath=filepath)
+
+
+def export_gltf(filepath: str):
+    """Export to gltf"""
+    bpy.ops.export_scene.gltf(filepath)
