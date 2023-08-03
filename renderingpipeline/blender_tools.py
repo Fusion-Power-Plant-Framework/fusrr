@@ -107,12 +107,6 @@ def delete_cube():
         objs.remove(cube, do_unlink=True)
 
 
-def save_image(file_name: str):
-    """Saves render as PNG"""
-    bpy.context.scene.render.filepath = str(file_name)
-    bpy.ops.render.render(write_still=True, use_viewport=True)
-
-
 def save_blender_file(filepath: Path | str):
     """Save blender file"""
     filepath = Path(filepath)

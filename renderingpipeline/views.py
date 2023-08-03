@@ -12,7 +12,6 @@ from renderingpipeline.blender_tools import (
     add_text,
     camera_fix,
     half_reactor,
-    save_image,
     spin_extrusion,
 )
 from renderingpipeline.reactor import Reactor
@@ -213,5 +212,6 @@ class View(ViewBase):
     @staticmethod
     def save_image(file_name: str):
         """Saves render as PNG"""
-        save_image(file_name)
+        bpy.context.scene.render.filepath = str(file_name)
+        bpy.ops.render.render(write_still=True, use_viewport=True)
         # save .gltf and .blend
