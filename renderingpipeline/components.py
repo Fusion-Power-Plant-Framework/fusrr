@@ -17,7 +17,7 @@ from renderingpipeline.blender_tools import (
     component_outline,
     delete_cube,
     faces_pf_coils,
-    hex_color_to_rgba,
+    hex_colour_to_rgba,
     join_obj,
     make_face_from_vertices,
     rect_blend,
@@ -178,7 +178,7 @@ class BlenderComponent(abc.ABC):
 
     def default_colour(self, colour: Optional[str] = None):
         """Create material and adds colour to shape."""
-        colour_rgb = self.hex_color_to_rgba(colour or PURPLE)
+        colour_rgb = hex_colour_to_rgba(colour or PURPLE)
         for ob in self.shape.objects.values():
             mat = bpy.data.materials.new(name=type(self).__name__)
             ob.data.materials.append(mat)
@@ -441,11 +441,6 @@ class Cryostat(BlenderComponent):
             make_face_from_vertices(str(i))
         self.join_objects(cryo_list, "cryostat")  # make into one object and rename
 
-    def build(self):
-        """Build method to render the component"""
-        self._cryo_outline()
-        self.scene()
-        self.default_colour(colour=cyan)  # CRYO_BLUE)
 
 class PFCoil(BlenderComponent):
     """PF Coil Component."""
