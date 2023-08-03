@@ -1,7 +1,6 @@
 """Regression tests for entire rendering pipeline."""
 from pathlib import Path
 
-from renderingpipeline.blender_tools import save_image
 from renderingpipeline.reactor import Reactor
 from renderingpipeline.views import View
 
@@ -25,7 +24,7 @@ def test_pipelines(tmp_path):
     view.key()
 
     # Save "view_test.png" in temporary test dir
-    save_image(tmp_path / "view_test")
+    view.save_image(tmp_path / "view_test")
 
     # Check .png has been produced
     png_exists = len(list(tmp_path.glob("*.png"))) > 0
