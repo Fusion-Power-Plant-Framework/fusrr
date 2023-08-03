@@ -355,7 +355,7 @@ def half_reactor():
     bpy.ops.object.select_all(action="DESELECT")
 
 
-def hex_color_to_rgba(hex_color):
+def hex_colour_to_rgba(hex_colour) -> tuple[float, ...]:
     """Converts hex to blender's sRGB
 
     Args
@@ -364,12 +364,12 @@ def hex_color_to_rgba(hex_color):
 
     Returns
     -------
-        blender colour code
+        tuple : blender colour code
     """
-    hex_color = hex_color.strip("#")
-    srgb_red = int(hex_color[:2], 16) / 255
-    srgb_green = int(hex_color[2:4], 16) / 255
-    srgb_blue = int(hex_color[4:6], 16) / 255
+    hex_colour = hex_colour.strip("#")
+    srgb_red = int(hex_colour[:2], 16) / 255
+    srgb_green = int(hex_colour[2:4], 16) / 255
+    srgb_blue = int(hex_colour[4:6], 16) / 255
     return tuple([srgb_red, srgb_green, srgb_blue, 1.0])
 
 

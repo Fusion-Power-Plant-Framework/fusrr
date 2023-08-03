@@ -12,7 +12,7 @@ from renderingpipeline.blender_tools import (
     add_text,
     camera_fix,
     focal_length,
-    hex_color_to_rgba,
+    hex_colour_to_rgba,
     spin_extrusion,
 )
 from renderingpipeline.reactor import Reactor
@@ -34,7 +34,7 @@ colour_dict = dict(
 def change_colour(colour):
     """Creates material to add colour to active objects(s)"""
     active_objects = bpy.context.selected_objects
-    colour = hex_color_to_rgba(colour)
+    colour = hex_colour_to_rgba(colour)
     for obj in active_objects:
         mat = bpy.data.materials.new(name=f"{obj.name} Material")
         obj.data.materials.append(mat)
