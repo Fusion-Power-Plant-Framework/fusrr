@@ -13,7 +13,6 @@ from renderingpipeline.blender_tools import (
     camera_fix,
     focal_length,
     hex_color_to_rgba,
-    save_image,
     spin_extrusion,
 )
 from renderingpipeline.reactor import Reactor
