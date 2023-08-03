@@ -98,31 +98,31 @@ From plot_proc.py. Build tools
 """
 RADIAL_BUILD = [
     "bore",
-    "ohcth",
+    "cs_rad_th",
     "precomp",
-    "gapoh",
-    "tfcth",
+    "cs_rad_gap",
+    "tfc_inleg",
     "tftsgap",
     "thshield_ib",
-    "gapds",
+    "thshldgap",
     "d_vv_in",
     "shldith",
     "vvblgapi",
     "blnkith",
     "fwith",
-    "scrapli",
+    "scrapthi",
     "rminori",
     "rminoro",
-    "scraplo",
+    "scraptho",
     "fwoth",
     "blnkoth",
     "vvblgapo",
     "shldoth",
     "d_vv_out",
-    "gapsto",
+    "vvtfgap",
     "thshield_ob",
     "tftsgap",
-    "tfthko",
+    "tfth_outleg",
 ]
 
 vertical_upper = [
@@ -136,7 +136,7 @@ vertical_upper = [
     "vgap2",
     "thshield_vb",
     "tftsgap",
-    "tfcth",
+    "tfc_inleg",
 ]
 
 vertical_lower = [
@@ -148,7 +148,7 @@ vertical_lower = [
     "vgap2",
     "thshield_vb",
     "tftsgap",
-    "tfcth",
+    "tfc_inleg",
 ]
 
 

@@ -25,6 +25,7 @@ from renderingpipeline.blender_tools import (
     render_component_mesh,
     spin_extrusion,
 )
+from renderingpipeline.mapping import RADIAL_BUILD, vertical_lower, vertical_upper
 
 tf_list = ["Tf.1", "Tf.2", "Tf.3", "Tf.4", "Tf.5"]
 plasma_list = ["plasma", "plasma.001"]
@@ -77,6 +78,31 @@ BLUEMIRA_COMP_NAMES = {
 }
 
 
+def plotdh(r0, a, delta, kap):
+    """Plots half a thin D-Section centred on z = 0
+
+    Parameters
+    ----------
+    r0 : float
+        rmajor
+    a : float
+        horizontal radius
+    delta : float
+        triangularity
+    kap : float
+        elongation
+
+    Returns
+    -------
+    tuple of arrays
+        radius and z displacement arrays
+    """
+    angs = np.linspace(0, np.pi, 50, endpoint=True)
+    rs = r0 + a * np.cos(angs + delta * np.sin(1.0 * angs))
+    zs = kap * a * np.sin(angs)
+    return rs, zs
+
+
 def ellips_fill(
     a1: float = 0,
     a2: float = 0,
@@ -111,6 +137,43 @@ def ellips_fill(
     verts.extend(endpoint)
 
     return verts
+
+
+def cumulative_radial_build(parameters, section):
+    """Function for calculating the cumulative radial build up to and
+    including the given section.
+
+    Parameters
+    ----------
+    parameters : Instance of dataclass
+    section : str
+
+    Returns
+    -------
+    float
+        cumulative radial build up to given section
+    """
+    complete = False
+    cumulative_build = 0
+    for item in RADIAL_BUILD:
+        if item == "rminori" or item == "rminoro":
+            cumulative_build += parameters.rminor
+        elif item == "vvblgapi" or item == "vvblgapo":
+            cumulative_build += parameters.vvblgap
+        elif "d_vv_in" in item:
+            cumulative_build += parameters.d_vv_in
+        elif "d_vv_out" in item:
+            cumulative_build += parameters.d_vv_out
+        else:
+            cumulative_build += getattr(parameters, item)
+
+        if item == section:
+            complete = True
+            break
+
+    if complete is False:
+        print("radial build parameter ", section, " not found")
+    return cumulative_build
 
 
 class BlenderComponent(abc.ABC):
@@ -588,6 +651,12 @@ class VacuumVessel(BlenderComponent):
     ):
         self.params = params
 
+        (
+            self.cumulative_lower,
+            self.cumulative_upper,
+            self.lower,
+            self.upper,
+        ) = self.cumulative_builds()
         shapes = []
         if params is None:
             shapes.extend(self._get_bluemira_comps())
@@ -598,13 +667,110 @@ class VacuumVessel(BlenderComponent):
 
         super().__init__(shapes, colour)
 
+    def cumulative_builds(self):
+        """Builds plot_procs cumulative build
+
+        Returns
+        -------
+        tuple of dictionaries
+            cumulative builds
+        """
+        cumulative_upper = dict()
+        upper = dict()
+        cu_subtotal = 0
+        for item in vertical_upper:
+            upper[item] = getattr(self.params, item)
+            cu_subtotal += upper[item]
+            cumulative_upper[item] = cu_subtotal
+
+        cumulative_lower = dict()
+        lower = dict()
+        cl_subtotal = 0
+        for item in vertical_lower:
+            lower[item] = getattr(self.params, item)
+            cl_subtotal += lower[item]
+            cumulative_lower[item] = cl_subtotal
+
+        return cumulative_lower, cumulative_upper, lower, upper
+
     def create_shape(self):
         """Create vacuum vessel shape.
 
         This is an artistic take on the output PROCESS produces to make a 3D model.
         It is our best guess at what the full component would look like.
         """
-        raise NotImplementedError("TODO")
+        i_single_null = self.params.i_single_null
+        triang = self.params.delta_95
+        temp_array_1 = ()
+        temp_array_2 = ()
+
+        # Outer side (furthest from plasma)
+        radx = (
+            cumulative_radial_build(section="d_vv_out", parameters=self.params)
+            + cumulative_radial_build(section="gapds", parameters=self.params)
+        ) / 2.0
+        rminx = (
+            cumulative_radial_build(section="d_vv_out", parameters=self.params)
+            - cumulative_radial_build(section="gapds", parameters=self.params)
+        ) / 2.0
+        kapx = self.cumulative_upper["d_vv_top"] / rminx
+
+        if i_single_null == 1:
+            (rs, zs) = plotdh(radx, rminx, triang, kapx)
+            temp_array_1 = temp_array_1 + ((rs, zs))
+
+        kapx = self.cumulative_lower["d_vv_bot"] / rminx
+        (rs, zs) = plotdh(radx, rminx, triang, kapx)
+        temp_array_2 = temp_array_2 + ((rs, zs))
+
+        # Inner side (nearest to the plasma)
+        radx = (
+            cumulative_radial_build(section="shldoth", parameters=self.params)
+            + cumulative_radial_build(section="d_vv_in", parameters=self.params)
+        ) / 2.0
+        rminx = (
+            cumulative_radial_build(section="shldoth", parameters=self.params)
+            - cumulative_radial_build(section="d_vv_in", parameters=self.params)
+        ) / 2.0
+
+        if i_single_null == 1:
+            kapx = (self.cumulative_upper["d_vv_top"] - self.upper["d_vv_top"]) / rminx
+            (rs, zs) = plotdh(radx, rminx, triang, kapx)
+            temp_array_1 = temp_array_1 + ((rs, zs))
+
+        kapx = (self.cumulative_lower["d_vv_bot"] + self.lower["d_vv_bot"]) / rminx
+        (rs, zs) = plotdh(radx, rminx, triang, kapx)
+        temp_array_2 = temp_array_2 + ((rs, zs))
+
+        # Single null: Draw top half from output
+        # Double null: Reflect bottom half to top
+        if i_single_null == 1:
+            rs = np.concatenate([temp_array_1[0], temp_array_1[2][::-1]])
+            zs = np.concatenate([temp_array_1[1], temp_array_1[3][::-1]])
+            self.create_mesh(x_coords=rs, y_coords=zs, name="upper_vv")
+
+        rs = np.concatenate([temp_array_2[0], temp_array_2[2][::-1]])
+        zs = np.concatenate([temp_array_2[1], temp_array_2[3][::-1]])
+        self.create_mesh(x_coords=rs, y_coords=zs, name="Idk")
+        # For double null, reflect shape of lower half to top instead
+        # if i_single_null == 0:
+        # axis.fill(rs, -zs, color=vessel)
+
+    def create_mesh(
+        self,
+        x_coords: Iterable[float],
+        y_coords: Iterable[float],
+        name: str = "vacuum_vessel",
+    ):
+        """Creates the vertices of the vacuum vessel"""
+        scene, mesh, bm = render_component_mesh(name)
+        for x, y in zip(x_coords, y_coords):
+            bm.verts.new((x, y, 0))
+
+        bm.to_mesh(mesh)
+        bm.free()
+
+        scene.view_layers.update()
 
 
 class RadiationShield(BlenderComponent):
