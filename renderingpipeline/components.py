@@ -35,10 +35,9 @@ cryo_list = [
 ]
 PLASMA = "plasma"
 
-PURPLE = "#7d2f8e"  # plasma purplfor e
+PURPLE = "#7d2f8e"  # plasma purple
 BLUE = "#003688"  # tf blue
 CRYO_BLUE = "#2e7ebc"
-cyan = "#4cbdf0"
 PF_BLUE = "#0072c2"
 BLANKET = "#4a98c9"
 DIVERTOR = "#d0e1f2"
@@ -163,9 +162,7 @@ class BlenderComponent(abc.ABC):
             regex (str, optional): Defaults to "*".
         """
         bpy.ops.object.select_all(action="DESELECT")
-        bpy.ops.object.select_pattern(pattern=f"{prefix}{regex}")
-        obj = bpy.context.selected_objects
-        for comp in obj:
+        for comp in self._select_objects(prefix, regex):
             comp.select_set(True)
         spin_extrusion()
 
@@ -186,7 +183,7 @@ class BlenderComponent(abc.ABC):
             mat.diffuse_color = colour_rgb
             bpy.context.scene.view_layers.update()
 
-    def join_objects(self, name=list, new_name=str):
+    def join_objects(self, name: List[str], new_name: str):
         """Joins plotted objects into one component
 
         Args
@@ -383,7 +380,7 @@ class TFCoil(BlenderComponent):
         # Vertical leg
         # Bottom left corner
         centre_coords = rect_blend(
-            patches.Rectangle([x5 - tf_il, y5], tf_il, (y1 - y5), lw=0, facecolor="cyan")
+            patches.Rectangle([x5 - tf_il, y5], tf_il, (y1 - y5), lw=0, facecolor=BLUE)
         )
         component_outline(centre_coords, tf_list[4])
 
