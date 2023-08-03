@@ -35,7 +35,7 @@ cryo_list = [
 ]
 PLASMA = "plasma"
 
-PURPLE = "#7d2f8e"  # plasma purple
+PURPLE = "#7d2f8e"  # plasma purplfor e
 BLUE = "#003688"  # tf blue
 CRYO_BLUE = "#2e7ebc"
 cyan = "#4cbdf0"
@@ -185,6 +185,25 @@ class BlenderComponent(abc.ABC):
             ob.data.materials.append(mat)
             mat.diffuse_color = colour_rgb
             bpy.context.scene.view_layers.update()
+
+    def join_objects(self, name=list, new_name=str):
+        """Joins plotted objects into one component
+
+        Args
+        ----
+            name (list): names of the objects to be joined
+            new_name (str): new name of joined component
+        """
+        bpy.ops.object.select_all(action="DESELECT")
+        for comp in name:
+            bpy.data.objects[comp].select_set(True)
+        bpy.ops.object.mode_set(mode="EDIT")
+        bpy.ops.mesh.face_split_by_edges()
+        bpy.ops.object.mode_set(mode="OBJECT")
+        bpy.ops.object.join()
+        for sect in bpy.context.selected_objects:
+            sect.name = new_name
+        bpy.ops.object.select_all(action="DESELECT")
 
     def tracking_centre(
         self, component_shape
@@ -384,12 +403,8 @@ class Cryostat(BlenderComponent):
             shapes.extend(self._get_bluemira_comps())
         else:
             self.create_shape()
-            self.select_spin("Upper_Outer_wall")  # better way for multiple
-            # self.select_spin('Upper_wall')             #components in a class?
-            # self.select_spin('Lower_wall')
-            self.select_spin("Lower_Outer_wall")  # will kill if more than two
-            for name in cryo_list:
-                shapes.extend(self._select_objects(name))
+            self.select_spin("cryostat")
+            shapes.extend(self._select_objects("cryostat"))
 
         super().__init__(shapes, colour)
 
@@ -425,12 +440,7 @@ class Cryostat(BlenderComponent):
         # Makes each wall into a filled shape
         for i in cryo_list:
             make_face_from_vertices(str(i))
-
-    def build(self):
-        """Build method to render the component"""
-        self._cryo_outline()
-        self.scene()
-        self.default_colour(colour=cyan)  # CRYO_BLUE)
+        self.join_objects(cryo_list, "cryostat")  # make into one object and rename
 
 
 class PFCoil(BlenderComponent):
