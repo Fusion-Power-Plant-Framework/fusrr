@@ -149,12 +149,20 @@ class View(ViewBase):
                 names.select_set(True)
         spin_extrusion()
 
-    def cutaway(self):  # fine for PROCESS extruded components
-        """3D cutaway view"""
-        bpy.ops.mesh.bisect()
-        camera_fix("Camera", self.reactor.plasma.shape, 78)
-        camera_fix("Sun", self.reactor.plasma.shape, 110)
-        focal_length("Camera", 38)
+    def cutaway(self, components=list):  # cuts out section of reactor, WIP=removing more
+        """2D segment view"""
+        bpy.ops.object.select_all(action="DESELECT")
+        for obj in components:
+            bpy.data.objects[obj].select_set(True)
+            bpy.ops.object.editmode_toggle()  # object NOT objects
+        bpy.ops.mesh.bisect(
+            plane_co=(0, 0, 1), plane_no=(0, 0, 1), clear_inner=True, clear_outer=False
+        )
+        bpy.ops.object.mode_set(mode="OBJECT")
+        bpy.ops.object.select_all(action="DESELECT")
+        # camera_fix("Camera", self.reactor.plasma.shape, 78)
+        # camera_fix("Sun", self.reactor.plasma.shape, 110)
+        # focal_length("Camera", 38)
 
     def tf_thick(self):
         """Add some depth - begining of making 3D TFcoils"""
