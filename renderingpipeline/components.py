@@ -440,12 +440,6 @@ class Cryostat(BlenderComponent):
             make_face_from_vertices(str(i))
         self.join_objects(cryo_list, "cryostat")  # make into one object and rename
 
-    def build(self):
-        """Build method to render the component"""
-        self._cryo_outline()
-        self.scene()
-        self.default_colour(colour=CRYO_BLUE)
-
 
 class PFCoil(BlenderComponent):
     """PF Coil Component."""

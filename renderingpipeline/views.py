@@ -138,8 +138,12 @@ class View(ViewBase):
 
     def make_3d(self):
         """Spins 2D render around an axis to make 3D - whole reactor"""
-        no = ["tfcoil", "cryostat", "blanket"]
-        for seen in filter(lambda n: n not in no, self.components):
+        hide = [
+            "tfcoil",
+            "cryostat",
+            "blanket",
+        ]  # cryo and blanket are less intresting tf is not poloidal
+        for seen in filter(lambda n: n not in hide, self.components):
             try:
                 comp = getattr(self.reactor, seen).shape
             except AttributeError:
