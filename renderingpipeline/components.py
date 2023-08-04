@@ -767,10 +767,12 @@ class VacuumVessel(BlenderComponent):
     ):
         """Creates the vertices of the vacuum vessel"""
         scene, mesh, bm = render_component_mesh(name)
+
         for x, y in zip(x_coords, y_coords):
             bm.verts.new((x, y, 0))
-
-        bm.to_mesh(mesh)
+            bm.to_mesh(mesh)
+            bpy.context.view_layer.objects.active = bpy.context.scene.objects[name]
+            make_face_from_vertices(vertex_obj=name)
         bm.free()
 
         scene.view_layers.update()
