@@ -90,6 +90,15 @@ class View(ViewBase):
 
         bpy.data.objects["Sun"].hide_render = False
 
+    def wide_shot(self):
+        """Useful positioning
+        -done through trial + error
+        -Best in 3D renders and wide 2D shots
+        """
+        camera_fix("Camera", self.reactor.plasma.shape, 78)
+        camera_fix("Sun", self.reactor.plasma.shape, 110)
+        focal_length("Camera", 38)
+
     def highlight_plasma(
         self, colour: str
     ):  # Not working yet, issues w/ selection and meshes
@@ -136,64 +145,6 @@ class View(ViewBase):
         """
         add_light(0, 0, dist * 10)
 
-    def make_3d(self):
-        """Spins 2D render around an axis to make 3D - whole reactor"""
-        hide = [
-            "tfcoil",
-            "cryostat",
-            "blanket",
-        ]  # cryo and blanket are less intresting tf is not poloidal
-        for seen in filter(lambda n: n not in hide, self.components):
-            try:
-                comp = getattr(self.reactor, seen).shape
-            except AttributeError:
-                # Component doesnt exist on reactor
-                continue
-            for names in comp.objects[:]:
-                names.select_set(True)
-        spin_extrusion()
-
-    def half_reactor(self):  # cuts out section of reactor, WIP=removing more
-        """2D segment view"""  # may have to just delete all vertices.
-        bpy.ops.object.select_all(action="DESELECT")
-        objects = bpy.context.scene.objects
-        for obj in objects:
-            obj.select_set(obj.type == "MESH")
-        bpy.ops.object.editmode_toggle()  # object NOT objects
-        bpy.ops.mesh.select_all(action="SELECT")
-        bpy.ops.mesh.bisect(
-            plane_co=(0, 0, 1), plane_no=(0, 0, -1), clear_inner=True, clear_outer=False
-        )
-        bpy.ops.mesh.select_all(action="SELECT")
-        bpy.ops.mesh.bisect(
-            plane_co=(0, 0, 1), plane_no=(1, 0, 0), clear_inner=True, clear_outer=False
-        )
-        bpy.ops.mesh.select_all(action="SELECT")
-        bpy.ops.mesh.bisect(
-            plane_co=(0, 0, -1),
-            plane_no=(0, 0, -0.99),
-            clear_inner=False,
-            clear_outer=True,
-        )
-        bpy.ops.object.mode_set(mode="OBJECT")
-        bpy.ops.object.select_all(action="DESELECT")
-        camera_fix("Camera", self.reactor.plasma.shape, 78)
-        camera_fix("Sun", self.reactor.plasma.shape, 110)
-        focal_length("Camera", 38)
-
-    def tf_thick(self):
-        """Add some depth - begining of making 3D TFcoils"""
-        for obj in self.reactor.tfcoil.shape.objects[:]:
-            obj.select_set(True)
-            bpy.context.view_layer.objects.active = obj
-            bpy.ops.object.mode_set(mode="EDIT")
-            bpy.ops.mesh.select_all(action="SELECT")
-            bpy.ops.mesh.spin(
-                angle=0.1, steps=100, axis=(0.0, 1.0, 0.0)
-            )  # Currently angle/ thickness hard-coded want to become input from MFILE
-            bpy.ops.object.mode_set(mode="OBJECT")
-            bpy.ops.object.select_all(action="DESELECT")
-
     def key_2d(self):
         """Adds 'cube key' - setup for 2D render"""
         plasma = self.reactor.plasma.shape.objects[:][0]
@@ -221,9 +172,7 @@ class View(ViewBase):
             add_text(dist * 2.2, y, 0, rad=1.8, text=str(object))
             change_colour(colour=colour_dict[object])
         bpy.ops.object.select_all(action="DESELECT")
-        camera_fix("Camera", self.reactor.plasma.shape, 78)
-        camera_fix("Sun", self.reactor.plasma.shape, 110)
-        focal_length("Camera", 35)
+        self.wide_shot
 
     @staticmethod
     def export(filepath: str):  # will not work in function, need to override context
@@ -242,3 +191,63 @@ class View(ViewBase):
         bpy.context.scene.render.filepath = str(file_name)
         bpy.ops.render.render(write_still=True, use_viewport=True)
         # save .gltf and .blend
+
+
+class ReactorShape(View):
+    """Functions for changing the shape of the reactor"""
+
+    def half_reactor(self):  # cuts out section of reactor, WIP=removing more
+        """2D segment view"""  # may have to just delete all vertices.
+        bpy.ops.object.select_all(action="DESELECT")
+        objects = bpy.context.scene.objects
+        for obj in objects:
+            obj.select_set(obj.type == "MESH")
+        bpy.ops.object.editmode_toggle()  # object NOT objects
+        bpy.ops.mesh.select_all(action="SELECT")
+        bpy.ops.mesh.bisect(
+            plane_co=(0, 0, 1), plane_no=(0, 0, -1), clear_inner=True, clear_outer=False
+        )
+        bpy.ops.mesh.select_all(action="SELECT")
+        bpy.ops.mesh.bisect(
+            plane_co=(0, 0, 1), plane_no=(1, 0, 0), clear_inner=True, clear_outer=False
+        )
+        bpy.ops.mesh.select_all(action="SELECT")
+        bpy.ops.mesh.bisect(
+            plane_co=(0, 0, -1),
+            plane_no=(0, 0, -0.99),
+            clear_inner=False,
+            clear_outer=True,
+        )
+        bpy.ops.object.mode_set(mode="OBJECT")
+        bpy.ops.object.select_all(action="DESELECT")
+        self.wide_shot()
+
+    def tf_thick(self):
+        """Add some depth - begining of making 3D TFcoils"""
+        for obj in self.reactor.tfcoil.shape.objects[:]:
+            obj.select_set(True)
+            bpy.context.view_layer.objects.active = obj
+            bpy.ops.object.mode_set(mode="EDIT")
+            bpy.ops.mesh.select_all(action="SELECT")
+            bpy.ops.mesh.spin(
+                angle=0.1, steps=100, axis=(0.0, 1.0, 0.0)
+            )  # Currently angle/ thickness hard-coded want to become input from MFILE
+            bpy.ops.object.mode_set(mode="OBJECT")
+            bpy.ops.object.select_all(action="DESELECT")
+
+    def make_3d(self):
+        """Spins 2D render around an axis to make 3D - whole reactor"""
+        hide = [
+            "tfcoil",
+            "cryostat",
+            "blanket",
+        ]  # cryo and blanket are less intresting tf is not poloidal
+        for seen in filter(lambda n: n not in hide, self.components):
+            try:
+                comp = getattr(self.reactor, seen).shape
+            except AttributeError:
+                # Component doesnt exist on reactor
+                continue
+            for names in comp.objects[:]:
+                names.select_set(True)
+        spin_extrusion()
