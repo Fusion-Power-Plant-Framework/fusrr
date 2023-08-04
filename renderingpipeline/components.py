@@ -39,7 +39,6 @@ PLASMA = "plasma"
 PURPLE = "#7d2f8e"  # plasma purple
 BLUE = "#003688"  # tf blue
 CRYO_BLUE = "#2e7ebc"
-cyan = "#4cbdf0"
 PF_BLUE = "#0072c2"
 BLANKET = "#4a98c9"
 DIVERTOR = "#d0e1f2"
