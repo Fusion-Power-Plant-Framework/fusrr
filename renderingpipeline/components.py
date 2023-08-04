@@ -160,6 +160,8 @@ def cumulative_radial_build(parameters, section):
             cumulative_build += parameters.rminor
         elif item == "vvblgapi" or item == "vvblgapo":
             cumulative_build += parameters.vvblgap
+        elif item == "thshieldi" or item == "thshieldo":
+            cumulative_build += parameters.thshield
         elif "d_vv_in" in item:
             cumulative_build += parameters.d_vv_in
         elif "d_vv_out" in item:
@@ -688,7 +690,7 @@ class VacuumVessel(BlenderComponent):
         cl_subtotal = 0
         for item in vertical_lower:
             lower[item] = getattr(self.params, item)
-            cl_subtotal += lower[item]
+            cl_subtotal -= lower[item]
             cumulative_lower[item] = cl_subtotal
 
         return cumulative_lower, cumulative_upper, lower, upper
@@ -700,7 +702,7 @@ class VacuumVessel(BlenderComponent):
         It is our best guess at what the full component would look like.
         """
         i_single_null = self.params.i_single_null
-        triang = self.params.delta_95
+        triang95 = self.params.triang95
         temp_array_1 = ()
         temp_array_2 = ()
 
@@ -713,14 +715,15 @@ class VacuumVessel(BlenderComponent):
             cumulative_radial_build(section="d_vv_out", parameters=self.params)
             - cumulative_radial_build(section="gapds", parameters=self.params)
         ) / 2.0
+
         kapx = self.cumulative_upper["d_vv_top"] / rminx
 
         if i_single_null == 1:
-            (rs, zs) = plotdh(radx, rminx, triang, kapx)
+            (rs, zs) = plotdh(radx, rminx, triang95, kapx)
             temp_array_1 = temp_array_1 + ((rs, zs))
 
         kapx = self.cumulative_lower["d_vv_bot"] / rminx
-        (rs, zs) = plotdh(radx, rminx, triang, kapx)
+        (rs, zs) = plotdh(radx, rminx, triang95, kapx)
         temp_array_2 = temp_array_2 + ((rs, zs))
 
         # Inner side (nearest to the plasma)
@@ -735,11 +738,11 @@ class VacuumVessel(BlenderComponent):
 
         if i_single_null == 1:
             kapx = (self.cumulative_upper["d_vv_top"] - self.upper["d_vv_top"]) / rminx
-            (rs, zs) = plotdh(radx, rminx, triang, kapx)
+            (rs, zs) = plotdh(radx, rminx, triang95, kapx)
             temp_array_1 = temp_array_1 + ((rs, zs))
 
         kapx = (self.cumulative_lower["d_vv_bot"] + self.lower["d_vv_bot"]) / rminx
-        (rs, zs) = plotdh(radx, rminx, triang, kapx)
+        (rs, zs) = plotdh(radx, rminx, triang95, kapx)
         temp_array_2 = temp_array_2 + ((rs, zs))
 
         # Single null: Draw top half from output
@@ -751,7 +754,7 @@ class VacuumVessel(BlenderComponent):
 
         rs = np.concatenate([temp_array_2[0], temp_array_2[2][::-1]])
         zs = np.concatenate([temp_array_2[1], temp_array_2[3][::-1]])
-        self.create_mesh(x_coords=rs, y_coords=zs, name="Idk")
+        self.create_mesh(x_coords=rs, y_coords=zs, name="lower_vv")
         # For double null, reflect shape of lower half to top instead
         # if i_single_null == 0:
         # axis.fill(rs, -zs, color=vessel)
