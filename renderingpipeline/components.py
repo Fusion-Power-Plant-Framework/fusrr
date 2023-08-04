@@ -39,7 +39,6 @@ PLASMA = "plasma"
 PURPLE = "#7d2f8e"  # plasma purple
 BLUE = "#003688"  # tf blue
 CRYO_BLUE = "#2e7ebc"
-cyan = "#4cbdf0"
 PF_BLUE = "#0072c2"
 BLANKET = "#4a98c9"
 DIVERTOR = "#d0e1f2"
@@ -445,7 +444,8 @@ class Cryostat(BlenderComponent):
         """Build method to render the component"""
         self._cryo_outline()
         self.scene()
-        self.default_colour(colour=cyan)  # CRYO_BLUE)
+        self.default_colour(colour=CRYO_BLUE)
+
 
 class PFCoil(BlenderComponent):
     """PF Coil Component."""

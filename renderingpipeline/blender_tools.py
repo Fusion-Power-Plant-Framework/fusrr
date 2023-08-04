@@ -9,7 +9,6 @@ import bmesh
 import bpy_types
 import mathutils
 import numpy as np
-import mathutils
 
 
 def empty_obj(x, y, z):
@@ -404,15 +403,6 @@ def import_gltf(filepath: str):
     bpy.ops.import_scene.gltf(filepath=filepath)
 
 
-def pi_rotation(set_comp: str):
-    """Moves camera about a fixed point by 180 degrees
-
-    Args
-    ----
-        set_comp (str): setup component i.e. Camera, Sun, Light
-    """
-    object = bpy.data.objects[str(set_comp)]
-    looking_direction = object.location - mathutils.Vector((0.0, 0.0, 0.0))
-    rot_quat = looking_direction.to_track_quat("-Z", "Z")
-    object.rotation_euler = rot_quat.to_euler("XYZ")
-    object.location = rot_quat @ mathutils.Vector((0.0, 0.0, 80))
+def export_gltf(filepath: str):
+    """Export to gltf"""
+    bpy.ops.export_scene.gltf(filepath)
