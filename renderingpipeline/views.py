@@ -138,7 +138,7 @@ class View(ViewBase):
 
     def make_3d(self):
         """Spins 2D render around an axis to make 3D - whole reactor"""
-        no = ["tfcoil", "cryostat", "blanket"]  # Upper_Outer_wall still extruding
+        no = ["tfcoil", "cryostat", "blanket"]
         for seen in filter(lambda n: n not in no, self.components):
             try:
                 comp = getattr(self.reactor, seen).shape
@@ -149,22 +149,27 @@ class View(ViewBase):
                 names.select_set(True)
         spin_extrusion()
 
-    def cutaway(
-        self, components: list[str]
-    ):  # cuts out section of reactor, WIP=removing more
+    def half_reactor(self):  # cuts out section of reactor, WIP=removing more
         """2D segment view"""  # may have to just delete all vertices.
         bpy.ops.object.select_all(action="DESELECT")
-        for obj in components:
-            bpy.data.objects[obj].select_set(True)
-            bpy.ops.object.editmode_toggle()  # object NOT objects
+        objects = bpy.context.scene.objects
+        for obj in objects:
+            obj.select_set(obj.type == "MESH")
+        bpy.ops.object.editmode_toggle()  # object NOT objects
         bpy.ops.mesh.select_all(action="SELECT")
         bpy.ops.mesh.bisect(
-            plane_co=(0, 0, 1),
-            plane_no=(0, 0, -1),
-            clear_inner=True,
-            clear_outer=False,
-            xstart=-1000,
-            xend=1000,
+            plane_co=(0, 0, 1), plane_no=(0, 0, -1), clear_inner=True, clear_outer=False
+        )
+        bpy.ops.mesh.select_all(action="SELECT")
+        bpy.ops.mesh.bisect(
+            plane_co=(0, 0, 1), plane_no=(1, 0, 0), clear_inner=True, clear_outer=False
+        )
+        bpy.ops.mesh.select_all(action="SELECT")
+        bpy.ops.mesh.bisect(
+            plane_co=(0, 0, -1),
+            plane_no=(0, 0, -0.99),
+            clear_inner=False,
+            clear_outer=True,
         )
         bpy.ops.object.mode_set(mode="OBJECT")
         bpy.ops.object.select_all(action="DESELECT")
