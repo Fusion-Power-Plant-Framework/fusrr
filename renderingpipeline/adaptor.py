@@ -78,33 +78,33 @@ class OutputParams:
     y3: float
     y4: float
     y5: float
-    tfc_inleg: float
+    tfcth: float
     vvblgap: float
     d_vv_in: float
     d_vv_out: float
     blnktth: float
     bore: float
-    cs_rad_th: float
+    ohcth: float
     precomp: float
-    cs_rad_gap: float
+    gapoh: float
     tftsgap: float
     thshield_ib: float
-    thshldgap: float
+    gapds: float
     shldith: float
     vvblgapi: float
     blnkith: float
     fwith: float
-    scrapthi: float
+    scrapli: float
     rminori: float
     rminoro: float
-    scraptho: float
+    scraplo: float
     fwoth: float
     blnkoth: float
     vvblgapo: float
     shldoth: float
-    vvtfgap: float
+    gapsto: float
     thshield_ob: float
-    tfth_outleg: float
+    tfthko: float
     rminor_kappa: float
     vgaptop: float
     fwtth: float
@@ -113,12 +113,14 @@ class OutputParams:
     d_vv_top: float
     vgap2: float
     thshield_vb: float
+    thshield: float
     vgap: float
     divfix: float
     shldlth: float
     d_vv_bot: float
     tftsgap: float
     triang: float
+    triang95: float
     bore: float
     ohdz: float
     iohcl: float
