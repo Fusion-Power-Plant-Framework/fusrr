@@ -145,35 +145,6 @@ class View(ViewBase):
         """
         add_light(0, 0, dist * 10)
 
-    def key_2d(self):
-        """Adds 'cube key' - setup for 2D render"""
-        plasma = self.reactor.plasma.shape.objects[:][0]
-        dist = plasma.dimensions.y
-        bpy.ops.object.select_all(action="DESELECT")
-        y = 16
-        for obj in key_list:
-            y += -4
-            add_cube(-dist * 2, y, 0)
-            change_colour(colour=colour_dict[obj])
-            add_text(-dist * 1.8, y, 0, rad=2, text=str(obj))
-            change_colour(colour=colour_dict[obj])
-        bpy.ops.object.select_all(action="DESELECT")  # may not be needed but safer
-
-    def key_3d(self):  # bit messy, trial and error but looks nice in the end
-        """Adds 'cube key' and sets framing"""
-        plasma = self.reactor.plasma.shape.objects[:][0]
-        dist = plasma.dimensions.y
-        bpy.ops.object.select_all(action="DESELECT")
-        y = 16
-        for object in key_list:
-            y += -4
-            add_cube(dist * 2, y, 0)
-            change_colour(colour=colour_dict[object])
-            add_text(dist * 2.2, y, 0, rad=1.8, text=str(object))
-            change_colour(colour=colour_dict[object])
-        bpy.ops.object.select_all(action="DESELECT")
-        self.wide_shot
-
     @staticmethod
     def export(filepath: str):  # will not work in function, need to override context
         """Save as blender file
@@ -195,6 +166,23 @@ class View(ViewBase):
 
 class ReactorShape(View):
     """Functions for changing the shape of the reactor"""
+
+    def tf_thick(self):
+        """Add some depth - begining of making 3D TFcoils"""
+        for obj in self.reactor.tfcoil.shape.objects[:]:
+            obj.select_set(True)
+            bpy.context.view_layer.objects.active = obj
+            bpy.ops.object.mode_set(mode="EDIT")
+            bpy.ops.mesh.select_all(action="SELECT")
+            bpy.ops.mesh.spin(
+                angle=0.1, steps=100, axis=(0.0, 1.0, 0.0)
+            )  # Currently angle/ thickness hard-coded want to become input from MFILE
+            bpy.ops.object.mode_set(mode="OBJECT")
+            bpy.ops.object.select_all(action="DESELECT")
+
+
+class View2D(View):
+    """Cross section view of reactor"""
 
     def half_reactor(self):  # cuts out section of reactor, WIP=removing more
         """2D segment view"""  # may have to just delete all vertices.
@@ -222,18 +210,23 @@ class ReactorShape(View):
         bpy.ops.object.select_all(action="DESELECT")
         self.wide_shot()
 
-    def tf_thick(self):
-        """Add some depth - begining of making 3D TFcoils"""
-        for obj in self.reactor.tfcoil.shape.objects[:]:
-            obj.select_set(True)
-            bpy.context.view_layer.objects.active = obj
-            bpy.ops.object.mode_set(mode="EDIT")
-            bpy.ops.mesh.select_all(action="SELECT")
-            bpy.ops.mesh.spin(
-                angle=0.1, steps=100, axis=(0.0, 1.0, 0.0)
-            )  # Currently angle/ thickness hard-coded want to become input from MFILE
-            bpy.ops.object.mode_set(mode="OBJECT")
-            bpy.ops.object.select_all(action="DESELECT")
+    def key(self):
+        """Adds 'cube key' - setup for 2D render"""
+        plasma = self.reactor.plasma.shape.objects[:][0]
+        dist = plasma.dimensions.y
+        bpy.ops.object.select_all(action="DESELECT")
+        y = 16
+        for obj in key_list:
+            y += -4
+            add_cube(-dist * 2, y, 0)
+            change_colour(colour=colour_dict[obj])
+            add_text(-dist * 1.8, y, 0, rad=2, text=str(obj))
+            change_colour(colour=colour_dict[obj])
+        bpy.ops.object.select_all(action="DESELECT")  # may not be needed but safer
+
+
+class View3D(View):
+    """Different 3d views"""
 
     def make_3d(self):
         """Spins 2D render around an axis to make 3D - whole reactor"""
@@ -251,3 +244,18 @@ class ReactorShape(View):
             for names in comp.objects[:]:
                 names.select_set(True)
         spin_extrusion()
+
+    def key_3d(self):  # bit messy, trial and error but looks nice in the end
+        """Adds 'cube key' and sets framing"""
+        plasma = self.reactor.plasma.shape.objects[:][0]
+        dist = plasma.dimensions.y
+        bpy.ops.object.select_all(action="DESELECT")
+        y = 16
+        for object in key_list:
+            y += -4
+            add_cube(dist * 2, y, 0)
+            change_colour(colour=colour_dict[object])
+            add_text(dist * 2.2, y, 0, rad=1.8, text=str(object))
+            change_colour(colour=colour_dict[object])
+        bpy.ops.object.select_all(action="DESELECT")
+        self.wide_shot
