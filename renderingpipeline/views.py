@@ -259,4 +259,30 @@ class View3D(View):
             add_text(dist * 2.2, y, 0, rad=1.8, text=str(object))
             change_colour(colour=colour_dict[object])
         bpy.ops.object.select_all(action="DESELECT")
-        self.wide_shot
+        self.wide_shot()
+
+    @staticmethod
+    def export(filepath: str):  # will not work in function, need to override context
+        """Save as blender file
+
+        Args
+        ----
+            filepath (str): destination for file
+        """
+        # out = bpy.ops.wm.save_as_mainfile(filepath)
+        bpy.ops.export_scene.gltf(filepath)
+
+    @staticmethod
+    def save_image(file_name: str):
+        """Saves render as PNG"""
+        bpy.context.scene.render.filepath = str(file_name)
+        bpy.ops.render.render(write_still=True, use_viewport=True)
+        # save .gltf and .blend
+
+    def multiple_tf(self):
+        """Copy and plot correct number of tf coils"""
+        pass
+
+
+class Comparison(View):
+    """Plots two reactor inputs"""
