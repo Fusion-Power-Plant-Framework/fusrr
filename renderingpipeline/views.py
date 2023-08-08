@@ -14,6 +14,7 @@ from renderingpipeline.blender_tools import (
     focal_length,
     hex_colour_to_rgba,
     orthographic_view,
+    move_to_collection,
     spin_extrusion,
     half_reactor
 )
@@ -286,3 +287,25 @@ class View3D(View):
 
 class Comparison(View):
     """Plots two reactor inputs"""
+
+    # if objects exist move next reactor else, carry on
+    def comparison(self):  # reactor1, reactor2):
+        """Set up for comparing two reactors
+
+        Args
+        ----
+            self (_type_): _description_
+            reactor2 (_type_): _description_
+        """
+        bpy.context.view_layer.objects.active = None
+        bpy.ops.object.select_all(action="SELECT")
+        for obj in bpy.context.selected_objects:
+            bpy.context.view_layer.objects.active = obj
+            obj.select_set(True)
+            name = bpy.context.object.name
+            bpy.data.objects[name].location = (40, 0, 0)
+
+        # select all and move to collection
+        move_to_collection("Reactor1")
+        # bpy.data.scenes["Scene"].(null) = True #works in blender not here
+        bpy.context.view_layer.objects.active = None

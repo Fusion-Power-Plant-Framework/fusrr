@@ -141,7 +141,12 @@ def join_obj(names: list):
     for obj_name in names:
         selected_objects = bpy.data.objects.get(str(obj_name))
         selected_objects.select_set(True)
-
+    for col in bpy.data.collections:
+        if col.name == "Reactor1":
+            for obj in bpy.data.collections["Reactor1"].all_objects:
+                obj.select_set(False)
+        else:
+            pass
     bpy.context.view_layer.objects.active = bpy.context.scene.objects[str(names[0])]
     bpy.ops.object.join()
 
@@ -155,6 +160,12 @@ def make_face_from_vertices(vertex_obj: str):
     """
     bpy.ops.object.select_all(action="DESELECT")
     bpy.data.objects[str(vertex_obj)].select_set(True)
+    for col in bpy.data.collections:
+        if col.name == "Reactor1":
+            for obj in bpy.data.collections["Reactor1"].all_objects:
+                obj.select_set(False)
+        else:
+            pass
     bpy.ops.object.mode_set(mode="EDIT")
     bpy.ops.mesh.select_all(action="SELECT")
     bpy.ops.mesh.edge_face_add()
@@ -335,7 +346,7 @@ def spin_extrusion():
     bpy.ops.object.mode_set(mode="EDIT")
     bpy.ops.mesh.select_all(action="SELECT")
     bpy.ops.mesh.spin(
-        angle=2 * np.pi, steps=100, axis=(0.0, 1.0, 0.0)
+        angle=2 * np.pi, steps=10, axis=(0.0, 1.0, 0.0)
     )  # Polodial rotation
     bpy.ops.object.mode_set(mode="OBJECT")
     bpy.ops.object.shade_smooth()
@@ -404,6 +415,19 @@ def focal_length(camera: str, length):
         length (int): focal length in mm
     """
     bpy.data.cameras[camera].lens = length
+
+
+def move_to_collection(new_name: str):
+    """Move all components to collection
+
+    Args
+    ----
+        new_name (str): name of new collection
+    """
+    bpy.ops.object.select_all(action="SELECT")
+    bpy.ops.object.move_to_collection(
+        collection_index=0, is_new=True, new_collection_name=new_name
+    )
 
 
 def import_gltf(filepath: str):

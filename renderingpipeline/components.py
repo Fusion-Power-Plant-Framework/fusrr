@@ -165,6 +165,13 @@ class BlenderComponent(abc.ABC):
         bpy.ops.object.select_all(action="DESELECT")
         for comp in self._select_objects(prefix, regex):
             comp.select_set(True)
+            bpy.context.view_layer.objects.active = comp
+        for col in bpy.data.collections:
+            if col.name == "Reactor1":
+                for obj in bpy.data.collections["Reactor1"].all_objects:
+                    obj.select_set(False)
+            else:
+                pass
         spin_extrusion()
 
     def hex_color_to_rgba(self, hex_color: str) -> Tuple[float, ...]:
