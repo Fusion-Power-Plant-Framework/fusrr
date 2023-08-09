@@ -1,6 +1,6 @@
 # **renderingpipeline**
 
-![image](examples/initial_collage.png)
+![image](examples/collage.png)
 
 
 ## Developing visualisations of fusion reactors.
