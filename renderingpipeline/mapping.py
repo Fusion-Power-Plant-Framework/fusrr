@@ -160,7 +160,7 @@ vertical_lower = [
 
 bluemira_param = {
     "rmajor": "R_0",
-    "No_TF": "n_TF",
-    "delta95": "delta_95",
+    "n_tf": "n_TF",
+    "delta_95": "delta_95",
     "kappa95": "kappa95",
 }

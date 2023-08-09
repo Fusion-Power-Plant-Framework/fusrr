@@ -14,9 +14,9 @@ from renderingpipeline.blender_tools import (
     focal_length,
     hex_colour_to_rgba,
     orthographic_view,
+    move_camera,
     move_to_collection,
     spin_extrusion,
-    half_reactor
 )
 from renderingpipeline.reactor import Reactor
 
@@ -262,6 +262,15 @@ class View3D(View):
         bpy.ops.object.select_all(action="DESELECT")
         self.wide_shot()
 
+    def hide_render(self, component: str):
+        """Hide render (this could go in blender comp but useful for user)
+
+        Args
+        ----
+            component (str): component
+        """
+        bpy.data.objects[component].hide_render = True
+
     @staticmethod
     def export(filepath: str):  # will not work in function, need to override context
         """Save as blender file
@@ -297,15 +306,36 @@ class Comparison(View):
             self (_type_): _description_
             reactor2 (_type_): _description_
         """
-        bpy.context.view_layer.objects.active = None
-        bpy.ops.object.select_all(action="SELECT")
+        # bpy.context.view_layer.objects.active = None
+        # bpy.ops.object.select_all(action="SELECT")
+        # for obj in bpy.context.selected_objects:
+        #     bpy.context.view_layer.objects.active = obj
+        #     obj.select_set(True)
+        #     name = bpy.context.object.name
+        #     bpy.data.objects[name].location = (40, 0, 0)
+
+        bpy.ops.object.select_all(action="DESELECT")
+        bpy.ops.object.select_by_type(type="MESH")
+        bpy.ops.object.join()
+        for sect in bpy.context.selected_objects:
+            sect.name = "reactor1"
+        bpy.data.objects["reactor1"].location = (40, 0, 0)
+        move_to_collection("reactor1", "Reactor1")
+        bpy.ops.object.select_all(action="DESELECT")
+
+    def comparison_shot(self):
+        """Setup camera + components for comparison"""
+        bpy.ops.object.select_all(action="DESELECT")
+        bpy.data.objects["reactor1"].select_set(True)
+        bpy.data.objects["reactor1"].hide_render = False
+        bpy.data.objects["Camera"].select_set(True)
+        cam = bpy.data.objects["Camera"]
+        for c in cam.constraints:
+            cam.constraints.remove(c)
+        bpy.ops.object.select_all(action="DESELECT")
+        bpy.data.objects["Camera"].select_set(True)
         for obj in bpy.context.selected_objects:
             bpy.context.view_layer.objects.active = obj
-            obj.select_set(True)
-            name = bpy.context.object.name
-            bpy.data.objects[name].location = (40, 0, 0)
-
-        # select all and move to collection
-        move_to_collection("Reactor1")
-        # bpy.data.scenes["Scene"].(null) = True #works in blender not here
-        bpy.context.view_layer.objects.active = None
+        bpy.context.object.rotation_euler = (0, 0, 0)
+        move_camera(20, 0, 82)
+        focal_length("Camera", 30)

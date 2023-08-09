@@ -346,7 +346,7 @@ def spin_extrusion():
     bpy.ops.object.mode_set(mode="EDIT")
     bpy.ops.mesh.select_all(action="SELECT")
     bpy.ops.mesh.spin(
-        angle=2 * np.pi, steps=10, axis=(0.0, 1.0, 0.0)
+        angle=2 * np.pi, steps=100, axis=(0.0, 1.0, 0.0)
     )  # Polodial rotation
     bpy.ops.object.mode_set(mode="OBJECT")
     bpy.ops.object.shade_smooth()
@@ -417,14 +417,15 @@ def focal_length(camera: str, length):
     bpy.data.cameras[camera].lens = length
 
 
-def move_to_collection(new_name: str):
+def move_to_collection(object_name: str, new_name: str):
     """Move all components to collection
 
     Args
     ----
         new_name (str): name of new collection
     """
-    bpy.ops.object.select_all(action="SELECT")
+    bpy.ops.object.select_all(action="DESELECT")
+    bpy.data.objects[object_name].select_set(True)
     bpy.ops.object.move_to_collection(
         collection_index=0, is_new=True, new_collection_name=new_name
     )
@@ -438,3 +439,39 @@ def import_gltf(filepath: str):
 def export_gltf(filepath: str):
     """Export to gltf"""
     bpy.ops.export_scene.gltf(filepath)
+
+
+def recur_layer_collection(layer_coll, coll_name):
+    """Iterates through collections to find desired collection
+
+    Args
+    ----
+        layerColl : bpy.context.view_layer.layer_collection
+        collName (str): _description_
+
+    Returns
+    -------
+        _type_: _description_
+    """
+    found = None
+    if layer_coll.name == coll_name:
+        return layer_coll
+    for layer in layer_coll.children:
+        found = recur_layer_collection(layer, coll_name)
+        if found:
+            return found
+
+
+def exclude_collection(col_name: str):
+    """Moves selected component to new collection and excludes it from the secene
+
+    Args
+    ----
+        col_name (str): name of new collection
+    """
+    move_to_collection(col_name)
+    layer_collection = bpy.context.view_layer.layer_collection
+    layercoll = recur_layer_collection(layer_collection, col_name)
+    bpy.context.view_layer.active_layer_collection = layercoll
+    bpy.context.view_layer.active_layer_collection.exclude = True
+    bpy.context.view_layer.objects.active = None
