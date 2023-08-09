@@ -98,43 +98,6 @@ class View(ViewBase):
         camera_fix("Sun", self.reactor.plasma.shape, 110)
         focal_length("Camera", 38)
 
-    def highlight_plasma(
-        self, colour: str
-    ):  # Not working yet, issues w/ selection and meshes
-        """Selects and changes colour of plasma
-
-        Args
-        ----
-            colour (str): hex number for colour
-        """
-        bpy.ops.object.select_all(action="DESELECT")
-        comp = self.reactor.plasma.shape.objects[:][0]
-        comp.select_set(True)
-        bpy.ops.object.mode_set(mode="EDIT")  # blender likes 'EDIT' VScode does not
-        bpy.ops.mesh.delete(type="FACE")
-        bpy.ops.object.mode_set(mode="OBJECT")
-        change_colour(colour)
-
-    def move_plasma(self, x, y, z):
-        """Selects and moves plasma
-
-        Args
-        ----
-            x : coords
-            y : coords
-            z : coords
-        """
-        objs = self.reactor.plasma.shape.objects[:]
-        bb_max = np.array(objs[0].bound_box)
-        for ob_ind in range(len(objs) - 1):
-            bb_max = np.maximum(bb_max, np.array(objs[ob_ind + 1].bound_box))
-
-        centre = np.mean(bb_max, axis=0)
-        shift = np.ptp(np.stack([centre, np.array([x, y, z])]), axis=0)
-
-        for ob in objs:
-            ob.location = Vector(shift) + ob.location
-
     def add_light(self, dist: float):
         """Adds sunlight object to view
 
@@ -164,7 +127,7 @@ class View(ViewBase):
 
 
 class ReactorShape(View):
-    """Functions for changing the shape of the reactor"""
+    """Functions for changing the shape/ properties of the reactor or components"""
 
     def tf_thick(self):
         """Add some depth - begining of making 3D TFcoils"""
@@ -178,6 +141,43 @@ class ReactorShape(View):
             )  # Currently angle/ thickness hard-coded want to become input from MFILE
             bpy.ops.object.mode_set(mode="OBJECT")
             bpy.ops.object.select_all(action="DESELECT")
+
+    def move_plasma(self, x, y, z):
+        """Selects and moves plasma
+
+        Args
+        ----
+            x : coords
+            y : coords
+            z : coords
+        """
+        objs = self.reactor.plasma.shape.objects[:]
+        bb_max = np.array(objs[0].bound_box)
+        for ob_ind in range(len(objs) - 1):
+            bb_max = np.maximum(bb_max, np.array(objs[ob_ind + 1].bound_box))
+
+        centre = np.mean(bb_max, axis=0)
+        shift = np.ptp(np.stack([centre, np.array([x, y, z])]), axis=0)
+
+        for ob in objs:
+            ob.location = Vector(shift) + ob.location
+
+    def highlight_plasma(
+        self, colour: str
+    ):  # Not working yet, issues w/ selection and meshes
+        """Selects and changes colour of plasma
+
+        Args
+        ----
+            colour (str): hex number for colour
+        """
+        bpy.ops.object.select_all(action="DESELECT")
+        comp = self.reactor.plasma.shape.objects[:][0]
+        comp.select_set(True)
+        bpy.ops.object.mode_set(mode="EDIT")  # blender likes 'EDIT' VScode does not
+        bpy.ops.mesh.delete(type="FACE")
+        bpy.ops.object.mode_set(mode="OBJECT")
+        change_colour(colour)
 
 
 class View2D(View):
@@ -229,12 +229,12 @@ class View3D(View):
 
     def make_3d(self):
         """Spins 2D render around an axis to make 3D - whole reactor"""
-        hide = [
+        dont_spin = [
             "tfcoil",
             "cryostat",
             "blanket",
         ]  # cryo and blanket cover other components tf is not poloidal
-        for seen in filter(lambda n: n not in hide, self.components):
+        for seen in filter(lambda n: n not in dont_spin, self.components):
             try:
                 comp = getattr(self.reactor, seen).shape
             except AttributeError:
