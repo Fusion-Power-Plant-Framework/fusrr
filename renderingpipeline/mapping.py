@@ -24,6 +24,7 @@ process_param = {
     "d_vv_out": "d_vv_out",
     "blnktth": "blnktth",
     "tftort": "tftort",
+    "casthi": "casthi",
     # Blanket use
     "bore": "bore",
     "cs_rad_th": "ohcth",

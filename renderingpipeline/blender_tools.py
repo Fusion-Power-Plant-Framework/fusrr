@@ -154,7 +154,7 @@ def make_face_from_vertices(vertex_obj: str):
         name of object where vertices are
     """
     bpy.ops.object.select_all(action="DESELECT")
-    bpy.data.objects[str(vertex_obj)].select_set(True)
+    bpy.data.objects[vertex_obj].select_set(True)
     bpy.ops.object.mode_set(mode="EDIT")
     bpy.ops.mesh.select_all(action="SELECT")
     bpy.ops.mesh.edge_face_add()
@@ -270,7 +270,7 @@ def change_to_mesh(obj: object):
     Parameters
     ----------
     object_names : list
-        objects in blender scene
+        object in blender scene
     """
     bpy.ops.object.select_all(action="DESELECT")
     bpy.data.objects[obj].select_set(True)
@@ -359,6 +359,18 @@ def half_reactor():
     bpy.ops.object.select_all(action="DESELECT")
 
 
+def focal_length(camera: str, length):
+    """Changes the camera focal length
+        note: longer fl = smaller FOV (i.e. more zoom)
+
+    Args
+    ----
+        camera (str): name of the camera
+        length (int): focal length in mm
+    """
+    bpy.data.cameras[camera].lens = length
+
+
 def hex_colour_to_rgba(hex_colour) -> tuple[float, ...]:
     """Converts hex to blender's sRGB
 
@@ -391,16 +403,38 @@ def pi_rotation(set_comp: str):
     object.location = rot_quat @ mathutils.Vector((0.0, 0.0, 80))
 
 
-def focal_length(camera: str, length):
-    """Changes the camera focal length
-        note: longer fl = smaller FOV (i.e. more zoom)
+def add_empty_axes(empty_name: str):
+    """Aim of this function is to create an empty axes centred on the origin"""
+    bpy.context.view_layer.objects.active = None
+    for obj in bpy.context.selected_objects:
+        obj.select_set(False)
+    bpy.ops.object.empty_add(type="PLAIN_AXES", location=(0, 0, 0))
+    for obj in bpy.context.selected_objects:
+        obj.name = empty_name
+    bpy.context.view_layer.objects.active = None
+    for obj in bpy.context.selected_objects:
+        obj.select_set(False)
 
-    Args
-    ----
-        camera (str): name of the camera
-        length (int): focal length in mm
-    """
-    bpy.data.cameras[camera].lens = length
+
+def array_object_rotation(object_name: str, empty_name: str, no_tf: int):
+    """The aim of this function will to be able to replicate an object around an axis"""
+    mod_name = "Tf_mod"
+    angle_gap = 2 * np.pi / no_tf
+    bpy.data.objects[object_name].select_set(True)
+    bpy.context.view_layer.objects.active = bpy.context.scene.objects[object_name]
+    bpy.ops.object.modifier_add(type="ARRAY")
+    for obj in bpy.context.selected_objects:
+        mod = obj.modifiers.get("Array")
+        mod.name = mod_name
+    bpy.context.object.modifiers[mod_name].count = no_tf
+    bpy.context.object.modifiers[mod_name].offset_object = bpy.data.objects[empty_name]
+    bpy.context.object.modifiers[mod_name].use_object_offset = True
+    bpy.context.object.modifiers[mod_name].use_relative_offset = False
+    bpy.data.objects[object_name].select_set(False)
+    bpy.context.view_layer.objects.active = None
+    bpy.data.objects[empty_name].select_set(True)
+    bpy.context.view_layer.objects.active = bpy.context.scene.objects[empty_name]
+    bpy.context.object.rotation_euler[1] = angle_gap
 
 
 def import_gltf(filepath: str):
