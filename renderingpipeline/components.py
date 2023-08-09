@@ -13,6 +13,8 @@ from matplotlib import patches
 
 from renderingpipeline.adaptor import OutputParams
 from renderingpipeline.blender_tools import (
+    add_empty_axes,
+    array_object_rotation,
     change_to_mesh,
     component_outline,
     delete_cube,
@@ -386,10 +388,11 @@ class TFCoil(BlenderComponent):
         component_outline(centre_coords, tf_list[4])
 
         for obj in tf_list:
-            change_to_mesh(object_names=obj)
+            change_to_mesh(obj=obj)
             make_face_from_vertices(obj)
 
         self.tf_coil_thickness()
+        self.multiple_tf_coils()
 
     def tf_coil_thickness(self):
         """Add some depth - beginning of making 3D TFcoils"""
@@ -405,6 +408,15 @@ class TFCoil(BlenderComponent):
         bpy.ops.object.mode_set(mode="EDIT")
         bpy.ops.mesh.extrude_repeat(steps=1, offset=(0, 0, simplified_thickness))
         bpy.ops.object.mode_set(mode="OBJECT")
+        for obj in bpy.context.selected_objects:
+            obj.name = "Tf_coils"
+
+    def multiple_tf_coils(self):
+        """Adds multiple tf_coils from singular tf coil"""
+        add_empty_axes(empty_name="Empty_tf")
+        array_object_rotation(
+            object_name="Tf_coils", empty_name="Empty_tf", no_tf=int(self.params.n_tf)
+        )
 
 
 class Cryostat(BlenderComponent):
@@ -450,7 +462,8 @@ class Cryostat(BlenderComponent):
         coords = rect_blend(rectangle=rect)
         component_outline(coords, cryo_list[3])
 
-        change_to_mesh(object_names=cryo_list)
+        for obj in cryo_list:
+            change_to_mesh(obj=obj)
 
         # Makes each wall into a filled shape
         for i in cryo_list:

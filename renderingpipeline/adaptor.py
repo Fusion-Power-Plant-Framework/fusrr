@@ -149,6 +149,7 @@ class OutputParams:
     rdewex: float
     ddwex: float
     zdewex: float
+    casthi: float
 
     file_path: Optional[Path] = None
 
