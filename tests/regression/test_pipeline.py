@@ -21,7 +21,7 @@ def test_pipelines(tmp_path):
 
     view = View(reactor1)
     view.tf_thick()
-    view.key()
+    view.key_2d()
 
     # Save "view_test.png" in temporary test dir
     view.save_image(tmp_path / "view_test")

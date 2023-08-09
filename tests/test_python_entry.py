@@ -1,11 +1,11 @@
 """test for python_entry"""
 from pathlib import Path
 
-import renderingpipeline.blender_tools as bt
+from renderingpipeline.views import View
 
 
 def test_save_image(tmp_path):
     """Test to assert if render has been saved"""
     path = tmp_path / "render.png"
-    bt.save_image(path)
+    View.save_image(path)
     assert Path(path).exists()
