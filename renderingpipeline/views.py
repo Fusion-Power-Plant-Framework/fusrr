@@ -17,8 +17,7 @@ from renderingpipeline.blender_tools import (
 )
 from renderingpipeline.reactor import Reactor
 
-# naming may change to become less hard-coded, currently working for key
-key_list = ["Plasma", "PF Coil", "Central Coil", "TF Coil", "Cryostat"]
+key_list = ["Plasma", "PF Coil", "Central Coil", "TF Coil", "Cryostat"]  # naming for key
 
 colour_dict = dict(
     {
@@ -234,7 +233,7 @@ class View3D(View):
             "tfcoil",
             "cryostat",
             "blanket",
-        ]  # cryo and blanket are less intresting tf is not poloidal
+        ]  # cryo and blanket cover other components tf is not poloidal
         for seen in filter(lambda n: n not in hide, self.components):
             try:
                 comp = getattr(self.reactor, seen).shape
