@@ -116,7 +116,6 @@ class View(ViewBase):
         ----
             filepath (str): destination for file
         """
-        # out = bpy.ops.wm.save_as_mainfile(filepath)
         bpy.ops.export_scene.gltf(filepath)
 
     @staticmethod
@@ -124,7 +123,16 @@ class View(ViewBase):
         """Saves render as PNG"""
         bpy.context.scene.render.filepath = str(file_name)
         bpy.ops.render.render(write_still=True, use_viewport=True)
-        # save .gltf and .blend
+
+    def reset_scene(self):
+        # must be called if making >1 reactor in same script (excluding comparison view)
+        """Delete existing meshes (allows for next reactor import)"""
+        for obj in bpy.context.scene.objects:
+            if obj.type == "MESH":
+                obj.select_set(True)
+            else:
+                obj.select_set(False)
+        bpy.ops.object.delete()
 
 
 class PlasmaOptions(View):
