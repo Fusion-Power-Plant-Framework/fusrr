@@ -387,3 +387,7 @@ def main():
     blend_file_path = "blanket_test"
     bpy.ops.wm.save_as_mainfile(filepath=blend_file_path)
     # bpy.ops.export_scene.gltf(filepath=blend_file_path)
+
+
+if __name__ == "__main__":
+    main()
