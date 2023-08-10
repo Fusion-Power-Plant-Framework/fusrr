@@ -2,7 +2,7 @@
 from pathlib import Path
 
 from renderingpipeline.reactor import Reactor
-from renderingpipeline.views import View
+from renderingpipeline.views import View, View2D
 
 
 def test_pipelines(tmp_path):
@@ -20,8 +20,9 @@ def test_pipelines(tmp_path):
     reactor1 = Reactor.reactor_from_file(input_file_path=input_file_path)
 
     view = View(reactor1)
-    view.tf_thick()
-    view.key_2d()
+    view.wide_shot()
+    key = View2D(reactor1)
+    key.key()
 
     # Save "view_test.png" in temporary test dir
     view.save_image(tmp_path / "view_test")

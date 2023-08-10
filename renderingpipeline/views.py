@@ -17,7 +17,8 @@ from renderingpipeline.blender_tools import (
 )
 from renderingpipeline.reactor import Reactor
 
-key_list = ["Plasma", "PF Coil", "Central Coil", "TF Coil", "Cryostat"]  # naming for key
+# naming for key/ legend
+key_list = ["Plasma", "PF Coil", "Central Coil", "TF Coil", "Cryostat"]
 
 colour_dict = dict(
     {
@@ -90,7 +91,7 @@ class View(ViewBase):
         bpy.data.objects["Sun"].hide_render = False
 
     def wide_shot(self):
-        """Useful positioning
+        """Useful positioning, moves camera + sun further away + zooms in
         -done through trial + error
         -Best in 3D renders and wide 2D shots
         """
@@ -126,21 +127,8 @@ class View(ViewBase):
         # save .gltf and .blend
 
 
-class ReactorShape(View):
-    """Functions for changing the shape/ properties of the reactor or components"""
-
-    def tf_thick(self):
-        """Add some depth - begining of making 3D TFcoils"""
-        for obj in self.reactor.tfcoil.shape.objects[:]:
-            obj.select_set(True)
-            bpy.context.view_layer.objects.active = obj
-            bpy.ops.object.mode_set(mode="EDIT")
-            bpy.ops.mesh.select_all(action="SELECT")
-            bpy.ops.mesh.spin(
-                angle=0.1, steps=100, axis=(0.0, 1.0, 0.0)
-            )  # Currently angle/ thickness hard-coded want to become input from MFILE
-            bpy.ops.object.mode_set(mode="OBJECT")
-            bpy.ops.object.select_all(action="DESELECT")
+class PlasmaOptions(View):
+    """Functions for altering look of plasma component"""
 
     def move_plasma(self, x, y, z):
         """Selects and moves plasma
@@ -174,7 +162,7 @@ class ReactorShape(View):
         bpy.ops.object.select_all(action="DESELECT")
         comp = self.reactor.plasma.shape.objects[:][0]
         comp.select_set(True)
-        bpy.ops.object.mode_set(mode="EDIT")  # blender likes 'EDIT' VScode does not
+        bpy.ops.object.mode_set(mode="EDIT")
         bpy.ops.mesh.delete(type="FACE")
         bpy.ops.object.mode_set(mode="OBJECT")
         change_colour(colour)
