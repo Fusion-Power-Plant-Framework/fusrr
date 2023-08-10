@@ -17,7 +17,7 @@ from renderingpipeline.blender_tools import (
 )
 from renderingpipeline.reactor import Reactor
 
-# naming may change to become less hard-coded, currently working for key
+# naming for key/ legend
 key_list = ["Plasma", "PF Coil", "Central Coil", "TF Coil", "Cryostat"]
 
 colour_dict = dict(
@@ -90,22 +90,45 @@ class View(ViewBase):
 
         bpy.data.objects["Sun"].hide_render = False
 
-    def highlight_plasma(
-        self, colour: str
-    ):  # Not working yet, issues w/ selection and meshes
-        """Selects and changes colour of plasma
+    def wide_shot(self):
+        """Useful positioning, moves camera + sun further away + zooms in
+        -done through trial + error
+        -Best in 3D renders and wide 2D shots
+        """
+        camera_fix("Camera", self.reactor.plasma.shape, 78)
+        camera_fix("Sun", self.reactor.plasma.shape, 110)
+        focal_length("Camera", 38)
+
+    def add_light(self, dist: float):
+        """Adds sunlight object to view
 
         Args
         ----
-            colour (str): hex number for colour
+            dist (float): distance
         """
-        bpy.ops.object.select_all(action="DESELECT")
-        comp = self.reactor.plasma.shape.objects[:][0]
-        comp.select_set(True)
-        bpy.ops.object.mode_set(mode="EDIT")  # blender likes 'EDIT' VScode does not
-        bpy.ops.mesh.delete(type="FACE")
-        bpy.ops.object.mode_set(mode="OBJECT")
-        change_colour(colour)
+        add_light(0, 0, dist * 10)
+
+    @staticmethod
+    def export(filepath: str):  # will not work in function, need to override context
+        """Save as blender file
+
+        Args
+        ----
+            filepath (str): destination for file
+        """
+        # out = bpy.ops.wm.save_as_mainfile(filepath)
+        bpy.ops.export_scene.gltf(filepath)
+
+    @staticmethod
+    def save_image(file_name: str):
+        """Saves render as PNG"""
+        bpy.context.scene.render.filepath = str(file_name)
+        bpy.ops.render.render(write_still=True, use_viewport=True)
+        # save .gltf and .blend
+
+
+class PlasmaOptions(View):
+    """Functions for altering look of plasma component"""
 
     def move_plasma(self, x, y, z):
         """Selects and moves plasma
@@ -127,49 +150,54 @@ class View(ViewBase):
         for ob in objs:
             ob.location = Vector(shift) + ob.location
 
-    def add_light(self, dist: float):
-        """Adds sunlight object to view
+    def highlight_plasma(
+        self, colour: str
+    ):  # Not working yet, issues w/ selection and meshes
+        """Selects and changes colour of plasma
 
         Args
         ----
-            dist (float): distance
+            colour (str): hex number for colour
         """
-        add_light(0, 0, dist * 10)
+        bpy.ops.object.select_all(action="DESELECT")
+        comp = self.reactor.plasma.shape.objects[:][0]
+        comp.select_set(True)
+        bpy.ops.object.mode_set(mode="EDIT")
+        bpy.ops.mesh.delete(type="FACE")
+        bpy.ops.object.mode_set(mode="OBJECT")
+        change_colour(colour)
 
-    def make_3d(self):
-        """Spins 2D render around an axis to make 3D - whole reactor"""
-        no = ["tfcoil", "cryostat", "blanket"]  # Upper_Outer_wall still extruding
-        for seen in filter(lambda n: n not in no, self.components):
-            try:
-                comp = getattr(self.reactor, seen).shape
-            except AttributeError:
-                # Component doesnt exist on reactor
-                continue
-            for names in comp.objects[:]:
-                names.select_set(True)
-        spin_extrusion()
 
-    def cutaway(self):  # fine for PROCESS extruded components
-        """3D cutaway view"""
-        bpy.ops.mesh.bisect()
-        camera_fix("Camera", self.reactor.plasma.shape, 78)
-        camera_fix("Sun", self.reactor.plasma.shape, 110)
-        focal_length("Camera", 38)
+class View2D(View):
+    """Cross section view of reactor"""
 
-    def tf_thick(self):
-        """Add some depth - begining of making 3D TFcoils"""
-        for obj in self.reactor.tfcoil.shape.objects[:]:
-            obj.select_set(True)
-            bpy.context.view_layer.objects.active = obj
-            bpy.ops.object.mode_set(mode="EDIT")
-            bpy.ops.mesh.select_all(action="SELECT")
-            bpy.ops.mesh.spin(
-                angle=0.1, steps=100, axis=(0.0, 1.0, 0.0)
-            )  # Currently angle/ thickness hard-coded want to become input from MFILE
-            bpy.ops.object.mode_set(mode="OBJECT")
-            bpy.ops.object.select_all(action="DESELECT")
+    def half_reactor(self):  # cuts out section of reactor, WIP=removing more
+        """2D segment view"""  # may have to just delete all vertices.
+        bpy.ops.object.select_all(action="DESELECT")
+        objects = bpy.context.scene.objects
+        for obj in objects:
+            obj.select_set(obj.type == "MESH")
+        bpy.ops.object.editmode_toggle()  # object NOT objects
+        bpy.ops.mesh.select_all(action="SELECT")
+        bpy.ops.mesh.bisect(
+            plane_co=(0, 0, 1), plane_no=(0, 0, -1), clear_inner=True, clear_outer=False
+        )
+        bpy.ops.mesh.select_all(action="SELECT")
+        bpy.ops.mesh.bisect(
+            plane_co=(0, 0, 1), plane_no=(1, 0, 0), clear_inner=True, clear_outer=False
+        )
+        bpy.ops.mesh.select_all(action="SELECT")
+        bpy.ops.mesh.bisect(
+            plane_co=(0, 0, -1),
+            plane_no=(0, 0, -0.99),
+            clear_inner=False,
+            clear_outer=True,
+        )
+        bpy.ops.object.mode_set(mode="OBJECT")
+        bpy.ops.object.select_all(action="DESELECT")
+        self.wide_shot()
 
-    def key_2d(self):
+    def key(self):
         """Adds 'cube key' - setup for 2D render"""
         plasma = self.reactor.plasma.shape.objects[:][0]
         dist = plasma.dimensions.y
@@ -182,6 +210,27 @@ class View(ViewBase):
             add_text(-dist * 1.8, y, 0, rad=2, text=str(obj))
             change_colour(colour=colour_dict[obj])
         bpy.ops.object.select_all(action="DESELECT")  # may not be needed but safer
+
+
+class View3D(View):
+    """Different 3d views"""
+
+    def make_3d(self):
+        """Spins 2D render around an axis to make 3D - whole reactor"""
+        dont_spin = [
+            "tfcoil",
+            "cryostat",
+            "blanket",
+        ]  # cryo and blanket cover other components tf is not poloidal
+        for seen in filter(lambda n: n not in dont_spin, self.components):
+            try:
+                comp = getattr(self.reactor, seen).shape
+            except AttributeError:
+                # Component doesnt exist on reactor
+                continue
+            for names in comp.objects[:]:
+                names.select_set(True)
+        spin_extrusion()
 
     def key_3d(self):  # bit messy, trial and error but looks nice in the end
         """Adds 'cube key' and sets framing"""
@@ -196,24 +245,4 @@ class View(ViewBase):
             add_text(dist * 2.2, y, 0, rad=1.8, text=str(object))
             change_colour(colour=colour_dict[object])
         bpy.ops.object.select_all(action="DESELECT")
-        camera_fix("Camera", self.reactor.plasma.shape, 78)
-        camera_fix("Sun", self.reactor.plasma.shape, 110)
-        focal_length("Camera", 35)
-
-    @staticmethod
-    def export(filepath: str):  # will not work in function, need to override context
-        """Save as blender file
-
-        Args
-        ----
-            filepath (str): destination for file
-        """
-        # out = bpy.ops.wm.save_as_mainfile(filepath)
-        bpy.ops.export_scene.gltf(filepath)
-
-    @staticmethod
-    def save_image(file_name: str):
-        """Saves render as PNG"""
-        bpy.context.scene.render.filepath = str(file_name)
-        bpy.ops.render.render(write_still=True, use_viewport=True)
-        # save .gltf and .blend
+        self.wide_shot
