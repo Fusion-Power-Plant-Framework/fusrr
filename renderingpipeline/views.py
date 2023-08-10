@@ -123,14 +123,13 @@ class View(ViewBase):
         add_light(0, 0, dist * 10)
 
     @staticmethod
-    def export(filepath: str):  # will not work in function, need to override context
+    def export(filepath: str):  # Blender scene context must be correct for this to work
         """Save as blender file
 
         Args
         ----
             filepath (str): destination for file
         """
-        # out = bpy.ops.wm.save_as_mainfile(filepath)
         bpy.ops.export_scene.gltf(filepath)
 
     @staticmethod
@@ -138,7 +137,6 @@ class View(ViewBase):
         """Saves render as PNG"""
         bpy.context.scene.render.filepath = str(file_name)
         bpy.ops.render.render(write_still=True, use_viewport=True)
-        # save .gltf and .blend
 
 
 class PlasmaOptions(View):
