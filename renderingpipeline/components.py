@@ -556,7 +556,7 @@ class PFCoil(BlenderComponent):
                 number_of_coils += 1
 
         bore = float(params_dict["bore"])
-        cs_rad_th = float(params_dict["cs_rad_th"])
+        cs_rad_th = float(params_dict["ohcth"])
         ohdz = float(params_dict["ohdz"])
 
         # Check for Central Solenoid
