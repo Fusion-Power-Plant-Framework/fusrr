@@ -664,6 +664,7 @@ class VacuumVessel(BlenderComponent):
             shapes.extend(self._get_bluemira_comps())
         else:
             self.create_shape()
+            self.select_spin("Vaccum_Vessel")
             # for name in ["pf_coil", "central_coil"]:
             #     shapes.extend(self._select_objects(name))
 
