@@ -191,22 +191,22 @@ class View2D(View):
         objects = bpy.context.scene.objects
         for obj in objects:
             obj.select_set(obj.type == "MESH")
-        bpy.ops.object.editmode_toggle()  # object NOT objects
+        bpy.ops.object.editmode_toggle()
         bpy.ops.mesh.select_all(action="SELECT")
         bpy.ops.mesh.bisect(
             plane_co=(0, 0, 1), plane_no=(0, 0, -1), clear_inner=True, clear_outer=False
-        )
+        )  # cut in half
         bpy.ops.mesh.select_all(action="SELECT")
         bpy.ops.mesh.bisect(
             plane_co=(0, 0, 1), plane_no=(1, 0, 0), clear_inner=True, clear_outer=False
-        )
+        )  # quarter cut
         bpy.ops.mesh.select_all(action="SELECT")
         bpy.ops.mesh.bisect(
             plane_co=(0, 0, -1),
             plane_no=(0, 0, -0.99),
             clear_inner=False,
             clear_outer=True,
-        )
+        )  # single slice
         bpy.ops.object.mode_set(mode="OBJECT")
         bpy.ops.object.select_all(action="DESELECT")
         orthographic_view()
@@ -230,7 +230,9 @@ class View2D(View):
 class View3D(View):
     """Different 3d views"""
 
-    def make_3d(self):
+    def make_3d(
+        self,
+    ):  # Not required now process default is 3D but could be useful in future
         """Spins 2D render around an axis to make 3D - whole reactor"""
         dont_spin = [
             "tfcoil",
@@ -247,7 +249,9 @@ class View3D(View):
                 names.select_set(True)
         spin_extrusion()
 
-    def key_3d(self):  # bit messy, trial and error but looks nice in the end
+    def key_3d(
+        self,
+    ):  # Trial + error on distance, will be overlap for larger reactors but should work for most
         """Adds 'cube key' and sets framing"""
         plasma = self.reactor.plasma.shape.objects[:][0]
         dist = plasma.dimensions.y
@@ -272,14 +276,13 @@ class View3D(View):
         bpy.data.objects[component].hide_render = True
 
     @staticmethod
-    def export(filepath: str):  # will not work in function, need to override context
+    def export(filepath: str):  # will not work if Blender scene context is incorrect
         """Save as blender file
 
         Args
         ----
             filepath (str): destination for file
         """
-        # out = bpy.ops.wm.save_as_mainfile(filepath)
         bpy.ops.export_scene.gltf(filepath)
 
     @staticmethod
@@ -287,40 +290,22 @@ class View3D(View):
         """Saves render as PNG"""
         bpy.context.scene.render.filepath = str(file_name)
         bpy.ops.render.render(write_still=True, use_viewport=True)
-        # save .gltf and .blend
-
-    def multiple_tf(self):
-        """Copy and plot correct number of tf coils"""
-        pass
 
 
 class Comparison(View):
-    """Plots two reactor inputs"""
+    """Set up for comparison view"""
 
-    # if objects exist move next reactor else, carry on
-    def comparison(self):  # reactor1, reactor2):
+    def comparison(self):  # Will fail if more than one reactor already exists in scene
         """Set up for comparing two reactors
-
-        Args
-        ----
-            self (_type_): _description_
-            reactor2 (_type_): _description_
+        - Makes 1 reactor a single object and moves it to own collection
         """
-        # bpy.context.view_layer.objects.active = None
-        # bpy.ops.object.select_all(action="SELECT")
-        # for obj in bpy.context.selected_objects:
-        #     bpy.context.view_layer.objects.active = obj
-        #     obj.select_set(True)
-        #     name = bpy.context.object.name
-        #     bpy.data.objects[name].location = (40, 0, 0)
-
         bpy.ops.object.select_all(action="DESELECT")
         bpy.ops.object.select_by_type(type="MESH")
         bpy.ops.object.join()
         for sect in bpy.context.selected_objects:
             sect.name = "reactor1"
         bpy.data.objects["reactor1"].location = (40, 0, 0)
-        move_to_collection("reactor1", "Reactor1")
+        move_to_collection("reactor1", "Reactor1")  # can change for name to be input
         bpy.ops.object.select_all(action="DESELECT")
 
     def comparison_shot(self):
@@ -330,7 +315,7 @@ class Comparison(View):
         bpy.data.objects["reactor1"].hide_render = False
         bpy.data.objects["Camera"].select_set(True)
         cam = bpy.data.objects["Camera"]
-        for c in cam.constraints:
+        for c in cam.constraints:  # removes default tracking
             cam.constraints.remove(c)
         bpy.ops.object.select_all(action="DESELECT")
         bpy.data.objects["Camera"].select_set(True)
