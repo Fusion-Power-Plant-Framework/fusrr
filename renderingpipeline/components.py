@@ -406,7 +406,7 @@ class TFCoil(BlenderComponent):
         # Arc points
         # MDK Only 4 points now required for elliptical arcs
 
-        tf_il = self.params.tfc_inleg
+        tf_il = self.params.tfcth
         rt = np.pi / 2
         rt2 = 2 * rt
         x1, x2, x3, x4, x5 = (
@@ -750,32 +750,25 @@ class VacuumVessel(BlenderComponent):
         if i_single_null == 1:
             rs = np.concatenate([temp_array_1[0], temp_array_1[2][::-1]])
             zs = np.concatenate([temp_array_1[1], temp_array_1[3][::-1]])
-            self.create_mesh(x_coords=rs, y_coords=zs, name="upper_vv")
+            component_outline(list(zip(rs, zs)), name="upper_vv")
 
         rs = np.concatenate([temp_array_2[0], temp_array_2[2][::-1]])
         zs = np.concatenate([temp_array_2[1], temp_array_2[3][::-1]])
-        self.create_mesh(x_coords=rs, y_coords=zs, name="lower_vv")
+
+        component_outline(coords=list(zip(rs, zs)), name="lower_vv")
+
+        self.create_mesh(vacuum_vessel_parts=["upper_vv", "lower_vv"])
         # For double null, reflect shape of lower half to top instead
         # if i_single_null == 0:
         # axis.fill(rs, -zs, color=vessel)
 
-    def create_mesh(
-        self,
-        x_coords: Iterable[float],
-        y_coords: Iterable[float],
-        name: str = "vacuum_vessel",
-    ):
-        """Creates the vertices of the vacuum vessel"""
-        scene, mesh, bm = render_component_mesh(name)
-
-        for x, y in zip(x_coords, y_coords):
-            bm.verts.new((x, y, 0))
-            bm.to_mesh(mesh)
-            bpy.context.view_layer.objects.active = bpy.context.scene.objects[name]
-            make_face_from_vertices(vertex_obj=name)
-        bm.free()
-
-        scene.view_layers.update()
+    def create_mesh(self, vacuum_vessel_parts: list):
+        """Creates the face of the vacuum vessel"""
+        change_to_mesh(vacuum_vessel_parts)
+        join_obj(vacuum_vessel_parts)
+        for obj in bpy.context.selected_objects:
+            obj.name = "Vacuum_Vessel"
+        make_face_from_vertices("Vacuum_Vessel")
 
 
 class RadiationShield(BlenderComponent):
