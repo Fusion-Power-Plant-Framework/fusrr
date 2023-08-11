@@ -386,7 +386,7 @@ class TFCoil(BlenderComponent):
         component_outline(centre_coords, tf_list[4])
 
         for obj in tf_list:
-            change_to_mesh(object_names=obj)
+            change_to_mesh(obj=obj)
             make_face_from_vertices(obj)
 
 
@@ -433,10 +433,9 @@ class Cryostat(BlenderComponent):
         coords = rect_blend(rectangle=rect)
         component_outline(coords, cryo_list[3])
 
-        change_to_mesh(object_names=cryo_list)
-
         # Makes each wall into a filled shape
         for i in cryo_list:
+            change_to_mesh(str(i))
             make_face_from_vertices(str(i))
         self.join_objects(cryo_list, "cryostat")  # make into one object and rename
 

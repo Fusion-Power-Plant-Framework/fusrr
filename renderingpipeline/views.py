@@ -207,6 +207,7 @@ class View2D(View):
         )
         bpy.ops.object.mode_set(mode="OBJECT")
         bpy.ops.object.select_all(action="DESELECT")
+        orthographic_view()
 
     def key(self):
         """Adds 'cube key' - setup for 2D render"""
