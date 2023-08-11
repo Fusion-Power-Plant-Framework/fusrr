@@ -264,7 +264,7 @@ def rect_blend_sep(rectangle: object):
     return x_coords, y_coords
 
 
-def change_to_mesh(object_names: list):
+def change_to_mesh(obj: object):
     """Changes spline object to mesh
 
     Parameters
@@ -273,13 +273,8 @@ def change_to_mesh(object_names: list):
         objects in blender scene
     """
     bpy.ops.object.select_all(action="DESELECT")
-
-    for i in object_names:
-        bpy.data.objects[str(i)].select_set(True)
-    # ! Selects object 0 to be active object, must change soon
-    bpy.context.view_layer.objects.active = bpy.context.scene.objects[
-        str(object_names[0])
-    ]
+    bpy.data.objects[obj].select_set(True)
+    bpy.context.view_layer.objects.active = bpy.context.scene.objects[str(obj)]
     bpy.ops.object.convert(target="MESH")
     bpy.ops.object.select_all(action="DESELECT")
 

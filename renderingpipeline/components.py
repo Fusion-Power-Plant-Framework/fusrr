@@ -385,9 +385,9 @@ class TFCoil(BlenderComponent):
         )
         component_outline(centre_coords, tf_list[4])
 
-        change_to_mesh(object_names=tf_list)
-        for i in tf_list:
-            make_face_from_vertices(i)
+        for obj in tf_list:
+            change_to_mesh(object_names=obj)
+            make_face_from_vertices(obj)
 
 
 class Cryostat(BlenderComponent):
