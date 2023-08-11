@@ -121,14 +121,13 @@ class View(ViewBase):
         add_light(0, 0, dist * 10)
 
     @staticmethod
-    def export(filepath: str):  # will not work in function, need to override context
+    def export(filepath: str):  # Blender scene context must be correct
         """Save as blender file
 
         Args
         ----
             filepath (str): destination for file
         """
-        # out = bpy.ops.wm.save_as_mainfile(filepath)
         bpy.ops.export_scene.gltf(filepath)
 
     @staticmethod
@@ -136,7 +135,6 @@ class View(ViewBase):
         """Saves render as PNG"""
         bpy.context.scene.render.filepath = str(file_name)
         bpy.ops.render.render(write_still=True, use_viewport=True)
-        # save .gltf and .blend
 
 
 class PlasmaOptions(View):
@@ -184,7 +182,9 @@ class View2D(View):
     """Cross section view of reactor"""
 
     def half_reactor(self):  # cuts out section of reactor
-        """2D segment view"""
+        """2D segment view
+        - recommend wide_shot for framing
+        """
         bpy.ops.object.select_all(action="DESELECT")
         objects = bpy.context.scene.objects
         for obj in objects:
@@ -207,30 +207,6 @@ class View2D(View):
         )
         bpy.ops.object.mode_set(mode="OBJECT")
         bpy.ops.object.select_all(action="DESELECT")
-        orthographic_view()
-        self.wide_shot()
-
-    def cutaway(self):
-        """Removes part of the reactor to get 'cut-in' view"""
-        bpy.ops.object.select_all(action="DESELECT")
-        objects = bpy.context.scene.objects
-        for obj in objects:
-            obj.select_set(obj.type == "MESH")
-        bpy.ops.object.editmode_toggle()
-        bpy.ops.mesh.select_all(action="SELECT")
-        bpy.ops.mesh.bisect(
-            plane_co=(-16, 0.66, 19),
-            plane_no=(-0.288, -0.186, -0.939),
-            clear_inner=True,
-            clear_outer=False,
-            xstart=307,
-            xend=557,
-            ystart=295,
-            yend=370,
-            flip=False,
-        )
-
-        self.wide_shot()
 
     def key(self):
         """Adds 'cube key' - setup for 2D render"""
@@ -267,8 +243,32 @@ class View3D(View):
                 names.select_set(True)
         spin_extrusion()
 
+    def cutaway(self):
+        """Removes part of the reactor to get 'cut-in' view
+        - recommend wide_shot for framing
+        """
+        bpy.ops.object.select_all(action="DESELECT")
+        objects = bpy.context.scene.objects
+        for obj in objects:
+            obj.select_set(obj.type == "MESH")
+        bpy.ops.object.editmode_toggle()
+        bpy.ops.mesh.select_all(action="SELECT")
+        bpy.ops.mesh.bisect(
+            plane_co=(-16, 0.66, 19),
+            plane_no=(-0.288, -0.186, -0.939),
+            clear_inner=True,
+            clear_outer=False,
+            xstart=307,
+            xend=557,
+            ystart=295,
+            yend=370,
+            flip=False,
+        )
+
     def key_3d(self):  # bit messy, trial and error but looks nice in the end
-        """Adds 'cube key' and sets framing"""
+        """Adds 'cube key' and sets framing
+        - recommend wide_shot for framing
+        """
         plasma = self.reactor.plasma.shape.objects[:][0]
         dist = plasma.dimensions.y
         bpy.ops.object.select_all(action="DESELECT")
@@ -280,22 +280,3 @@ class View3D(View):
             add_text(dist * 2.2, y, 0, rad=1.8, text=str(object))
             change_colour(colour=colour_dict[object])
         bpy.ops.object.select_all(action="DESELECT")
-        self.wide_shot()
-
-    @staticmethod
-    def export(filepath: str):  # will not work in function, need to override context
-        """Save as blender file
-
-        Args
-        ----
-            filepath (str): destination for file
-        """
-        # out = bpy.ops.wm.save_as_mainfile(filepath)
-        bpy.ops.export_scene.gltf(filepath)
-
-    @staticmethod
-    def save_image(file_name: str):
-        """Saves render as PNG"""
-        bpy.context.scene.render.filepath = str(file_name)
-        bpy.ops.render.render(write_still=True, use_viewport=True)
-        # save .gltf and .blend
