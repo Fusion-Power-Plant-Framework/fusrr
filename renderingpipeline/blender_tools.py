@@ -70,6 +70,16 @@ def move_camera(x, y, z):
     camera.location = (x, y, z)
 
 
+def orthographic_view():
+    """Changes camera settings to an orthographic (flat) rendering view"""
+    bpy.ops.object.select_all(action="DESELECT")
+    bpy.context.view_layer.objects.active = None
+    camera = bpy.data.objects["Camera"]
+    bpy.context.view_layer.objects.active = camera
+    bpy.context.object.data.type = "ORTHO"
+    bpy.context.object.data.ortho_scale = 80
+
+
 def camera_fix(camera: str, target: bpy_types.Collection, dist):
     """Fixes camera to look at target
     Parameters
