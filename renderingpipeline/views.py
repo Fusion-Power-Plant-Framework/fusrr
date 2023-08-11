@@ -264,6 +264,8 @@ class View3D(View):
             yend=370,
             flip=False,
         )
+        bpy.ops.object.mode_set(mode="OBJECT")
+        bpy.ops.object.select_all(action="DESELECT")
 
     def key_3d(self):  # bit messy, trial and error but looks nice in the end
         """Adds 'cube key' and sets framing
