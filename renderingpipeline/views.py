@@ -13,6 +13,7 @@ from renderingpipeline.blender_tools import (
     camera_fix,
     focal_length,
     hex_colour_to_rgba,
+    orthographic_view,
     spin_extrusion,
 )
 from renderingpipeline.reactor import Reactor
@@ -88,7 +89,18 @@ class View(ViewBase):
             for ob in comp.objects[:]:
                 ob.hide_render = False
 
-        bpy.data.objects["Sun"].hide_render = False
+        bpy.data.objects["Sun"].hide_render = True
+        bpy.data.worlds["World"].node_tree.nodes["Background"].inputs[
+            0
+        ].default_value = (
+            1,
+            1,
+            1,
+            1,
+        )  # white viewport background
+        bpy.context.scene.view_settings.gamma = (
+            0  # prevents colours from becoming washed out by light
+        )
 
     def wide_shot(self):
         """Useful positioning, moves camera + sun further away + zooms in
@@ -171,8 +183,8 @@ class PlasmaOptions(View):
 class View2D(View):
     """Cross section view of reactor"""
 
-    def half_reactor(self):  # cuts out section of reactor, WIP=removing more
-        """2D segment view"""  # may have to just delete all vertices.
+    def half_reactor(self):
+        """2D segment view"""
         bpy.ops.object.select_all(action="DESELECT")
         objects = bpy.context.scene.objects
         for obj in objects:
@@ -195,6 +207,7 @@ class View2D(View):
         )
         bpy.ops.object.mode_set(mode="OBJECT")
         bpy.ops.object.select_all(action="DESELECT")
+        orthographic_view()
         self.wide_shot()
 
     def key(self):
