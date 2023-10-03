@@ -1,8 +1,8 @@
 """Regression tests for entire rendering pipeline."""
 from pathlib import Path
 
-from renderingpipeline.reactor import Reactor
-from renderingpipeline.views import View, View2D
+from fusrr.reactor import Reactor
+from fusrr.views import View, View2D
 
 
 def test_pipelines(tmp_path):

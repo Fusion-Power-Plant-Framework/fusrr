@@ -3,8 +3,8 @@ Reactor class - builds individual components and puts them in the same scene
 """
 from inspect import getmembers
 
-from renderingpipeline.adaptor import OutputParams
-from renderingpipeline.components import BlenderComponent
+from fusrr.adaptor import OutputParams
+from fusrr.components import BlenderComponent
 
 
 class Reactor:

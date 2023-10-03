@@ -6,7 +6,7 @@ import bpy
 import numpy as np
 from mathutils import Vector
 
-from renderingpipeline.blender_tools import (
+from fusrr.blender_tools import (
     add_cube,
     add_light,
     add_text,
@@ -16,7 +16,7 @@ from renderingpipeline.blender_tools import (
     orthographic_view,
     spin_extrusion,
 )
-from renderingpipeline.reactor import Reactor
+from fusrr.reactor import Reactor
 
 # naming for key/ legend
 key_list = ["Plasma", "PF Coil", "Central Coil", "TF Coil", "Cryostat"]

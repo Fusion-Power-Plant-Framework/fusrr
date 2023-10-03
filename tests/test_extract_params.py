@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 from process.io.mfile import MFile
 
-from renderingpipeline.adaptor import OutputParams
+from fusrr.adaptor import OutputParams
 
 
 @pytest.mark.skip("OutputParams test requires fixing.")

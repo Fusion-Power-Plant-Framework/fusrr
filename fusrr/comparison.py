@@ -13,7 +13,7 @@ from typing import Iterable
 
 from tabulate import tabulate
 
-from renderingpipeline.adaptor import OutputParams
+from fusrr.adaptor import OutputParams
 
 
 def comparison(output_parameters: Iterable[OutputParams]) -> str:

@@ -1,71 +1,32 @@
-[project]
-name = "renderingpipeline"
-authors = [{name="The renderingpipeline team"}]
-description = """A tool to render"""
+[tool.poetry]
+name = "fusrr-pipeline"
+version = "0.1.0"
+description = ""
+authors = ["The FusRR Pipeline project maintainers"]
 readme = "README.md"
-requires-python = ">=3.10"
-version = "0.0.0a1"
-classifiers=[
-        "Development Status :: 2 - Pre-Alpha",
-        "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT",
-        "Operating System :: POSIX :: Linux",
-    ]
-dependencies = [
-    "bpy",
-    #"process",  # TODO install PROCESS once opensource?
-    "tabulate"
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: POSIX :: Linux",
 ]
-
-
-[project.urls]
-homepage = "https://github.com/Fusion-Power-Plant-Framework/renderingpipeline"
-documentation = "https://github.com/Fusion-Power-Plant-Framework/renderingpipeline"
-repository = "https://github.com/Fusion-Power-Plant-Framework/renderingpipeline"
-
-[project.optional-dependencies]
-dev = [
-    "black",
-    "flake8",
-    "flake8-absolute-import",
-    "flake8-bandit",
-    "flake8-docstrings",
-    "pep8-naming",
-    "pre-commit",
-    "pytest",
-    "pytest-cov",
-    "pytest-html",
-    "pytest-metadata",
-    "pytest-json-report",
-]
-
+packages = [{ include = "fusrr" }]
 
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
 
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["renderingpipeline*"]
-exclude = ["tests*"]
+[tool.poetry.dependencies]
+python = "3.10.*"
+bpy = "^3.6.0"
+numpy = "1.25.0"
 
-[tool.black]
-line-length = 89
-include = '\.pyi?$'
-extend-exclude = '\.env'
-
-[tool.coverage.report]
-"exclude_lines" = [
-  "if __name__ == .__main__.:"
-]
-
-[tool.isort]
-line_length = 89
-profile = "black"
-skip_gitignore = true
-known_first_party = ["renderingpipeline"]
-force_to_top = ["bpy"]
-
-[tool.pytest.ini_options]
-markers = []
-addopts = "--html=report.html --self-contained-html --strict-markers -r fEX"
+[tool.poetry.group.dev.dependencies]
+black = "^23.9.1"
+ruff = "^0.0.292"
+pytest = "^7.4.2"
+pytest-metadata = "^3.0.0"
+pytest-html = "^4.0.2"
+pytest-json-report = "^1.5.0"
+ipython = "^8.16.1"
+pre-commit = "^3.4.0"

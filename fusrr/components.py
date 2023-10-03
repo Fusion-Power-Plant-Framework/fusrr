@@ -11,8 +11,8 @@ import bpy_types
 import numpy as np
 from matplotlib import patches
 
-from renderingpipeline.adaptor import OutputParams
-from renderingpipeline.blender_tools import (
+from fusrr.adaptor import OutputParams
+from fusrr.blender_tools import (
     add_empty_axes,
     array_object_rotation,
     change_to_mesh,
@@ -371,7 +371,14 @@ class TFCoil(BlenderComponent):
         a1 = x4 - x5
         b1 = y5 - y4
         verts = ellips_fill(
-            a1=a1, a2=a1 + tf_il, b1=b1, b2=b1 + tf_il, x0=x4, y0=y5, ang1=-rt, ang2=-rt2
+            a1=a1,
+            a2=a1 + tf_il,
+            b1=b1,
+            b2=b1 + tf_il,
+            x0=x4,
+            y0=y5,
+            ang1=-rt,
+            ang2=-rt2,
         )
         component_outline(verts, tf_list[2])
         # Outboard lower arc

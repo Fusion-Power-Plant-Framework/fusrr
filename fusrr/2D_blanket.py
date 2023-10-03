@@ -13,9 +13,9 @@ import bpy
 import bmesh
 import numpy as np
 
-from renderingpipeline.adaptor import OutputParams
-from renderingpipeline.blender_tools import delete_cube
-from renderingpipeline.mapping import RADIAL_BUILD, vertical_lower, vertical_upper
+from fusrr.adaptor import OutputParams
+from fusrr.blender_tools import delete_cube
+from fusrr.mapping import RADIAL_BUILD, vertical_lower, vertical_upper
 
 
 def cumul_setup(blanket_shape_dict):

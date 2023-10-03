@@ -11,7 +11,7 @@ from typing import Optional
 
 from process.io.mfile import MFile
 
-from renderingpipeline.mapping import bluemira_param, process_param
+from fusrr.mapping import bluemira_param, process_param
 
 
 def process_file_adaptor(input_data, filepath):
@@ -35,7 +35,8 @@ def process_file_adaptor(input_data, filepath):
 
 def bluemira_file_adaptor(input_data, filepath):
     """
-    Converts generic name into BLUEMIRA parameters to then be reassigned values and names
+    Converts generic name into BLUEMIRA parameters to then be
+    reassigned values and names
 
     Returns
     -------

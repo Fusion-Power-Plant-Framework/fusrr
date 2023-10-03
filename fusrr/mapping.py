@@ -60,7 +60,6 @@ process_param = {
     "divfix": "divfix",
     "shldlth": "shldlth",
     "d_vv_bot": "d_vv_bot",
-    "tftsgap": "tftsgap",
     "triang": "triang",
     # PF coil use
     "ohdz": "ohdz",
