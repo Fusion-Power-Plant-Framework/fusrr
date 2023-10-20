@@ -55,14 +55,14 @@ class View(ViewBase):
     """Set up for initial view + additional options"""
 
     components = (
-        "blanket",
-        "cryostat",
-        "divertor",
-        "pfcoil",
-        "plasma",
-        "radiationshield",
+        # "blanket",
+        # "cryostat",
+        # "divertor",
+        # "pfcoil",
+        # "plasma",
+        # "radiationshield",
         "tfcoil",
-        "vacuumvessel",
+        # "vacuumvessel",
     )
 
     def __init__(self, reactor: Reactor):
