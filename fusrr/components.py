@@ -10,7 +10,7 @@ import bpy
 import bpy_types
 import numpy as np
 from matplotlib import patches
-from process.io.reactor_geometry import plasma_geometry
+from process.io.reactor_geometry import plasma_geometry, cryostat_geometry
 
 from fusrr.adaptor import OutputParams
 from fusrr.blender_tools import (
@@ -420,22 +420,20 @@ class Cryostat(BlenderComponent):
         rdewex = self.params.rdewex
         ddwex = self.params.ddwex
         zdewex = self.params.zdewex
+        cryostat_colour = None
 
-        # Taken from plot_proc.py plotting 2D cryostat function
-        rect = patches.Rectangle([rdewex, 0], ddwex, zdewex + ddwex, lw=0)
-        coords = rect_blend(rectangle=rect)
+        rect1, rect2, rect3, rect4 = cryostat_geometry(rdewex, ddwex, zdewex, facecolor=cryostat_colour)
+
+        coords = rect_blend(rectangle=rect1)
         component_outline(coords, cryo_list[0])
 
-        rect = patches.Rectangle([rdewex, 0], ddwex, -(zdewex + ddwex), lw=0)
-        coords = rect_blend(rectangle=rect)
+        coords = rect_blend(rectangle=rect2)
         component_outline(coords, cryo_list[1])
 
-        rect = patches.Rectangle([0, zdewex], rdewex, ddwex, lw=0)
-        coords = rect_blend(rectangle=rect)
+        coords = rect_blend(rectangle=rect3)
         component_outline(coords, cryo_list[2])
 
-        rect = patches.Rectangle([0, -zdewex], rdewex, -ddwex, lw=0)
-        coords = rect_blend(rectangle=rect)
+        coords = rect_blend(rectangle=rect4)
         component_outline(coords, cryo_list[3])
 
         for obj in cryo_list:
