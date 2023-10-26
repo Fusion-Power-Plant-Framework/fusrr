@@ -10,7 +10,7 @@ import bpy
 import bpy_types
 import numpy as np
 from matplotlib import patches
-from process.io.reactor_geometry import plasma_geometry, cryostat_geometry
+from process.io.reactor_geometry import plasma_geometry, cryostat_geometry, tfcoil_geometry
 
 from fusrr.adaptor import OutputParams
 from fusrr.blender_tools import (
@@ -78,42 +78,6 @@ BLUEMIRA_COMP_NAMES = {
         ("VVTS_1", "*"),
     ),
 }
-
-
-def ellips_fill(
-    a1: float = 0,
-    a2: float = 0,
-    b1: float = 0,
-    b2: float = 0,
-    x0: float = 0,
-    y0: float = 0,
-    ang1: float = 0,
-    ang2: float = np.pi / 2,
-) -> List[float]:
-    """Fills the space between two concentric ellipse sectors.
-
-    Arguments
-    ---------
-    axis: plot object
-    a1, a2, b1, b2 horizontal and vertical radii to be filled
-    x0, y0 coordinates of centre of the ellipses
-    ang1, ang2 are the polar angles of the start and end
-
-    """
-    angs = np.linspace(ang1, ang2, endpoint=True)
-    r1 = ((np.cos(angs) / a1) ** 2 + (np.sin(angs) / b1) ** 2) ** (-0.5)
-    xs1 = r1 * np.cos(angs) + x0
-    ys1 = r1 * np.sin(angs) + y0
-    angs = np.linspace(ang2, ang1, endpoint=True)
-    r2 = ((np.cos(angs) / a2) ** 2 + (np.sin(angs) / b2) ** 2) ** (-0.5)
-    xs2 = r2 * np.cos(angs) + x0
-    ys2 = r2 * np.sin(angs) + y0
-    verts = list(zip(xs1, ys1))
-    verts.extend(list(zip(xs2, ys2)))
-    endpoint = verts[-1:]
-    verts.extend(endpoint)
-
-    return verts
 
 
 class BlenderComponent(abc.ABC):
@@ -325,43 +289,14 @@ class TFCoil(BlenderComponent):
         if y3 != 0:
             print("TF coil geometry: The value of yarc(3) is not zero, but should be.")
 
-        a1 = x2 - x1
-        b1 = y2 - y1
-        verts = ellips_fill(
-            a1=a1, a2=a1 + tf_il, b1=b1, b2=b1 + tf_il, x0=x2, y0=y1, ang1=rt, ang2=rt2
-        )
-        component_outline(verts, tf_list[0])
-        # Outboard upper arc
-        a1 = x3 - x2
-        verts = ellips_fill(
-            a1=a1, a2=a1 + tf_il, b1=y2, b2=y2 + tf_il, x0=x2, y0=0, ang1=0, ang2=rt
-        )
-        component_outline(verts, tf_list[1])
-        # Inboard lower arc
-        a1 = x4 - x5
-        b1 = y5 - y4
-        verts = ellips_fill(
-            a1=a1,
-            a2=a1 + tf_il,
-            b1=b1,
-            b2=b1 + tf_il,
-            x0=x4,
-            y0=y5,
-            ang1=-rt,
-            ang2=-rt2,
-        )
-        component_outline(verts, tf_list[2])
-        # Outboard lower arc
-        a1 = x3 - x2
-        verts = ellips_fill(
-            a1=a1, a2=a1 + tf_il, b1=-y4, b2=tf_il - y4, x0=x4, y0=0, ang1=0, ang2=-rt
-        )
-        component_outline(verts, tf_list[3])
-        # Vertical leg
-        # Bottom left corner
-        centre_coords = rect_blend(
-            patches.Rectangle([x5 - tf_il, y5], tf_il, (y1 - y5), lw=0, facecolor=BLUE)
-        )
+        verts1, verts2, verts3, verts4, rect = tfcoil_geometry(x1=x1, x2=x2, x3=x3, x4=x4, x5=x5, y1=y1, y2=y2, y3=y3, y4=y4, y5=y5, tfcth=tf_il, facecolor=BLUE, rtangle=rt, rtangle2=rt2)
+
+        component_outline(verts1, tf_list[0])
+        component_outline(verts2, tf_list[1])
+        component_outline(verts3, tf_list[2])
+        component_outline(verts4, tf_list[3])
+
+        centre_coords = rect_blend(rect)
         component_outline(centre_coords, tf_list[4])
 
         for obj in tf_list:

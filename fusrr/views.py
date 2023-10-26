@@ -56,12 +56,12 @@ class View(ViewBase):
 
     components = (
         # "blanket",
-        "cryostat",
+        # "cryostat",
         # "divertor",
         # "pfcoil",
         # "plasma",
         # "radiationshield",
-        # "tfcoil",
+        "tfcoil",
         # "vacuumvessel",
     )
 
