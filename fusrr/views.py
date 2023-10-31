@@ -58,10 +58,10 @@ class View(ViewBase):
         # "blanket",
         # "cryostat",
         # "divertor",
-        # "pfcoil",
+        "pfcoil",
         # "plasma",
         # "radiationshield",
-        "tfcoil",
+        # "tfcoil",
         # "vacuumvessel",
     )
 

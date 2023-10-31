@@ -10,7 +10,7 @@ import bpy
 import bpy_types
 import numpy as np
 from matplotlib import patches
-from process.io.reactor_geometry import plasma_geometry, cryostat_geometry, tfcoil_geometry
+from process.io.reactor_geometry import plasma_geometry, cryostat_geometry, tfcoil_geometry, pfcoil_geometry
 
 from fusrr.adaptor import OutputParams
 from fusrr.blender_tools import (
@@ -357,7 +357,7 @@ class Cryostat(BlenderComponent):
         zdewex = self.params.zdewex
         cryostat_colour = None
 
-        rect1, rect2, rect3, rect4 = cryostat_geometry(rdewex, ddwex, zdewex, facecolor=cryostat_colour)
+        rect1, rect2, rect3, rect4 = cryostat_geometry(rdewex=rdewex, ddwex=ddwex, zdewex=zdewex, facecolor=cryostat_colour)
 
         coords = rect_blend(rectangle=rect1)
         component_outline(coords, cryo_list[0])
@@ -445,20 +445,12 @@ class PFCoil(BlenderComponent):
             coils_z.append(params_dict[f"zpf{coil:01}"])
             coils_dr.append(params_dict[f"pfdr{coil:01}"])
             coils_dz.append(params_dict[f"pfdz{coil:01}"])
-
+        
+        r_points, z_points = pfcoil_geometry(coils_r=coils_r, coils_z=coils_z, coils_dr=coils_dr, coils_dz=coils_dz)
         for i in range(len(coils_r)):
-            r_1 = float(coils_r[i]) - 0.5 * float(coils_dr[i])
-            z_1 = float(coils_z[i]) - 0.5 * float(coils_dz[i])
-            z_2 = float(coils_z[i]) + 0.5 * float(coils_dz[i])
-            r_2 = float(coils_r[i]) + 0.5 * float(coils_dr[i])
-
-            r_points = [r_1, r_1, r_2, r_2, r_1]
-            z_points = [z_1, z_2, z_2, z_1, z_1]
-
             pf_coil_name = f"pf_coil{i}"
-            self.create_mesh(r_points, z_points, pf_coil_name)
+            self.create_mesh(r_points[i], z_points[i], pf_coil_name)
             faces_pf_coils(pf_coil_name)
-
         central_coil = patches.Rectangle([bore, (-ohdz / 2)], cs_rad_th, ohdz)
         central_coil_name = "central_coil"
         x_coords, y_coords = rect_blend_sep(central_coil)
