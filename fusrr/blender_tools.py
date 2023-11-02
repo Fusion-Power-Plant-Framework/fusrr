@@ -183,85 +183,46 @@ def faces_pf_coils(vertex_obj: str):
         print("No object selected")
 
 
-def rect_blend(rectangle: object):
-    """Makes a rectangle to be plotted in blender from rectangle patches object
+def rect_blend(center_x: float, center_z: float, width: float, height: float):
+    """Makes a rectangle to be plotted in blender
 
     Parameters
     ----------
-    rectangle : object
-        from matplotlib patches
+    center_x : float
+    center_z : float
+    width : float
+    height : float
 
     Returns
     -------
-    array
+    centre_coords : list
         coordinates of vertices
     """
     x_coords = []
     y_coords = []
     # Gets bottom left point
-    x0 = rectangle.get_x()
-    y0 = rectangle.get_y()
+    x0 = center_x
+    y0 = center_z
     x_coords.append(x0)
     y_coords.append(y0)
 
     # Gets bottom right point
-    x1 = x0 + rectangle.get_width()
+    x1 = x0 + width
     x_coords.append(x1)
     y_coords.append(y0)
 
     # Top right point
-    y1 = y0 + rectangle.get_height()
+    y1 = y0 + height
     x_coords.append(x1)
     y_coords.append(y1)
 
     # Gets top left point
-
     x_coords.append(x0)
     y_coords.append(y1)
 
     centre_coords = list(zip(x_coords, y_coords))
 
     return centre_coords
-
-
-def rect_blend_sep(rectangle: object):
-    """Makes a x and y seperated coordinate rectangle
-    # ! Can just adapt rect_blend function to do this
-
-    Parameters
-    ----------
-    rectangle : object
-        matplotlib patches rectangle
-
-    Returns
-    -------
-    tuple of lists
-        x and y coords
-    """
-    x_coords = []
-    y_coords = []
-    # Gets bottom left point
-    x0 = rectangle.get_x()
-    y0 = rectangle.get_y()
-    x_coords.append(x0)
-    y_coords.append(y0)
-
-    # Gets bottom right point
-    x1 = x0 + rectangle.get_width()
-    x_coords.append(x1)
-    y_coords.append(y0)
-
-    # Top right point
-    y1 = y0 + rectangle.get_height()
-    x_coords.append(x1)
-    y_coords.append(y1)
-
-    # Gets top left point
-
-    x_coords.append(x0)
-    y_coords.append(y1)
-
-    return x_coords, y_coords
 
 
 def change_to_mesh(obj: object):

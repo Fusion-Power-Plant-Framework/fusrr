@@ -2,15 +2,18 @@
 A file that stores the blender components of the reactor
 """
 import abc
-import math
 from dataclasses import asdict
 from typing import Iterable, List, Optional, Tuple
 
 import bpy
 import bpy_types
 import numpy as np
-from matplotlib import patches
-from process.io.reactor_geometry import plasma_geometry, cryostat_geometry, tfcoil_geometry, pfcoil_geometry
+from process.io.reactor_geometry import (
+    plasma_geometry,
+    cryostat_geometry,
+    tfcoil_geometry,
+    pfcoil_geometry,
+)
 
 from fusrr.adaptor import OutputParams
 from fusrr.blender_tools import (
@@ -24,7 +27,6 @@ from fusrr.blender_tools import (
     join_obj,
     make_face_from_vertices,
     rect_blend,
-    rect_blend_sep,
     render_component_mesh,
     spin_extrusion,
 )
@@ -215,13 +217,13 @@ class Plasma(BlenderComponent):
         delta95 = self.params.delta_95
         kappa95 = self.params.kappa95
         i_single_null = self.params.i_single_null
-        
+
         xs1, ys1, xs2, ys2, _ = plasma_geometry(
-        r_0=r0,
-        a=a,
-        triang_95=delta95,
-        kappa_95=kappa95,
-        i_single_null=i_single_null
+            r_0=r0,
+            a=a,
+            triang_95=delta95,
+            kappa_95=kappa95,
+            i_single_null=i_single_null,
         )
 
         for _x, _y in zip((xs1, xs2), (ys1, ys2)):
@@ -288,15 +290,35 @@ class TFCoil(BlenderComponent):
         )
         if y3 != 0:
             print("TF coil geometry: The value of yarc(3) is not zero, but should be.")
+        i_tf_shape = 1
+        rects, verts_list = tfcoil_geometry(
+            x1=x1,
+            x2=x2,
+            x3=x3,
+            x4=x4,
+            x5=x5,
+            y1=y1,
+            y2=y2,
+            y3=y3,
+            y4=y4,
+            y5=y5,
+            i_tf_shape=i_tf_shape,
+            tfcth=tf_il,
+            rtangle=rt,
+            rtangle2=rt2,
+        )
+        count = 0
+        for vert in verts_list:
+            component_outline(vert, tf_list[count])
+            count += 1
 
-        verts1, verts2, verts3, verts4, rect = tfcoil_geometry(x1=x1, x2=x2, x3=x3, x4=x4, x5=x5, y1=y1, y2=y2, y3=y3, y4=y4, y5=y5, tfcth=tf_il, facecolor=BLUE, rtangle=rt, rtangle2=rt2)
-
-        component_outline(verts1, tf_list[0])
-        component_outline(verts2, tf_list[1])
-        component_outline(verts3, tf_list[2])
-        component_outline(verts4, tf_list[3])
-
-        centre_coords = rect_blend(rect)
+        for rec in rects:
+            centre_coords = rect_blend(
+                center_x=rec.center_x,
+                center_z=rec.center_z,
+                width=rec.width,
+                height=rec.height,
+            )
         component_outline(centre_coords, tf_list[4])
 
         for obj in tf_list:
@@ -355,21 +377,17 @@ class Cryostat(BlenderComponent):
         rdewex = self.params.rdewex
         ddwex = self.params.ddwex
         zdewex = self.params.zdewex
-        cryostat_colour = None
-
-        rect1, rect2, rect3, rect4 = cryostat_geometry(rdewex=rdewex, ddwex=ddwex, zdewex=zdewex, facecolor=cryostat_colour)
-
-        coords = rect_blend(rectangle=rect1)
-        component_outline(coords, cryo_list[0])
-
-        coords = rect_blend(rectangle=rect2)
-        component_outline(coords, cryo_list[1])
-
-        coords = rect_blend(rectangle=rect3)
-        component_outline(coords, cryo_list[2])
-
-        coords = rect_blend(rectangle=rect4)
-        component_outline(coords, cryo_list[3])
+        rects = cryostat_geometry(rdewex=rdewex, ddwex=ddwex, zdewex=zdewex)
+        count = 0
+        for rect in rects:
+            coords = rect_blend(
+                center_x=rect.center_x,
+                center_z=rect.center_z,
+                width=rect.width,
+                height=rect.height,
+            )
+            component_outline(coords, cryo_list[count])
+            count += 1
 
         for obj in cryo_list:
             change_to_mesh(obj=obj)
@@ -424,14 +442,14 @@ class PFCoil(BlenderComponent):
         coils_dr = []
         coils_dz = []
 
+        bore = float(params_dict["bore"])
+        cs_rad_th = float(params_dict["cs_rad_th"])
+        ohdz = float(params_dict["ohdz"])
+
         number_of_coils = 0
         for key in params_dict:
             if "rpf" in key:
                 number_of_coils += 1
-
-        bore = float(params_dict["bore"])
-        cs_rad_th = float(params_dict["cs_rad_th"])
-        ohdz = float(params_dict["ohdz"])
 
         # Check for Central Solenoid
         iohcl = params_dict.get("iohcl", 1)
@@ -445,15 +463,32 @@ class PFCoil(BlenderComponent):
             coils_z.append(params_dict[f"zpf{coil:01}"])
             coils_dr.append(params_dict[f"pfdr{coil:01}"])
             coils_dz.append(params_dict[f"pfdz{coil:01}"])
-        
-        r_points, z_points = pfcoil_geometry(coils_r=coils_r, coils_z=coils_z, coils_dr=coils_dr, coils_dz=coils_dz)
+
+        r_points, z_points, central_coil = pfcoil_geometry(
+            coils_r=coils_r,
+            coils_z=coils_z,
+            coils_dr=coils_dr,
+            coils_dz=coils_dz,
+            bore=bore,
+            ohcth=cs_rad_th,
+            ohdz=ohdz,
+        )
+
         for i in range(len(coils_r)):
             pf_coil_name = f"pf_coil{i}"
             self.create_mesh(r_points[i], z_points[i], pf_coil_name)
             faces_pf_coils(pf_coil_name)
-        central_coil = patches.Rectangle([bore, (-ohdz / 2)], cs_rad_th, ohdz)
+
         central_coil_name = "central_coil"
-        x_coords, y_coords = rect_blend_sep(central_coil)
+
+        x_coords, y_coords = zip(
+            *rect_blend(
+                center_x=central_coil.center_x,
+                center_z=central_coil.center_z,
+                width=central_coil.width,
+                height=central_coil.height,
+            )
+        )
 
         self.create_mesh(
             x_coords=x_coords, y_coords=y_coords, coil_name=central_coil_name
