@@ -10,6 +10,14 @@ The aim of this repository is to take outputs from ``PROCESS`` and `BLUEMIRA` an
 
 ## Setup
 
+This project required Git LFS, install it on Ubuntu:
+
+```bash
+apt install git-lfs
+```
+
+Git LFS is commonly part of Git and installed along with it.
+
 This project uses [Hatch](https://hatch.pypa.io/latest/).
 
 Although any Python environment manager can be used, we recommend using the default environment setup by Hatch.
