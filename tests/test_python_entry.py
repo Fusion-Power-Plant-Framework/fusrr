@@ -1,4 +1,5 @@
 """test for python_entry"""
+
 from pathlib import Path
 
 from fusrr.views import View

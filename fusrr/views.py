@@ -1,5 +1,6 @@
 """Views class - WIP - will produce 1 tf, plasma, pf coils, cryostat
 """
+
 import abc
 
 import bpy
@@ -121,7 +122,9 @@ class View(ViewBase):
         add_light(0, 0, dist * 10)
 
     @staticmethod
-    def export(filepath: str):  # will not work in function, need to override context
+    def export(
+        filepath: str
+    ):  # will not work in function, need to override context
         """Save as blender file
 
         Args
@@ -192,11 +195,17 @@ class View2D(View):
         bpy.ops.object.editmode_toggle()  # object NOT objects
         bpy.ops.mesh.select_all(action="SELECT")
         bpy.ops.mesh.bisect(
-            plane_co=(0, 0, 1), plane_no=(0, 0, -1), clear_inner=True, clear_outer=False
+            plane_co=(0, 0, 1),
+            plane_no=(0, 0, -1),
+            clear_inner=True,
+            clear_outer=False,
         )
         bpy.ops.mesh.select_all(action="SELECT")
         bpy.ops.mesh.bisect(
-            plane_co=(0, 0, 1), plane_no=(1, 0, 0), clear_inner=True, clear_outer=False
+            plane_co=(0, 0, 1),
+            plane_no=(1, 0, 0),
+            clear_inner=True,
+            clear_outer=False,
         )
         bpy.ops.mesh.select_all(action="SELECT")
         bpy.ops.mesh.bisect(
@@ -222,7 +231,9 @@ class View2D(View):
             change_colour(colour=colour_dict[obj])
             add_text(-dist * 1.8, y, 0, rad=2, text=str(obj))
             change_colour(colour=colour_dict[obj])
-        bpy.ops.object.select_all(action="DESELECT")  # may not be needed but safer
+        bpy.ops.object.select_all(
+            action="DESELECT"
+        )  # may not be needed but safer
 
 
 class View3D(View):

@@ -1,6 +1,7 @@
 """
 Reactor class - builds individual components and puts them in the same scene
 """
+
 from inspect import getmembers
 
 from fusrr.adaptor import OutputParams
@@ -37,7 +38,10 @@ class Reactor:
     def render(self):
         """Render reactor scene for each component"""
         to_render = dict(
-            mem for mem in getmembers(self, lambda m: isinstance(m, BlenderComponent))
+            mem
+            for mem in getmembers(
+                self, lambda m: isinstance(m, BlenderComponent)
+            )
         )
 
         for mem in to_render.values():

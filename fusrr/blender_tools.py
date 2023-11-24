@@ -2,7 +2,7 @@
 """
 
 from pathlib import Path
-from typing import Iterable
+from collections.abc import Iterable
 
 import bpy
 import bmesh
@@ -82,6 +82,7 @@ def orthographic_view():
 
 def camera_fix(camera: str, target: bpy_types.Collection, dist):
     """Fixes camera to look at target
+
     Parameters
     ----------
     camera : bpy.data.objects[""]  Most likely: ["Camera"]
@@ -132,6 +133,7 @@ def save_blender_file(filepath: Path | str):
 
 def join_obj(names: list):
     """Joins objects in list into one object
+
     Parameters
     ----------
     names : list
@@ -142,12 +144,15 @@ def join_obj(names: list):
         selected_objects = bpy.data.objects.get(str(obj_name))
         selected_objects.select_set(True)
 
-    bpy.context.view_layer.objects.active = bpy.context.scene.objects[str(names[0])]
+    bpy.context.view_layer.objects.active = bpy.context.scene.objects[
+        str(names[0])
+    ]
     bpy.ops.object.join()
 
 
 def make_face_from_vertices(vertex_obj: str):
     """Makes a face from group of vertices
+
     Parameters
     ----------
     vertex_obj : object
@@ -164,6 +169,7 @@ def make_face_from_vertices(vertex_obj: str):
 
 def faces_pf_coils(vertex_obj: str):
     """Makes a face from group of vertices
+
     Parameters
     ----------
     vertex_obj : object
@@ -421,19 +427,25 @@ def array_object_rotation(object_name: str, empty_name: str, no_tf: int):
     mod_name = "Tf_mod"
     angle_gap = 2 * np.pi / no_tf
     bpy.data.objects[object_name].select_set(True)
-    bpy.context.view_layer.objects.active = bpy.context.scene.objects[object_name]
+    bpy.context.view_layer.objects.active = bpy.context.scene.objects[
+        object_name
+    ]
     bpy.ops.object.modifier_add(type="ARRAY")
     for obj in bpy.context.selected_objects:
         mod = obj.modifiers.get("Array")
         mod.name = mod_name
     bpy.context.object.modifiers[mod_name].count = no_tf
-    bpy.context.object.modifiers[mod_name].offset_object = bpy.data.objects[empty_name]
+    bpy.context.object.modifiers[mod_name].offset_object = bpy.data.objects[
+        empty_name
+    ]
     bpy.context.object.modifiers[mod_name].use_object_offset = True
     bpy.context.object.modifiers[mod_name].use_relative_offset = False
     bpy.data.objects[object_name].select_set(False)
     bpy.context.view_layer.objects.active = None
     bpy.data.objects[empty_name].select_set(True)
-    bpy.context.view_layer.objects.active = bpy.context.scene.objects[empty_name]
+    bpy.context.view_layer.objects.active = bpy.context.scene.objects[
+        empty_name
+    ]
     bpy.context.object.rotation_euler[1] = angle_gap
 
 

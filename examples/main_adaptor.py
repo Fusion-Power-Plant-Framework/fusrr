@@ -1,4 +1,5 @@
 """Executes adaptor.py"""
+
 import argparse
 
 from fusrr.adaptor import OutputParams

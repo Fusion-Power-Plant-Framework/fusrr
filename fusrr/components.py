@@ -1,10 +1,12 @@
 """
 A file that stores the blender components of the reactor
 """
+
 import abc
 import math
 from dataclasses import asdict
-from typing import Iterable, List, Optional, Tuple
+from typing import List, Optional, Tuple
+from collections.abc import Iterable
 
 import bpy
 import bpy_types
@@ -56,7 +58,9 @@ BLUEMIRA_COMP_NAMES = {
         ("TF", "*"),
         ("ITER_like_gravity_support", "*"),
     ),
-    "Cryostat": (("Cryostat", "*"),),  # VVCryo, cryostatTS and the VV Cryo plugs
+    "Cryostat": (
+        ("Cryostat", "*"),
+    ),  # VVCryo, cryostatTS and the VV Cryo plugs
     "PFCoil": (  # PF and CS coils
         ("Ground_Insulation", "*"),
         ("PFCoilSupport", "*"),
@@ -88,7 +92,7 @@ def ellips_fill(
     y0: float = 0,
     ang1: float = 0,
     ang2: float = np.pi / 2,
-) -> List[float]:
+) -> list[float]:
     """Fills the space between two concentric ellipse sectors.
 
     Arguments
@@ -118,7 +122,9 @@ def ellips_fill(
 class BlenderComponent(abc.ABC):
     """Base class to setup components"""
 
-    def __init__(self, shapes: Iterable[bpy_types.Object], colour: str = PURPLE):
+    def __init__(
+        self, shapes: Iterable[bpy_types.Object], colour: str = PURPLE
+    ):
         delete_cube()
         self._shape_ref = self._create_collection(type(self).__name__, shapes)
         self.default_colour(colour)
@@ -136,7 +142,7 @@ class BlenderComponent(abc.ABC):
         It is our best guess at what the full component would look like.
         """
 
-    def _get_bluemira_comps(self) -> List[bpy_types.Object]:
+    def _get_bluemira_comps(self) -> list[bpy_types.Object]:
         shapes = []
         for prefix, regex in BLUEMIRA_COMP_NAMES[type(self).__name__]:
             shapes.extend(self._select_objects(prefix, regex))
@@ -151,7 +157,9 @@ class BlenderComponent(abc.ABC):
         bpy.context.scene.collection.children.link(group)
         return group
 
-    def _select_objects(self, prefix: str, regex: str = "*") -> Tuple[bpy_types.Object]:
+    def _select_objects(
+        self, prefix: str, regex: str = "*"
+    ) -> tuple[bpy_types.Object]:
         bpy.ops.object.select_all(action="DESELECT")
         bpy.ops.object.select_pattern(pattern=f"{prefix}{regex}")
         return tuple(bpy.context.selected_objects)
@@ -169,7 +177,7 @@ class BlenderComponent(abc.ABC):
             comp.select_set(True)
         spin_extrusion()
 
-    def hex_color_to_rgba(self, hex_color: str) -> Tuple[float, ...]:
+    def hex_color_to_rgba(self, hex_color: str) -> tuple[float, ...]:
         """Convert hex to blender's sRGB."""
         hex_color = hex_color.strip("#")
         srgb_red = int(hex_color[:2], 16) / 255
@@ -186,7 +194,7 @@ class BlenderComponent(abc.ABC):
             mat.diffuse_color = colour_rgb
             bpy.context.scene.view_layers.update()
 
-    def join_objects(self, name: List[str], new_name: str):
+    def join_objects(self, name: list[str], new_name: str):
         """Joins plotted objects into one component
 
         Args
@@ -226,7 +234,9 @@ class BlenderComponent(abc.ABC):
 class Plasma(BlenderComponent):
     """Plasma component."""
 
-    def __init__(self, params: Optional[OutputParams] = None, colour: str = PURPLE):
+    def __init__(
+        self, params: Optional[OutputParams] = None, colour: str = PURPLE
+    ):
         self.params = params
 
         shapes = []
@@ -269,7 +279,10 @@ class Plasma(BlenderComponent):
         outang = 1.5 / r2
         if i_single_null == 0:
             angs1 = np.linspace(
-                -(inang + theta1) + np.pi, (inang + theta1) + np.pi, 256, endpoint=True
+                -(inang + theta1) + np.pi,
+                (inang + theta1) + np.pi,
+                256,
+                endpoint=True,
             )
             angs2 = np.linspace(
                 -(outang + theta2), (outang + theta2), 256, endpoint=True
@@ -296,7 +309,10 @@ class Plasma(BlenderComponent):
         make_face_from_vertices(PLASMA)
 
     def create_mesh(
-        self, x_coords: Iterable[float], y_coords: Iterable[float], name: str = "plasma"
+        self,
+        x_coords: Iterable[float],
+        y_coords: Iterable[float],
+        name: str = "plasma",
     ):
         """Create the vertices of the plasma array for plasma mesh."""
         scene, mesh, bm = render_component_mesh(name)
@@ -322,7 +338,9 @@ class Plasma(BlenderComponent):
 class TFCoil(BlenderComponent):
     """TF Coil component"""
 
-    def __init__(self, params: Optional[OutputParams] = None, colour: str = BLUE):
+    def __init__(
+        self, params: Optional[OutputParams] = None, colour: str = BLUE
+    ):
         self.params = params
 
         shapes = []
@@ -353,18 +371,34 @@ class TFCoil(BlenderComponent):
             getattr(self.params, y) for y in ("y1", "y2", "y3", "y4", "y5")
         )
         if y3 != 0:
-            print("TF coil geometry: The value of yarc(3) is not zero, but should be.")
+            print(
+                "TF coil geometry: The value of yarc(3) is not zero, but should be."
+            )
 
         a1 = x2 - x1
         b1 = y2 - y1
         verts = ellips_fill(
-            a1=a1, a2=a1 + tf_il, b1=b1, b2=b1 + tf_il, x0=x2, y0=y1, ang1=rt, ang2=rt2
+            a1=a1,
+            a2=a1 + tf_il,
+            b1=b1,
+            b2=b1 + tf_il,
+            x0=x2,
+            y0=y1,
+            ang1=rt,
+            ang2=rt2,
         )
         component_outline(verts, tf_list[0])
         # Outboard upper arc
         a1 = x3 - x2
         verts = ellips_fill(
-            a1=a1, a2=a1 + tf_il, b1=y2, b2=y2 + tf_il, x0=x2, y0=0, ang1=0, ang2=rt
+            a1=a1,
+            a2=a1 + tf_il,
+            b1=y2,
+            b2=y2 + tf_il,
+            x0=x2,
+            y0=0,
+            ang1=0,
+            ang2=rt,
         )
         component_outline(verts, tf_list[1])
         # Inboard lower arc
@@ -384,13 +418,22 @@ class TFCoil(BlenderComponent):
         # Outboard lower arc
         a1 = x3 - x2
         verts = ellips_fill(
-            a1=a1, a2=a1 + tf_il, b1=-y4, b2=tf_il - y4, x0=x4, y0=0, ang1=0, ang2=-rt
+            a1=a1,
+            a2=a1 + tf_il,
+            b1=-y4,
+            b2=tf_il - y4,
+            x0=x4,
+            y0=0,
+            ang1=0,
+            ang2=-rt,
         )
         component_outline(verts, tf_list[3])
         # Vertical leg
         # Bottom left corner
         centre_coords = rect_blend(
-            patches.Rectangle([x5 - tf_il, y5], tf_il, (y1 - y5), lw=0, facecolor=BLUE)
+            patches.Rectangle(
+                [x5 - tf_il, y5], tf_il, (y1 - y5), lw=0, facecolor=BLUE
+            )
         )
         component_outline(centre_coords, tf_list[4])
 
@@ -421,14 +464,18 @@ class TFCoil(BlenderComponent):
         """Adds multiple tf_coils from singular tf coil"""
         add_empty_axes(empty_name="Empty_tf")
         array_object_rotation(
-            object_name="Tf_coils", empty_name="Empty_tf", no_tf=int(self.params.n_tf)
+            object_name="Tf_coils",
+            empty_name="Empty_tf",
+            no_tf=int(self.params.n_tf),
         )
 
 
 class Cryostat(BlenderComponent):
     """Cryostat Component."""
 
-    def __init__(self, params: Optional[OutputParams] = None, colour: str = CRYO_BLUE):
+    def __init__(
+        self, params: Optional[OutputParams] = None, colour: str = CRYO_BLUE
+    ):
         self.params = params
 
         shapes = []
@@ -474,13 +521,17 @@ class Cryostat(BlenderComponent):
         # Makes each wall into a filled shape
         for i in cryo_list:
             make_face_from_vertices(str(i))
-        self.join_objects(cryo_list, "cryostat")  # make into one object and rename
+        self.join_objects(
+            cryo_list, "cryostat"
+        )  # make into one object and rename
 
 
 class PFCoil(BlenderComponent):
     """PF Coil Component."""
 
-    def __init__(self, params: Optional[OutputParams] = None, colour: str = PF_BLUE):
+    def __init__(
+        self, params: Optional[OutputParams] = None, colour: str = PF_BLUE
+    ):
         self.params = params
 
         shapes = []
@@ -569,7 +620,9 @@ class PFCoil(BlenderComponent):
 class Blanket(BlenderComponent):
     """Blanket Component."""
 
-    def __init__(self, params: Optional[OutputParams] = None, colour: str = BLANKET):
+    def __init__(
+        self, params: Optional[OutputParams] = None, colour: str = BLANKET
+    ):
         self.params = params
 
         shapes = []
@@ -594,7 +647,9 @@ class Blanket(BlenderComponent):
 class Divertor(BlenderComponent):
     """Divertor Component."""
 
-    def __init__(self, params: Optional[OutputParams] = None, colour: str = DIVERTOR):
+    def __init__(
+        self, params: Optional[OutputParams] = None, colour: str = DIVERTOR
+    ):
         self.params = params
 
         shapes = []
@@ -646,7 +701,9 @@ class VacuumVessel(BlenderComponent):
 class RadiationShield(BlenderComponent):
     """Radiation shield Component."""
 
-    def __init__(self, params: Optional[OutputParams] = None, colour: str = RADSHIELD):
+    def __init__(
+        self, params: Optional[OutputParams] = None, colour: str = RADSHIELD
+    ):
         self.params = params
 
         shapes = []

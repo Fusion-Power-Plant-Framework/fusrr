@@ -6,10 +6,11 @@ Also allows manually inputting params to store in class.
 Currently set to 5 output params but can add any key from .DAT file
 
 """
+
 from __future__ import annotations
 
 from dataclasses import asdict
-from typing import Iterable
+from collections.abc import Iterable
 
 from tabulate import tabulate
 

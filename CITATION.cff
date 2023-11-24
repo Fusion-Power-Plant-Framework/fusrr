@@ -16,7 +16,7 @@ authors:
     given-names: M.
     affiliation: United Kingdom Atomic Energy Authority, Culham Science Centre, Abingdon, Oxfordshire OX14 3DB, United Kingdom
 
-title: "fusrr-pipeline: A Rendering Pipeline for Fusion Reactor Designs"
+title: "fusrr: A Rendering Pipeline for Fusion Reactor Designs"
 license: MIT
-repository-code: "https://github.com/Fusion-Power-Plant-Framework/fusrr-pipeline"
-website: "https://github.com/Fusion-Power-Plant-Framework/fusrr-pipeline"
+repository-code: "https://github.com/Fusion-Power-Plant-Framework/fusrr"
+website: "https://github.com/Fusion-Power-Plant-Framework/fusrr"

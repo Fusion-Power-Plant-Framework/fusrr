@@ -1,4 +1,5 @@
 """Regression tests for entire rendering pipeline."""
+
 from pathlib import Path
 
 from fusrr.reactor import Reactor

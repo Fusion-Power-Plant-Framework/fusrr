@@ -2,6 +2,7 @@
 Takes PROCESS (.DAT) or BLUEMIRA (.json) files and outputs parameters the same format.
 
 """
+
 from __future__ import annotations
 
 import json
@@ -27,7 +28,9 @@ def process_file_adaptor(input_data, filepath):
     for name_1 in input_data:
         variables[name_1] = data_obj.data[process_param[name_1]].get_scan(-1)
         try:
-            variables[name_1] = data_obj.data[process_param[name_1]].get_scan(-1)
+            variables[name_1] = data_obj.data[process_param[name_1]].get_scan(
+                -1
+            )
         except KeyError:
             continue
     return variables
@@ -43,7 +46,7 @@ def bluemira_file_adaptor(input_data, filepath):
         Dictionary containing generic parameters and their values
     """
     variables = {}
-    with open(str(filepath), "r") as fh:
+    with open(str(filepath)) as fh:
         data_obj = json.load(fh)
     for name in input_data:
         try:

@@ -1,6 +1,6 @@
-# **FusRR Pipeline**
+# **FusRR**
 
-**Fus**ion **R**eactor **R**endering Pipeline
+**Fus**ion **R**eactor **R**enderer
 
 ![image](examples/initial_collage.png)
 
@@ -8,29 +8,89 @@
 
 The aim of this repository is to take outputs from ``PROCESS`` and `BLUEMIRA` and render them to be able to produce useful visualisations in Blender.
 
-## Work in Progress
+## Setup
 
-The rendering pipeline is still in the early stages of development and therefore can only produce certain reactor designs from `PROCESS` and import CAD output from `BLUEMIRA`
+This project uses [Hatch](https://hatch.pypa.io/latest/).
 
-## Installation
+Although any Python environment manager can be used, we recommend using the default environment setup by Hatch.
 
-With a python environment active you will need to first install `PROCESS`. Then, once you have cloned the repository, change into the directory and run `poetry install` to install the dependencies for the project.
+### Without Hatch
 
-If you want to run the tests you will also need to install the develop dependencies:
+Setup and activate your environment with your chosen Python environment manager (pyenv, conda, virtualenv, etc.)
+
+Run the following to install this project as a local editable install, with the necessary optional dependency groups:
 
 ```bash
-
-> pip install -e "./[dev]"
-> pytest
-
+pip install -e '.[dev,test,lint]'
 ```
 
-## Usage
+### With Hatch
 
-FusRR is intended to be used with a `PROCESS` MFILE and/or a `bluemira` CAD output file. Both files can be read by the `Reactor` object and then used to create a view of the reactor.
+To start using Hatch, it must be installed and accessible from the command line. See the Hatch [installation](https://hatch.pypa.io/latest/install/) for more.
 
-An example of how to create a reactor from an MFILE is shown in `examples/example_view.ipynb`.
+A simple way to install Hatch is to run:
+
+```bash
+pip install -g hatch
+```
+
+If you can run `hatch -h` then Hatch has been successfully installed.
+
+We recommend setting the `dirs.env` in your hatch config to the following:
+
+```toml
+[dirs.env]
+virtual = ".hatch"
+```
+
+The path to this file can be found by running:
+
+```bash
+hatch config find
+```
+
+It makes it easier to set the path to environment in your code editor.
+
+Then run:
+
+```bash
+hatch shell
+```
+
+This will create the default hatch environment in the project folder.
+
+Then set the path to your Python environment in your editor to `.hatch/fusrr/bin/python`
+
+## Installing PROCESS
+
+After your environment has been setup, you will need to install PROCESS.
+
+Make sure your environment is active, clone [PROCESS](https://github.com/ukaea/PROCESS) and follow the install [instructions](https://ukaea.github.io/PROCESS/installation/installation-ubuntu/).
+
+In summary you need to run the following:
+
+```bash
+sudo apt update
+sudo apt install -y cmake gfortran python3-pip lcov poppler-utils python3-venv
+
+git clone https://github.com/ukaea/PROCESS
+cd PROCESS
+
+cmake -S . -B build
+cmake --build build
+
+# make sure you have your FUSRR Python environment active
+pip install .
+```
+
+## Tests
+
+Run
+
+```bash
+hatch run test:tests
+```
 
 ## Licence Information
 
-**renderingpipeline** is [released under the MIT License](LICENCE)
+**FusRR** is [released under the MIT License](LICENCE)

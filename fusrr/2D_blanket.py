@@ -7,6 +7,7 @@ Returns
 Blanket shape blend file
 
 """
+
 from dataclasses import asdict
 
 import bpy
@@ -211,7 +212,22 @@ def plot_blanket(blanket_shape, cumulative_upper, cumulative_lower):
         c_shldith, c_blnkoth, blnkith, blnkoth, divgap, -blnktth, triang
     )
 
-    return rs1, rs2, rs3, rs4, zs1, zs2, zs3, zs4, isrs, iszs, osrs, oszs, rs, zs
+    return (
+        rs1,
+        rs2,
+        rs3,
+        rs4,
+        zs1,
+        zs2,
+        zs3,
+        zs4,
+        isrs,
+        iszs,
+        osrs,
+        oszs,
+        rs,
+        zs,
+    )
 
 
 def cumulative_radial_build(section, blanket_shape):
@@ -285,8 +301,6 @@ def tf_coil_outline(coords):
     bpy.context.view_layer.objects.active = ob
     ob.select_set(True)
 
-    return None
-
 
 def plasma_render(x_coords, y_coords):
     """Renders the vertices of the plasma array
@@ -320,12 +334,12 @@ def plasma_render(x_coords, y_coords):
 
     scene.view_layers.update()
 
-    return None
-
 
 def main():
     """Main function"""
-    blanket_shape = OutputParams.from_file(file_name="scripts/baseline_2018_MFILE.DAT")
+    blanket_shape = OutputParams.from_file(
+        file_name="scripts/baseline_2018_MFILE.DAT"
+    )
 
     blanket_shape_dict: dict[str, str] = {
         k: str(v) for k, v in asdict(blanket_shape).items()
@@ -377,7 +391,9 @@ def main():
     plasma_render(rs1, zs1)
     plasma_render(rs2, zs2)
     plasma_render(rs3, zs3)  # plotting in wrong place? - straight(ish) line
-    plasma_render(rs4, zs4)  # may also be in wrong place, better looking than above
+    plasma_render(
+        rs4, zs4
+    )  # may also be in wrong place, better looking than above
     # plasma_render(osrs, oszs) #WRONG - more strange lines
     plasma_render(isrs, iszs)  # one of these is not being plotted
     # plasma_render(rs, zs) #same as above + strange line
