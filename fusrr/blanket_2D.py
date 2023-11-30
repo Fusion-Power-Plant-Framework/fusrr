@@ -47,7 +47,7 @@ def cumul_setup(blanket_shape_dict):
         subtotal -= float(lower[item])
         cumulative_lower[item] = subtotal
 
-    return cumulative_upper, cumulative_lower
+    return cumulative_upper, cumulative_lower, upper, lower
 
 
 def plotdh(r0, a, delta, kap):
@@ -122,24 +122,24 @@ def plotdhgap(inpt, outpt, inthk, outthk, toppt, topthk, delta):
 
     return rs1, rs2, rs3, rs4, zs1, zs2, zs3, zs4
 
-    """ axis.plot(
-        np.concatenate([rs1, rs2[::-1]]),
-        np.concatenate([zs1, zs2[::-1]]),
-        color="black",
-        lw=thin,
-    )
-    axis.plot(
-        np.concatenate([rs3, rs4[::-1]]),
-        -np.concatenate([zs3, zs4[::-1]]),
-        color="black",
-        lw=thin,
-    )
-    axis.fill(
-        np.concatenate([rs1, rs2[::-1]]), np.concatenate([zs1, zs2[::-1]]), color=col
-    )
-    axis.fill(
-        np.concatenate([rs3, rs4[::-1]]), -np.concatenate([zs3, zs4[::-1]]), color=col
-    ) """
+    # """ axis.plot(
+    #     np.concatenate([rs1, rs2[::-1]]),
+    #     np.concatenate([zs1, zs2[::-1]]),
+    #     color="black",
+    #     lw=thin,
+    # )
+    # axis.plot(
+    #     np.concatenate([rs3, rs4[::-1]]),
+    #     -np.concatenate([zs3, zs4[::-1]]),
+    #     color="black",
+    #     lw=thin,
+    # )
+    # axis.fill(
+    #     np.concatenate([rs1, rs2[::-1]]), np.concatenate([zs1, zs2[::-1]]), color=col
+    # )
+    # axis.fill(
+    #     np.concatenate([rs3, rs4[::-1]]), -np.concatenate([zs3, zs4[::-1]]), color=col
+    # ) """
 
 
 def plot_blanket(blanket_shape, cumulative_upper, cumulative_lower):
@@ -242,7 +242,9 @@ def cumulative_radial_build(section, blanket_shape):
             cumulative_build += blanket_shape.d_vv_in
         elif "d_vv_out" in item:
             cumulative_build += blanket_shape.d_vv_out  # c_shldith
-
+        # TODO not sure if this works?:
+        else:
+            cumulative_build += getattr(blanket_shape, item)
         if item == section:
             complete = True
             break

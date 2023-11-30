@@ -151,6 +151,12 @@ class OutputParams:
     ddwex: float
     zdewex: float
     casthi: float
+    tfcth: float
+    ohcth: float
+    gapoh: float
+    gapds: float
+    scrapli: float
+    scraplo: float
 
     file_path: Optional[Path] = None
 

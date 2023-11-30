@@ -8,12 +8,17 @@ from typing import Iterable, List, Optional, Tuple
 import bpy
 import bpy_types
 import numpy as np
-from process.io.reactor_geometry import (
-    plasma_geometry,
-    cryostat_geometry,
-    tfcoil_geometry,
-    pfcoil_geometry,
+
+from process.geometry.plasma_geometry import plasma_geometry
+from process.geometry.cryostat_geometry import cryostat_geometry
+from process.geometry.tfcoil_geometry import tfcoil_geometry_d_shape
+from process.geometry.pfcoil_geometry import pfcoil_geometry
+from process.geometry.vacuum_vessel_geometry import (
+    vacuum_vessel_geometry_single_null,
+    vacuum_vessel_geometry,
 )
+from fusrr.trial_cumulative_build import cumulative_radial_build, cumul_setup
+
 
 from fusrr.adaptor import OutputParams
 from fusrr.blender_tools import (
@@ -39,6 +44,13 @@ cryo_list = [
     "Upper_wall",
     "Lower_wall",
 ]
+vacuum_vessel_list = [
+    "vacuum vessel",
+    "vacuum vessel.001",
+    "vacuum vessel.002",
+    "vacuum vessel.003",
+]
+
 PLASMA = "plasma"
 
 PURPLE = "#7d2f8e"  # plasma purple
@@ -190,6 +202,150 @@ class BlenderComponent(abc.ABC):
         return x, y, z
 
 
+class VacuumVessel(BlenderComponent):
+    """VacuumVessel Component."""
+
+    def __init__(
+        self, params: Optional[OutputParams] = None, colour: str = VACUUMVESSEL
+    ):
+        self.params = params
+
+        shapes = []
+        if params is None:
+            shapes.extend(self._get_bluemira_comps())
+        else:
+            self.create_shape()
+            self.select_spin("vacuum vessel")
+            shapes.extend(self._select_objects("vacuum vessel"))
+
+        super().__init__(shapes, colour)
+
+    def create_shape(self):
+        """Create vacuum vessel shape.
+
+        This is an artistic take on the output PROCESS produces to make a 3D model.
+        It is our best guess at what the full component would look like.
+        """
+        params_dict = {k: str(v) for k, v in asdict(self.params).items()}
+        i_single_null = self.params.i_single_null
+        triang_95 = self.params.delta_95
+
+        cumulative_upper, cumulative_lower, upper, lower = cumul_setup(
+            params_dict=params_dict
+        )
+
+        # Outer side (furthest from plasma)
+        radx_outer = (
+            cumulative_radial_build("d_vv_out", self.params)
+            + cumulative_radial_build("gapds", self.params)
+        ) / 2.0
+        rminx_outer = (
+            cumulative_radial_build("d_vv_out", self.params)
+            - cumulative_radial_build("gapds", self.params)
+        ) / 2.0
+
+        # Inner side (nearest to the plasma)
+        radx_inner = (
+            cumulative_radial_build("shldoth", self.params)
+            + cumulative_radial_build("d_vv_in", self.params)
+        ) / 2.0
+        rminx_inner = (
+            cumulative_radial_build("shldoth", self.params)
+            - cumulative_radial_build("d_vv_in", self.params)
+        ) / 2.0
+
+        if i_single_null == 1:
+            vvg = vacuum_vessel_geometry_single_null(
+                cumulative_upper=cumulative_upper,
+                upper=upper,
+                triang=triang_95,
+                radx_outer=radx_outer,
+                rminx_outer=rminx_outer,
+                radx_inner=radx_inner,
+                rminx_inner=rminx_inner,
+            )
+            # v1
+            # _x, _y, _w, _z = vvg.rs_1, vvg.rs_2, vvg.zs_1, vvg.zs_2
+            # self.create_mesh(_x, _w, name="vacuum vessel")
+            # # self.create_mesh(_x, _z, name="vacuum vessel")
+            # # self.create_mesh(_y, _w, name="vacuum vessel")
+            # self.create_mesh(_y, _z, name="vacuum vessel")
+            # join_obj(vacuum_vessel_list)
+            # make_face_from_vertices("vacuum vessel")
+
+            # v2
+            # not sure if i need the [::-1] bit?
+            # for _x, _y in zip((vvg.rs_1, vvg.rs_2[::-1]), (vvg.zs_1, vvg.zs_2[::-1])):
+            for _x, _y in zip((vvg.rs_1, vvg.rs_2), (vvg.zs_1, vvg.zs_2)):
+                self.create_mesh(_x, _y, name="vacuum vessel")
+            join_obj(vacuum_vessel_list)
+            make_face_from_vertices("vacuum vessel")
+
+            # try like tf :
+            # verts in tf are lists of rs and zs
+            # verts_list = [[vvg.rs_1, vvg.zs_1], [vvg.rs_2, vvg.zs_2]]
+            # count = 0
+            # for vert in verts_list:
+            #     component_outline(vert, vacuum_vessel_list[count])
+            #     count += 1
+            # for obj in vacuum_vessel_list:
+            #     change_to_mesh(obj=obj)
+            #     make_face_from_vertices(obj)
+
+        vvg = vacuum_vessel_geometry(
+            cumulative_lower=cumulative_lower,
+            lower=lower,
+            triang=triang_95,
+            radx_outer=radx_outer,
+            rminx_outer=rminx_outer,
+            radx_inner=radx_inner,
+            rminx_inner=rminx_inner,
+        )
+        # verts_list = [[vvg.rs_1, vvg.zs_1], [vvg.rs_2, vvg.zs_2]]
+        # count = 0
+        # for vert in verts_list:
+        #     component_outline(vert, vacuum_vessel_list[count])
+        #     count += 1
+        # for obj in vacuum_vessel_list:
+        #     change_to_mesh(obj=obj)
+        #     make_face_from_vertices(obj)
+        # # rs = vvg.rs
+        # # zs = vvg.rs
+        # # self.create_mesh(rs, zs, name="vacuum vessel")
+        # # _x, _y, _w, _z = vvg.rs_1, vvg.rs_2, vvg.zs_1, vvg.zs_2
+        # # self.create_mesh(_x, _w, name="vacuum vessel")
+        # # # self.create_mesh(_x, _z, name="vacuum vessel")
+        # # # self.create_mesh(_y, _w, name="vacuum vessel")
+        # # self.create_mesh(_y, _z, name="vacuum vessel")
+        # # join_obj(vacuum_vessel_list)
+        # # make_face_from_vertices("vacuum vessel")
+        new_vac_list = vacuum_vessel_list[:-1]
+        # # # for _x, _y in zip((vvg.rs_1, vvg.rs_2[::-1]), (vvg.zs_1, vvg.zs_2[::-1])):
+        for _x, _y in zip((vvg.rs_1, vvg.rs_2), (vvg.zs_1, vvg.zs_2)):
+            self.create_mesh(_x, _y, name="vacuum vessel")
+        join_obj(new_vac_list)
+        make_face_from_vertices("vacuum vessel")
+
+        # raise NotImplementedError("TODO")
+
+    def create_mesh(
+        self, x_coords: Iterable[float], y_coords: Iterable[float], name: str
+    ):
+        """Create the vertices of the vacuum vessel array for vacuum vessel mesh."""
+        scene, mesh, bm = render_component_mesh(name)
+
+        for x, y in zip(x_coords, y_coords):
+            bm.verts.new((x, y, 0))
+
+        bm.to_mesh(mesh)
+        bm.free()
+
+        scene.view_layers.update()
+
+
+# try like tf coils again
+
+
 class Plasma(BlenderComponent):
     """Plasma component."""
 
@@ -218,7 +374,7 @@ class Plasma(BlenderComponent):
         kappa95 = self.params.kappa95
         i_single_null = self.params.i_single_null
 
-        xs1, ys1, xs2, ys2, _ = plasma_geometry(
+        pg = plasma_geometry(
             r_0=r0,
             a=a,
             triang_95=delta95,
@@ -226,7 +382,7 @@ class Plasma(BlenderComponent):
             i_single_null=i_single_null,
         )
 
-        for _x, _y in zip((xs1, xs2), (ys1, ys2)):
+        for _x, _y in zip((pg.xs1, pg.xs2), (pg.ys1, pg.ys2)):
             self.create_mesh(_x, _y, name=PLASMA)
         join_obj(plasma_list)
         make_face_from_vertices(PLASMA)
@@ -290,8 +446,8 @@ class TFCoil(BlenderComponent):
         )
         if y3 != 0:
             print("TF coil geometry: The value of yarc(3) is not zero, but should be.")
-        i_tf_shape = 1
-        rects, verts_list = tfcoil_geometry(
+
+        rects, verts_list = tfcoil_geometry_d_shape(
             x1=x1,
             x2=x2,
             x3=x3,
@@ -299,10 +455,8 @@ class TFCoil(BlenderComponent):
             x5=x5,
             y1=y1,
             y2=y2,
-            y3=y3,
             y4=y4,
             y5=y5,
-            i_tf_shape=i_tf_shape,
             tfcth=tf_il,
             rtangle=rt,
             rtangle2=rt2,
@@ -521,58 +675,6 @@ class Blanket(BlenderComponent):
         raise NotImplementedError("TODO")
 
 
-class Divertor(BlenderComponent):
-    """Divertor Component."""
-
-    def __init__(self, params: Optional[OutputParams] = None, colour: str = DIVERTOR):
-        self.params = params
-
-        shapes = []
-        if params is None:
-            shapes.extend(self._get_bluemira_comps())
-        else:
-            self.create_shape()
-            # for name in ["pf_coil", "central_coil"]:
-            #    shapes.extend(self._select_objects(name))
-
-        super().__init__(shapes, colour)
-
-    def create_shape(self):
-        """Create divertor shape.
-
-        This is an artistic take on the output PROCESS produces to make a 3D model.
-        It is our best guess at what the full component would look like.
-        """
-        raise NotImplementedError("TODO")
-
-
-class VacuumVessel(BlenderComponent):
-    """VacuumVessel Component."""
-
-    def __init__(
-        self, params: Optional[OutputParams] = None, colour: str = VACUUMVESSEL
-    ):
-        self.params = params
-
-        shapes = []
-        if params is None:
-            shapes.extend(self._get_bluemira_comps())
-        else:
-            self.create_shape()
-            # for name in ["pf_coil", "central_coil"]:
-            #     shapes.extend(self._select_objects(name))
-
-        super().__init__(shapes, colour)
-
-    def create_shape(self):
-        """Create vacuum vessel shape.
-
-        This is an artistic take on the output PROCESS produces to make a 3D model.
-        It is our best guess at what the full component would look like.
-        """
-        raise NotImplementedError("TODO")
-
-
 class RadiationShield(BlenderComponent):
     """Radiation shield Component."""
 
@@ -591,6 +693,32 @@ class RadiationShield(BlenderComponent):
 
     def create_shape(self):
         """Create radiation shield shape.
+
+        This is an artistic take on the output PROCESS produces to make a 3D model.
+        It is our best guess at what the full component would look like.
+        """
+        raise NotImplementedError("TODO")
+
+
+# TODO Couldn't find a plot_divertor fn in plot_proc?
+class Divertor(BlenderComponent):
+    """Divertor Component."""
+
+    def __init__(self, params: Optional[OutputParams] = None, colour: str = DIVERTOR):
+        self.params = params
+
+        shapes = []
+        if params is None:
+            shapes.extend(self._get_bluemira_comps())
+        else:
+            self.create_shape()
+            # for name in ["pf_coil", "central_coil"]:
+            #    shapes.extend(self._select_objects(name))
+
+        super().__init__(shapes, colour)
+
+    def create_shape(self):
+        """Create divertor shape.
 
         This is an artistic take on the output PROCESS produces to make a 3D model.
         It is our best guess at what the full component would look like.

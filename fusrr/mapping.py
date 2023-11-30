@@ -91,6 +91,13 @@ process_param = {
     "rdewex": "rdewex",
     "ddwex": "ddwex",
     "zdewex": "zdewex",
+    "tfcth": "tfcth",
+    # "ohcth": "cs_rad_th",
+    "ohcth": "ohcth",
+    "gapoh": "gapoh",
+    "gapds": "gapds",
+    "scrapli": "scrapli",
+    "scraplo": "scraplo",
 }
 
 """

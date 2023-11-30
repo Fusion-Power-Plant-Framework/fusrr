@@ -19,7 +19,7 @@ from fusrr.blender_tools import (
 from fusrr.reactor import Reactor
 
 # naming for key/ legend
-key_list = ["Plasma", "PF Coil", "Central Coil", "TF Coil", "Cryostat"]
+key_list = ["Plasma", "PF Coil", "Central Coil", "TF Coil", "Cryostat", "Vacuum Vessel"]
 
 colour_dict = dict(
     {
@@ -28,6 +28,7 @@ colour_dict = dict(
         "Central Coil": "#0072c2",
         "TF Coil": "#003688",
         "Cryostat": "#2e7ebc",
+        "Vacuum Vessel": "#b7d4ea",
     }
 )
 
@@ -58,11 +59,11 @@ class View(ViewBase):
         # "blanket",
         # "cryostat",
         # "divertor",
-        "pfcoil",
+        # "pfcoil",
         # "plasma",
         # "radiationshield",
         # "tfcoil",
-        # "vacuumvessel",
+        "vacuumvessel",
     )
 
     def __init__(self, reactor: Reactor):
@@ -134,6 +135,7 @@ class View(ViewBase):
     @staticmethod
     def save_image(file_name: str):
         """Saves render as PNG"""
+        # TODO with bpy, save blender file so can open in blender after running
         bpy.context.scene.render.filepath = str(file_name)
         bpy.ops.render.render(write_still=True, use_viewport=True)
         # save .gltf and .blend
