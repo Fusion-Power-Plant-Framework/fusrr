@@ -122,25 +122,6 @@ def plotdhgap(inpt, outpt, inthk, outthk, toppt, topthk, delta):
 
     return rs1, rs2, rs3, rs4, zs1, zs2, zs3, zs4
 
-    # """ axis.plot(
-    #     np.concatenate([rs1, rs2[::-1]]),
-    #     np.concatenate([zs1, zs2[::-1]]),
-    #     color="black",
-    #     lw=thin,
-    # )
-    # axis.plot(
-    #     np.concatenate([rs3, rs4[::-1]]),
-    #     -np.concatenate([zs3, zs4[::-1]]),
-    #     color="black",
-    #     lw=thin,
-    # )
-    # axis.fill(
-    #     np.concatenate([rs1, rs2[::-1]]), np.concatenate([zs1, zs2[::-1]]), color=col
-    # )
-    # axis.fill(
-    #     np.concatenate([rs3, rs4[::-1]]), -np.concatenate([zs3, zs4[::-1]]), color=col
-    # ) """
-
 
 def plot_blanket(blanket_shape, cumulative_upper, cumulative_lower):
     """Function to plot blanket
