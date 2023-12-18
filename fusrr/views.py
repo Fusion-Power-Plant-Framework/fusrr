@@ -5,6 +5,7 @@ import abc
 import bpy
 import numpy as np
 from mathutils import Vector
+from pathlib import Path
 
 from fusrr.blender_tools import (
     add_cube,
@@ -140,6 +141,12 @@ class View(ViewBase):
         bpy.context.scene.render.filepath = str(file_name)
         bpy.ops.render.render(write_still=True, use_viewport=True)
         # save .gltf and .blend
+
+    @staticmethod
+    def save_blend_file(file_name: str):
+        """Saves render as blend file"""
+        filepath = str((Path.cwd() / file_name).resolve())
+        bpy.ops.wm.save_as_mainfile(filepath=filepath)
 
 
 class PlasmaOptions(View):
