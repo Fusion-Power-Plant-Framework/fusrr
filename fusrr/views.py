@@ -64,6 +64,7 @@ class View(ViewBase):
         # "radiationshield",
         # "tfcoil",
         "vacuumvessel",
+        "firstwall",
     )
 
     def __init__(self, reactor: Reactor):

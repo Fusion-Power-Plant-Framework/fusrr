@@ -12,9 +12,12 @@ from typing import Optional
 from process.io.mfile import MFile
 
 from fusrr.mapping import bluemira_param, process_param
+from copy import deepcopy
 
 
-def process_file_adaptor(input_data, filepath):
+def process_file_adaptor(
+    input_data, filepath, params_overwrites: Optional[dict] = None
+):
     """
     Imports data from mfile and assigns name and value
 
@@ -24,10 +27,14 @@ def process_file_adaptor(input_data, filepath):
     """
     variables = {}
     data_obj = MFile(filename=str(filepath))
+    params_map = deepcopy(process_param)
+    if params_overwrites is not None:
+        params_map = {**params_map, **params_overwrites}
+
     for name_1 in input_data:
-        variables[name_1] = data_obj.data[process_param[name_1]].get_scan(-1)
+        variables[name_1] = data_obj.data[params_map[name_1]].get_scan(-1)
         try:
-            variables[name_1] = data_obj.data[process_param[name_1]].get_scan(-1)
+            variables[name_1] = data_obj.data[params_map[name_1]].get_scan(-1)
         except KeyError:
             continue
     return variables
@@ -161,7 +168,9 @@ class OutputParams:
     file_path: Optional[Path] = None
 
     @classmethod
-    def from_file(cls, file_path: Path) -> OutputParams:
+    def from_file(
+        cls, file_path: Path, params_overwrites: Optional[dict] = None
+    ) -> OutputParams:
         """
         Makes instance of class from file name
         and assigns values to generic parameters
@@ -171,7 +180,9 @@ class OutputParams:
         output_names.pop(output_names.index("file_path"))
 
         if file_path.suffix == ".DAT":
-            parameters = process_file_adaptor(output_names, file_path)
+            parameters = process_file_adaptor(
+                output_names, file_path, params_overwrites
+            )
 
         elif file_path.suffix == ".json":
             parameters = bluemira_file_adaptor(output_names, file_path)

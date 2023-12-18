@@ -5,6 +5,7 @@ from inspect import getmembers
 
 from fusrr.adaptor import OutputParams
 from fusrr.components import BlenderComponent
+from typing import Optional
 
 
 class Reactor:
@@ -16,7 +17,9 @@ class Reactor:
             setattr(self, name, comp)
 
     @classmethod
-    def reactor_from_file(cls, input_file_path):
+    def reactor_from_file(
+        cls, input_file_path, params_overwrites: Optional[dict] = None
+    ):
         """A method to make an instance of a reactor from file
 
         Parameters
@@ -24,7 +27,7 @@ class Reactor:
         input_file : str
             Input file name of .DAT file
         """
-        reactor_params = OutputParams.from_file(input_file_path)
+        reactor_params = OutputParams.from_file(input_file_path, params_overwrites)
         cdict = {}
         for component in BlenderComponent.__subclasses__():
             try:

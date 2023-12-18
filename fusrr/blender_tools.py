@@ -132,6 +132,7 @@ def save_blender_file(filepath: Path | str):
 
 def join_obj(names: list):
     """Joins objects in list into one object
+    Combined object is named as the first object in the list of names
     Parameters
     ----------
     names : list
