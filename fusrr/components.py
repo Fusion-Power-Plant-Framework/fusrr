@@ -14,20 +14,18 @@ from process.geometry.cryostat_geometry import cryostat_geometry
 from process.geometry.tfcoil_geometry import tfcoil_geometry_d_shape
 from process.geometry.pfcoil_geometry import pfcoil_geometry
 from process.geometry.vacuum_vessel_geometry import (
-    vacuum_vessel_geometry,
     vacuum_vessel_geometry_single_null,
+    vacuum_vessel_geometry_double_null,
 )
 from process.geometry.blanket_geometry import (
-    blanket_geometry,
     blanket_geometry_single_null,
     blanket_geometry_double_null,
 )
 from process.geometry.shield_geometry import (
-    shield_geometry,
     shield_geometry_single_null,
+    shield_geometry_double_null,
 )
 from process.geometry.firstwall_geometry import (
-    first_wall_geometry,
     first_wall_geometry_single_null,
     first_wall_geometry_double_null,
 )
@@ -566,24 +564,8 @@ class VacuumVessel(BlenderComponent):
             - cumulative_radial_build("d_vv_in", self.params)
         ) / 2.0
 
-        # lower half of vacuum vessel
-        vvg = vacuum_vessel_geometry(
-            cumulative_lower=cumulative_lower,
-            lower=lower,
-            triang=triang_95,
-            radx_outer=radx_outer,
-            rminx_outer=rminx_outer,
-            radx_inner=radx_inner,
-            rminx_inner=rminx_inner,
-        )
-        rs = vvg.rs
-        zs = vvg.zs
-
-        component_outline(list(zip(rs, zs)), "lower_vacuum_vessel")
-
-        # upper half of vacuum vessel
         if i_single_null == 1:
-            vvg = vacuum_vessel_geometry_single_null(
+            vvg_single_null = vacuum_vessel_geometry_single_null(
                 cumulative_upper=cumulative_upper,
                 upper=upper,
                 triang=triang_95,
@@ -591,28 +573,35 @@ class VacuumVessel(BlenderComponent):
                 rminx_outer=rminx_outer,
                 radx_inner=radx_inner,
                 rminx_inner=rminx_inner,
+                cumulative_lower=cumulative_lower,
+                lower=lower,
             )
-            rs = vvg.rs
-            zs = vvg.zs
+            rs = vvg_single_null.rs
+            zs = vvg_single_null.zs
 
-            component_outline(list(zip(rs, zs)), "upper_vacuum_vessel")
+            component_outline(list(zip(rs, zs)), "vacuum vessel")
 
         if i_single_null == 0:
-            # reflect lower half of vacuum vessel to create upper half
-            zs = -1 * zs
-            component_outline(list(zip(rs, zs)), "upper_vacuum_vessel")
+            vvg_double_null = vacuum_vessel_geometry_double_null(
+                cumulative_lower=cumulative_lower,
+                lower=lower,
+                radx_inner=radx_inner,
+                radx_outer=radx_outer,
+                rminx_inner=rminx_inner,
+                rminx_outer=rminx_outer,
+                triang=triang_95,
+            )
+            rs = vvg_double_null.rs
+            zs = vvg_double_null.zs
 
-        vacuum_vessel_parts = ["upper_vacuum_vessel", "lower_vacuum_vessel"]
+            component_outline(list(zip(rs, zs)), "vacuum vessel")
 
-        self.create_mesh(vacuum_vessel_parts=vacuum_vessel_parts)
+        self.create_mesh(vacuum_vessel_parts=["vacuum vessel"])
 
     def create_mesh(self, vacuum_vessel_parts: List[str]):
         """Creates the face of the vacuum vessel"""
         for ob in vacuum_vessel_parts:
             change_to_mesh(ob)
-        join_obj(vacuum_vessel_parts)
-        for obj in bpy.context.selected_objects:
-            obj.name = "vacuum vessel"
         make_face_from_vertices("vacuum vessel")
 
 
@@ -669,45 +658,29 @@ class Blanket(BlenderComponent):
                 cumulative_radial_build("fwoth", self.params)
                 - cumulative_radial_build("blnkith", self.params)
             ) / 2.0
-            bg = blanket_geometry_single_null(
+            bg_single_null = blanket_geometry_single_null(
                 radx_outer=radx_outer,
                 rminx_outer=rminx_outer,
                 radx_inner=radx_inner,
                 rminx_inner=rminx_inner,
                 cumulative_upper=cumulative_upper,
                 triang=triang_95,
+                cumulative_lower=cumulative_lower,
+                blnktth=blnktth,
+                c_shldith=c_shldith,
+                c_blnkoth=c_blnkoth,
+                blnkith=blnkith,
+                blnkoth=blnkoth,
             )
-            rs = bg.rs[2]
-            zs = bg.zs[2]
+            rs = bg_single_null.rs
+            zs = bg_single_null.zs
 
-            component_outline(list(zip(rs, zs)), "upper_blanket")
+            component_outline(list(zip(rs, zs)), "blanket")
 
-        bg = blanket_geometry(
-            cumulative_lower=cumulative_lower,
-            triang=triang_95,
-            blnktth=blnktth,
-            c_shldith=c_shldith,
-            c_blnkoth=c_blnkoth,
-            blnkith=blnkith,
-            blnkoth=blnkoth,
-        )
-
-        r1 = bg.rs[0]
-        r2 = bg.rs[1]
-        z1 = bg.zs[0]
-        z2 = bg.zs[1]
-
-        component_outline(list(zip(r1, z1)), "lower_blanket_1")
-        component_outline(list(zip(r2, z2)), "lower_blanket_2")
-
-        blanket_parts = [
-            "upper_blanket",
-            "lower_blanket_1",
-            "lower_blanket_2",
-        ]
+            blanket_parts = ["blanket"]
 
         if i_single_null == 0:
-            bg = blanket_geometry_double_null(
+            bg_double_null = blanket_geometry_double_null(
                 cumulative_lower=cumulative_lower,
                 triang=triang_95,
                 blnktth=blnktth,
@@ -716,31 +689,26 @@ class Blanket(BlenderComponent):
                 blnkith=blnkith,
                 blnkoth=blnkoth,
             )
-            r1 = bg.rs[0]
-            r2 = bg.rs[1]
-            z1 = bg.zs[0]
-            z2 = bg.zs[1]
+            r1 = bg_double_null.rs[0]
+            r2 = bg_double_null.rs[1]
+            z1 = bg_double_null.zs[0]
+            z2 = bg_double_null.zs[1]
 
-            component_outline(list(zip(r1, z1)), "upper_blanket_1")
-            component_outline(list(zip(r2, z2)), "upper_blanket_2")
+            component_outline(list(zip(r1, z1)), "outboard_blanket")
+            component_outline(list(zip(r2, z2)), "inboard_blanket")
 
-            blanket_parts = [
-                "upper_blanket_1",
-                "upper_blanket_2",
-                "lower_blanket_1",
-                "lower_blanket_2",
-            ]
+            blanket_parts = ["outboard_blanket", "inboard_blanket"]
 
         self.create_mesh(blanket_parts=blanket_parts)
 
     def create_mesh(self, blanket_parts: List[str]):
-        """Creates the face of the vacuum vessel"""
+        """Creates the face of the blanket"""
         for ob in blanket_parts:
             change_to_mesh(ob)
+            make_face_from_vertices(ob)
         join_obj(blanket_parts)
         for obj in bpy.context.selected_objects:
             obj.name = "blanket"
-        make_face_from_vertices("blanket")
 
 
 class RadiationShield(BlenderComponent):
@@ -790,52 +758,43 @@ class RadiationShield(BlenderComponent):
             - cumulative_radial_build("shldith", self.params)
         ) / 2.0
 
-        # lower half of radiation shield
-        sg = shield_geometry(
-            cumulative_lower=cumulative_lower,
-            radx_far=radx_far,
-            rminx_far=rminx_far,
-            radx_near=radx_near,
-            rminx_near=rminx_near,
-            triang=triang_95,
-        )
-        rs = sg.rs
-        zs = sg.zs
-
-        component_outline(list(zip(rs, zs)), "lower_radiation_shield")
-
-        # upper half of radiation shield
         if i_single_null == 1:
-            sg = shield_geometry_single_null(
+            sg_single_null = shield_geometry_single_null(
                 cumulative_upper=cumulative_upper,
                 radx_far=radx_far,
                 rminx_far=rminx_far,
                 radx_near=radx_near,
                 rminx_near=rminx_near,
                 triang=triang_95,
+                cumulative_lower=cumulative_lower,
             )
 
-            rs = sg.rs
-            zs = sg.zs
+            rs = sg_single_null.rs
+            zs = sg_single_null.zs
 
-            component_outline(list(zip(rs, zs)), "upper_radiation_shield")
+            component_outline(list(zip(rs, zs)), "radiation shield")
 
         if i_single_null == 0:
-            # reflect lower half of radiation shield to create upper half
-            zs = -1 * zs
-            component_outline(list(zip(rs, zs)), "upper_radiation_shield")
+            sg_double_null = shield_geometry_double_null(
+                cumulative_lower=cumulative_lower,
+                radx_far=radx_far,
+                radx_near=radx_near,
+                rminx_far=rminx_far,
+                rminx_near=rminx_near,
+                triang=triang_95,
+            )
 
-        radiation_shield_parts = ["upper_radiation_shield", "lower_radiation_shield"]
+            rs = sg_double_null.rs
+            zs = sg_double_null.zs
 
-        self.create_mesh(radiation_shield_parts=radiation_shield_parts)
+            component_outline(list(zip(rs, zs)), "radiation shield")
+
+        self.create_mesh(radiation_shield_parts=["radiation shield"])
 
     def create_mesh(self, radiation_shield_parts: List[str]):
         """Creates the face of the radiation shield"""
         for ob in radiation_shield_parts:
             change_to_mesh(ob)
-        join_obj(radiation_shield_parts)
-        for obj in bpy.context.selected_objects:
-            obj.name = "radiation shield"
         make_face_from_vertices("radiation shield")
 
 
@@ -893,45 +852,30 @@ class FirstWall(BlenderComponent):
                 - cumulative_radial_build("fwith", self.params)
             ) / 2.0
 
-            fwg = first_wall_geometry_single_null(
+            fwg_single_null = first_wall_geometry_single_null(
                 radx_outer=radx_outer,
                 rminx_outer=rminx_outer,
                 radx_inner=radx_inner,
                 rminx_inner=rminx_inner,
                 cumulative_upper=cumulative_upper,
                 triang=triang_95,
+                cumulative_lower=cumulative_lower,
+                blnktth=blnktth,
+                c_blnkith=c_blnkith,
+                c_fwoth=c_fwoth,
+                fwith=fwith,
+                fwoth=fwoth,
+                tfwvt=tfwvt,
             )
-            rs = fwg.rs[2]
-            zs = fwg.zs[2]
+            rs = fwg_single_null.rs
+            zs = fwg_single_null.zs
 
-            component_outline(list(zip(rs, zs)), "upper_firstwall")
+            component_outline(list(zip(rs, zs)), "first wall")
 
-        fwg = first_wall_geometry(
-            cumulative_lower=cumulative_lower,
-            triang=triang_95,
-            blnktth=blnktth,
-            c_blnkith=c_blnkith,
-            c_fwoth=c_fwoth,
-            fwith=fwith,
-            fwoth=fwoth,
-            tfwvt=tfwvt,
-        )
-        r1 = fwg.rs[0]
-        r2 = fwg.rs[1]
-        z1 = fwg.zs[0]
-        z2 = fwg.zs[1]
-
-        component_outline(list(zip(r1, z1)), "lower_firstwall_1")
-        component_outline(list(zip(r2, z2)), "lower_firstwall_2")
-
-        firstwall_parts = [
-            "upper_firstwall",
-            "lower_firstwall_1",
-            "lower_firstwall_2",
-        ]
+            firstwall_parts = ["first wall"]
 
         if i_single_null == 0:
-            fwg = first_wall_geometry_double_null(
+            fwg_double_null = first_wall_geometry_double_null(
                 cumulative_lower=cumulative_lower,
                 triang=triang_95,
                 blnktth=blnktth,
@@ -941,20 +885,15 @@ class FirstWall(BlenderComponent):
                 fwoth=fwoth,
                 tfwvt=tfwvt,
             )
-            r1 = fwg.rs[0]
-            r2 = fwg.rs[1]
-            z1 = fwg.zs[0]
-            z2 = fwg.zs[1]
+            r1 = fwg_double_null.rs[0]
+            r2 = fwg_double_null.rs[1]
+            z1 = fwg_double_null.zs[0]
+            z2 = fwg_double_null.zs[1]
 
-            component_outline(list(zip(r1, z1)), "upper_firstwall_1")
-            component_outline(list(zip(r2, z2)), "upper_firstwall_2")
+            component_outline(list(zip(r1, z1)), "outboard_firstwall")
+            component_outline(list(zip(r2, z2)), "inboard_firstwall")
 
-            firstwall_parts = [
-                "upper_firstwall_1",
-                "upper_firstwall_2",
-                "lower_firstwall_1",
-                "lower_firstwall_2",
-            ]
+            firstwall_parts = ["outboard_firstwall", "inboard_firstwall"]
 
         self.create_mesh(firstwall_parts=firstwall_parts)
 
@@ -962,13 +901,13 @@ class FirstWall(BlenderComponent):
         """Creates the face of the vacuum vessel"""
         for ob in firstwall_parts:
             change_to_mesh(ob)
+            make_face_from_vertices(ob)
         join_obj(firstwall_parts)
         for obj in bpy.context.selected_objects:
             obj.name = "first wall"
-        make_face_from_vertices("first wall")
 
 
-# TODO Couldn't find a plot_divertor fn in plot_proc?
+# TODO Couldn't find a plot_divertor fn in plot_proc
 class Divertor(BlenderComponent):
     """Divertor Component."""
 
