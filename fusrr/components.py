@@ -331,8 +331,8 @@ class TFCoil(BlenderComponent):
 
         for rec in rects:
             centre_coords = rect_blend(
-                center_x=rec.center_x,
-                center_z=rec.center_z,
+                anchor_x=rec.anchor_x,
+                anchor_z=rec.anchor_z,
                 width=rec.width,
                 height=rec.height,
             )
@@ -397,8 +397,8 @@ class Cryostat(BlenderComponent):
         count = 0
         for rect in rects:
             coords = rect_blend(
-                center_x=rect.center_x,
-                center_z=rect.center_z,
+                anchor_x=rect.anchor_x,
+                anchor_z=rect.anchor_z,
                 width=rect.width,
                 height=rect.height,
             )
@@ -499,8 +499,8 @@ class PFCoil(BlenderComponent):
 
         x_coords, y_coords = zip(
             *rect_blend(
-                center_x=central_coil.center_x,
-                center_z=central_coil.center_z,
+                anchor_x=central_coil.anchor_x,
+                anchor_z=central_coil.anchor_z,
                 width=central_coil.width,
                 height=central_coil.height,
             )

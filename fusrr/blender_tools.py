@@ -184,13 +184,13 @@ def faces_pf_coils(vertex_obj: str):
         print("No object selected")
 
 
-def rect_blend(center_x: float, center_z: float, width: float, height: float):
+def rect_blend(anchor_x: float, anchor_z: float, width: float, height: float):
     """Makes a rectangle to be plotted in blender
 
     Parameters
     ----------
-    center_x : float
-    center_z : float
+    anchor_x : float
+    anchor_z : float
     width : float
     height : float
 
@@ -202,8 +202,8 @@ def rect_blend(center_x: float, center_z: float, width: float, height: float):
     x_coords = []
     y_coords = []
     # Gets bottom left point
-    x0 = center_x
-    y0 = center_z
+    x0 = anchor_x
+    y0 = anchor_z
     x_coords.append(x0)
     y_coords.append(y0)
 
