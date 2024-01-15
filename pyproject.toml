@@ -124,6 +124,7 @@ unfixable = [
 
 [tool.ruff.isort]
 known-first-party = ["fusrr"]
+force-to-top = ["numpy", "matplotlib", "bpy"]
 
 [tool.ruff.flake8-tidy-imports]
 ban-relative-imports = "all"
@@ -132,7 +133,7 @@ ban-relative-imports = "all"
 max-complexity = 20
 
 [tool.ruff.pydocstyle]
-convention = "numpy"
+convention = "google"
 
 [tool.ruff.per-file-ignores]
 # Tests can use magic values, assertions, and relative imports
