@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import abc
 from typing import TYPE_CHECKING, Literal
 
@@ -13,30 +15,50 @@ class FusrrPipeline(abc.ABC):
 
 
 class FusrrBuildPipeline(FusrrPipeline):
+    """A FusrrBuildPipeline defines a container and a deterministic build order
+    for constructing `FusrrSceneObject`s.
+    """
+
     def __init__(self, collection_name: str | None = None):
+        """Construct a new build pipeline.
+
+        Args:
+            collection_name: The name of the collection to create and add
+                objects to. If None, no collection will be created.
+        """
         self.collection_name = collection_name
         # had to do all this typing and tuple stuff due to circular imports
         self._pipeline: list[
             tuple[
                 Literal["obj"],
-                "FusrrSceneObject",
+                FusrrSceneObject,
             ]
             | tuple[
                 Literal["pipe"],
-                "FusrrBuildPipeline",
+                FusrrBuildPipeline,
             ]
         ] = []
 
-    def clear(self):
-        self._pipeline.clear()
-
-    def add_object(self, obj: "FusrrSceneObject"):
+    def add_object(self, obj: FusrrSceneObject):
+        """Add an object to this pipeline."""
         self._pipeline.append(("obj", obj))
 
-    def add_pipe(self, pipe: "FusrrBuildPipeline"):
+    def add_pipe(self, pipe: FusrrBuildPipeline):
+        """Add a nested pipeline to this pipeline."""
         self._pipeline.append(("pipe", pipe))
 
-    def execute(self, scene: "FusrrScene"):
+    def execute(self, scene: FusrrScene):
+        """Execute this pipeline.
+
+        This will execute every object and nested pipeline in this pipeline
+        (in order), modifying the scene as it goes.
+
+        If a collection name was provided, this will also create a collection
+        and add all objects (and sub-collections) to it.
+
+        Args:
+            scene: The scene to execute this pipeline on.
+        """
         if not self._pipeline:
             return
 
@@ -44,10 +66,11 @@ class FusrrBuildPipeline(FusrrPipeline):
         for pipe_type, pipe_item in self._pipeline:
             pipe_item.execute(scene)
             if pipe_type == "obj":
-                obj: "FusrrSceneObject" = pipe_item  # type: ignore[assignment]
+                obj: FusrrSceneObject = pipe_item  # type: ignore[assignment]
                 object_names.add(obj.name)
 
-        if self.collection_name: ...
+        if self.collection_name:
+            ...
         # select and add objects to collection using object_names
 
 

@@ -4,20 +4,20 @@ build-backend = "hatchling.build"
 
 [project]
 name = "fusrr"
-authors = [{ name = "The FusRR Pipeline project maintainers" }]
+authors = [{ name = "The FusRR project maintainers" }]
 description = ""
 readme = "README.md"
 dynamic = ['version']
 license = "MIT"
 requires-python = ">=3.10"
-keywords = ["tokamak", "blender", "rendering", "fusion"]
+keywords = ["tokamak", "blender", "rendering", "nuclear", "fusion"]
 classifiers = [
-    "Programming Language :: Python",
-    "Development Status :: 3 - Alpha",
-    "Natural Language :: English",
-    "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Development Status :: 3 - Alpha",
+  "Natural Language :: English",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
 ]
 
 dependencies = ["bpy", "numpy", "matplotlib"]
@@ -25,12 +25,13 @@ dependencies = ["bpy", "numpy", "matplotlib"]
 [project.optional-dependencies]
 dev = ["pre-commit", "jupyterlab"]
 test = [
-    "pytest",
-    "coverage[toml]",
-    "pytest-html",
-    "pytest-metadata",
-    "pytest-json-report",
+  "pytest",
+  "coverage[toml]",
+  "pytest-html",
+  "pytest-metadata",
+  "pytest-json-report",
 ]
+docs = ["mkdocs-material", "mkdocstrings[python]"]
 lint = ["ruff", "mypy"]
 [project.urls]
 Source = "https://github.com/Fusion-Power-Plant-Framework/fusrr"
@@ -55,6 +56,13 @@ tests-cov = "coverage run -m pytest {args:tests}"
 cov-report = ["- coverage combine", "coverage report"]
 cov-all = ["tests-cov", "cov-report"]
 
+# env: docs
+[tool.hatch.envs.docs]
+features = ["docs"]
+[tool.hatch.envs.docs.scripts]
+build = "mkdocs build"
+serve = "mkdocs serve"
+
 # env: lint
 [tool.hatch.envs.lint]
 detached = true                               # Don't inherit from default (does not download project dependencies)
@@ -71,54 +79,54 @@ line-length = 80
 preview = true
 
 exclude = [
-    ".git",
-    "__pycache__",
-    "documentation",
-    ".env",
-    ".idea",
-    ".pytest_cache",
-    "htmlcov",
+  ".git",
+  "__pycache__",
+  "documentation",
+  ".env",
+  ".idea",
+  ".pytest_cache",
+  "htmlcov",
 ]
 select = ["ALL"]
 extend-select = ["E241", "CPY001", "PLR0904"]
 ignore = [
-    "I001",
-    "D100",
-    "COM812",
-    "ISC001",
-    "CPY001",
-    "D104",
-    "D205",
-    "ANN206",
-    "ANN201",
-    "ANN204",
-    "ANN102",
-    "ANN101",
-    "T201",
-    "N803",
-    "N806",
-    "N815",
-    "TRY003",
-    "EM101",
-    "EM102",
-    # Allow non-abstract empty methods in abstract base classes
-    "B027",
-    # Allow boolean positional values in function calls, like `dict.get(... True)`
-    "FBT003",
-    # Ignore checks for possible passwords
-    "S105",
-    "S106",
-    "S107",
-    # Ignore complexity
-    "C901",
-    "PLR0911",
-    "PLR0912",
-    "PLR0913",
-    "PLR0915",
+  "I001",
+  "D100",
+  "COM812",
+  "ISC001",
+  "CPY001",
+  "D104",
+  "D205",
+  "ANN206",
+  "ANN201",
+  "ANN204",
+  "ANN102",
+  "ANN101",
+  "T201",
+  "N803",
+  "N806",
+  "N815",
+  "TRY003",
+  "EM101",
+  "EM102",
+  # Allow non-abstract empty methods in abstract base classes
+  "B027",
+  # Allow boolean positional values in function calls, like `dict.get(... True)`
+  "FBT003",
+  # Ignore checks for possible passwords
+  "S105",
+  "S106",
+  "S107",
+  # Ignore complexity
+  "C901",
+  "PLR0911",
+  "PLR0912",
+  "PLR0913",
+  "PLR0915",
 ]
 unfixable = [
-    # Don't touch unused imports
-    "F401",
+  # Don't touch unused imports
+  "F401",
 ]
 
 

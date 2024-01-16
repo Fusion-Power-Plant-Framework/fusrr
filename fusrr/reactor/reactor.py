@@ -14,13 +14,11 @@ class Plasma(FusrrSceneObject):
 
     def _self_construct(self, scene: FusrrScene) -> None: ...
 
-    # def _self_construct(self, scene: FusrrScene) -> None:
-
 
 class FusrrReactor(FusrrSceneObject):
     def __init__(self, name: str):
         # all the things here
         super().__init__(name, None)
 
-    def _build(self):
+    def _build(self) -> None:
         self.add_object(Plasma("plasma"))
