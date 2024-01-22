@@ -9,8 +9,12 @@ if TYPE_CHECKING:
 
 
 class FusrrPipeline(abc.ABC):
+    """A FusrrPipeline defines a set of operations to be executed
+    on a FusrrScene.
+    """
+
     @abc.abstractmethod
-    def execute(self):
+    def execute(self, scene: FusrrScene):  # noqa: D102
         pass
 
 
@@ -70,10 +74,8 @@ class FusrrBuildPipeline(FusrrPipeline):
                 object_names.add(obj.name)
 
         if self.collection_name:
-            ...
-        # select and add objects to collection using object_names
+            created_objs = scene.select_objects(object_names)
+            scene.create_collection(self.collection_name, created_objs)
 
 
-class FusrrViewPipeline(FusrrPipeline):
-    def execute(self):
-        raise NotImplementedError
+class FusrrViewPipeline(FusrrPipeline): ...
