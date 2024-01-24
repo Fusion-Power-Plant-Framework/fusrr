@@ -80,6 +80,8 @@ venv.bak/
 .ipynb_checkpoints
 _pyproject.toml
 
+*.blend*
+
 # mkdocs doc build
 site
 fusrr/_version.py

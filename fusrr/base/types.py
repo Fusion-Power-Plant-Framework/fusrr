@@ -1,4 +1,10 @@
-from typing import Callable  # noqa: UP035
+from __future__ import annotations
 
-Constructor = Callable[[], None]
+from typing import TYPE_CHECKING
+from collections.abc import Callable
+
+if TYPE_CHECKING:
+    from fusrr.base.scene import FusrrScene
+
+Constructor = Callable[["FusrrScene"], None]
 OptionalConstructor = Constructor | None

@@ -125,6 +125,10 @@ class FusrrScene(FusrrBuildPipeline):
             bpy.data.objects[name].select_set(True)
         return tuple(bpy.context.selected_objects)
 
+    def select_object(self, name: str) -> bpy_types.Object:
+        """Select objects in the scene by name."""
+        return self.select_objects({name})[0]
+
     def deselect_all(self) -> None:  # noqa: PLR6301
         """Deselect all objects in the scene."""
         bpy.ops.object.select_all(action="DESELECT")
@@ -142,8 +146,8 @@ class FusrrScene(FusrrBuildPipeline):
     def execute_construct_object(self, name: str, constructor: Constructor):
         """Construct an object in the scene."""
         self._check_name_in_scene(name)
-        constructor()
-        self._name_selected_object(name)
+        constructor(self)
+        # self._name_selected_object(name)
 
     def execute(self):
         """Execute the FusrrScene.
