@@ -3,9 +3,10 @@ from collections.abc import Iterable
 
 import numpy as np
 
+from fusrr.base.models import Vec3
 from fusrr.base.object import FusrrSceneObject
 from fusrr.base.scene import FusrrScene
-from fusrr.base.tools import create_mesh
+from fusrr.base.tools import add_edges_to_mesh, new_mesh, revolve_mesh
 from fusrr.reactor.reactor_params import FusrrReactorParams
 
 
@@ -15,7 +16,7 @@ class Plasma(FusrrSceneObject):
         self.params = reactor_params
         super().__init__("Plasma", None)
 
-    def _build(self) -> None:
+    def _setup(self) -> None:
         r0 = self.params.rmajor
         a = self.params.rminor
         delta = 1.5 * self.params.delta_95
@@ -59,24 +60,17 @@ class Plasma(FusrrSceneObject):
             )
             angs2 = np.linspace(-(outang + theta2), theta2, 256, endpoint=True)
 
-        self.xs1 = -(r1 * np.cos(angs1) - x1)
-        self.ys1 = r1 * np.sin(angs1)
-        self.xs2 = -(r2 * np.cos(angs2) - x2)
-        self.ys2 = r2 * np.sin(angs2)
+        xs1 = -(r1 * np.cos(angs1) - x1)
+        zs1 = r1 * np.sin(angs1)
+        xs2 = -(r2 * np.cos(angs2) - x2)
+        zs2 = r2 * np.sin(angs2)
 
-    def _self_construct(self, scene: FusrrScene) -> None:
-        for _x, _y in zip(
-            (self.xs1, self.xs2), (self.ys1, self.ys2), strict=True
-        ):
-            self.create_mesh(_x, _y)
+        self.edge_1 = [Vec3(x, 0, z) for x, z in zip(xs1, zs1, strict=True)]
+        self.edge_2 = [Vec3(x, 0, z) for x, z in zip(xs2, zs2, strict=True)]
+
+    def _construct(self, scene: FusrrScene) -> None:
+        with new_mesh(self.name) as m:
+            add_edges_to_mesh(m, self.edge_1)
+            add_edges_to_mesh(m, self.edge_2)
+            revolve_mesh(m, m.edges, Vec3.ZERO, Vec3.Z, 360)
         scene.select_object(self.name)
-
-    def create_mesh(
-        self,
-        x_coords: Iterable[float],
-        y_coords: Iterable[float],
-    ):
-        """Create the vertices of the plasma array for plasma mesh."""
-        with create_mesh(self.name) as m:
-            for x, y in zip(x_coords, y_coords, strict=True):
-                m.verts.new((x, y, 0))

@@ -26,7 +26,7 @@ class FusrrReactor(FusrrSceneObject):
             ...
         # self.parames = bluemira_file_adaptor(output_names, file_path)
 
-    def _build(self) -> None:
+    def _setup(self) -> None:
         self.plasma = Plasma(self.parames)
 
         # add an add_all_attr_objects method to FusrrSceneObject

@@ -16,6 +16,16 @@ class Vec2:
     def ZERO(cls):
         return cls(0, 0)
 
+    @classmethod
+    @property
+    def X(cls):
+        return cls(1, 0)
+
+    @classmethod
+    @property
+    def Y(cls):
+        return cls(0, 1)
+
     @property
     def tup(self):
         return (self.x, self.y)
@@ -45,6 +55,21 @@ class Vec3:
     @property
     def ZERO(cls):
         return cls(0, 0, 0)
+
+    @classmethod
+    @property
+    def X(cls):
+        return cls(1, 0, 0)
+
+    @classmethod
+    @property
+    def Y(cls):
+        return cls(0, 1, 0)
+
+    @classmethod
+    @property
+    def Z(cls):
+        return cls(0, 0, 1)
 
     @property
     def tup(self):

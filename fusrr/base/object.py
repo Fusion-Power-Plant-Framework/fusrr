@@ -20,20 +20,20 @@ class FusrrSceneObject(FusrrBuildPipeline):
     def __init__(self, name: str, constructor: OptionalConstructor):
         self.name = name
         self.constructor = constructor
-        super().__init__(name + "_group")
+        super().__init__(name)
 
-        self._build()
+        self._setup()
 
-    def _build(self) -> None:  # noqa: PLR6301
+    def _setup(self) -> None:  # noqa: PLR6301
         return
 
-    def _self_construct(self, scene: "FusrrScene") -> None:
+    def _construct(self, scene: "FusrrScene") -> None:
         if self.constructor is not None:
             self.constructor(scene)
 
     def execute(self, scene: "FusrrScene"):
         """Executes the FusrrSceneObject."""
-        scene.execute_construct_object(self.name, self._self_construct)
+        scene.execute_construct_object(self.name, self._construct)
         super().execute(scene)
 
 
