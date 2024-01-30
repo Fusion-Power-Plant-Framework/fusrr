@@ -1,5 +1,5 @@
-from contextlib import contextmanager
 from collections.abc import Iterable
+from contextlib import contextmanager
 
 import bpy
 import numpy as np
@@ -9,22 +9,18 @@ from fusrr.base.models import Vec3
 
 
 @contextmanager
-def new_mesh(name: str):
+def set_mesh_on(obj):
     """Create a new mesh and object to go with it.
 
     Use as a context manager.
     """
-    mesh = bpy.data.meshes.new(name)  # add the new mesh
-    obj = bpy.data.objects.new(mesh.name, mesh)
-
-    bpy.context.collection.objects.link(obj)
+    mesh = obj.data
 
     bm = bmesh.new()
 
     try:
         yield bm
     finally:
-        # set the object's mesh to the bmesh
         bm.to_mesh(mesh)
         bm.free()
 

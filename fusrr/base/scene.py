@@ -133,6 +133,18 @@ class FusrrScene(FusrrBuildPipeline):
         """Deselect all objects in the scene."""
         bpy.ops.object.select_all(action="DESELECT")
 
+    def execute_create_object(self, name: str):
+        """Create a new object in the scene."""
+        self._check_name_in_scene(name)
+
+        mesh = bpy.data.meshes.new(name)
+        obj = bpy.data.objects.new(name, mesh)
+        bpy.context.collection.objects.link(obj)
+
+        # self.select_object(name)
+        # self._name_selected_object(name)
+        return obj
+
     def execute_clear_scene(self):
         """Clear the scene."""
         for m in bpy.data.meshes:
@@ -145,9 +157,9 @@ class FusrrScene(FusrrBuildPipeline):
 
     def execute_construct_object(self, name: str, constructor: Constructor):
         """Construct an object in the scene."""
-        self._check_name_in_scene(name)
         constructor(self)
-        # self._name_selected_object(name)
+
+        # maybe do selecting objects here?
 
     def execute(self):
         """Execute the FusrrScene.

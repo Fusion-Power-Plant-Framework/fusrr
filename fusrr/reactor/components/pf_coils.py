@@ -10,11 +10,11 @@ from fusrr.base.scene import FusrrScene
 from fusrr.reactor.reactor_params import FusrrReactorParams
 
 
-class Plasma(FusrrSceneObject):
+class PFCoils(FusrrSceneObject):
     def __init__(self, reactor_params: FusrrReactorParams):
         # all the things here
         self.params = reactor_params
-        super().__init__("Plasma", None)
+        super().__init__("pf_coils", None)
 
     def _setup(self) -> None:
         r0 = self.params.rmajor
