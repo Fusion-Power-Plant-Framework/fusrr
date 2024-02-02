@@ -76,7 +76,6 @@ all = ["style", "typing"]
 # tool: ruff
 [tool.ruff]
 line-length = 80
-preview = true
 
 exclude = [
   ".git",
@@ -88,13 +87,13 @@ exclude = [
   "htmlcov",
 ]
 select = ["ALL"]
-extend-select = ["E241", "CPY001", "PLR0904"]
+extend-select = ["E241", "PLR0904"]
 ignore = [
+  "ERA001",
   "I001",
   "D100",
   "COM812",
   "ISC001",
-  "CPY001",
   "D104",
   "D205",
   "ANN206",
