@@ -1,7 +1,10 @@
 version: "3"
 services:
   fusrr:
-    image: fusrr:latest
+    # image: fusrr:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: fusrr-v0.1 # will make this a variable in the future
     security_opt:
       - seccomp:unconfined #optional
@@ -11,7 +14,7 @@ services:
       - TZ=Etc/UTC
       - SUBFOLDER=/ #optional
     volumes:
-      - /path/to/config:/config
+      - .:/code
     ports:
       - 3000:3000
       - 3001:3001
