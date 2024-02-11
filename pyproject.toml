@@ -89,6 +89,7 @@ exclude = [
 select = ["ALL"]
 extend-select = ["E241", "PLR0904"]
 ignore = [
+  "D105", # Don't require docstrings for magic methods
   "ERA001",
   "I001",
   "D100",

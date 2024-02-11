@@ -105,7 +105,7 @@ class FusrrScene(FusrrBuildPipeline):
             copy=False,
         )
 
-    def create_collection(  # noqa: PLR6301
+    def create_collection(
         self, name: str, objects: Iterable[bpy_types.Object]
     ) -> bpy_types.Collection:
         """Create a collection and adds (links) objects to it."""
@@ -129,7 +129,7 @@ class FusrrScene(FusrrBuildPipeline):
         """Select objects in the scene by name."""
         return self.select_objects({name})[0]
 
-    def deselect_all(self) -> None:  # noqa: PLR6301
+    def deselect_all(self) -> None:
         """Deselect all objects in the scene."""
         bpy.ops.object.select_all(action="DESELECT")
 
@@ -170,7 +170,9 @@ class FusrrScene(FusrrBuildPipeline):
         Note:
             This will modify the state of the current Blender session.
         """
-        self.execute_clear_scene()
-        super().execute(self)
-        self.deselect_all()
-        self.save_scene()
+        try:
+            self.execute_clear_scene()
+            super().execute(self)
+        finally:
+            self.deselect_all()
+            self.save_scene()

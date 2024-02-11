@@ -9,7 +9,7 @@ from fusrr.base.models import Vec3
 
 
 @contextmanager
-def set_mesh_on(obj):
+def new_mesh_for(obj):
     """Create a new mesh and object to go with it.
 
     Use as a context manager.
@@ -25,7 +25,7 @@ def set_mesh_on(obj):
         bm.free()
 
 
-def add_edges_to_mesh(m: bmesh.types.BMesh, points: Iterable[Vec3]):
+def add_edges_to_mesh_from_points(m: bmesh.types.BMesh, points: Iterable[Vec3]):
     verts = [m.verts.new(p.tup) for p in points]
     m.verts.ensure_lookup_table()
     for i in range(len(verts)):
@@ -34,9 +34,8 @@ def add_edges_to_mesh(m: bmesh.types.BMesh, points: Iterable[Vec3]):
         m.edges.new((verts[i - 1], verts[i]))
 
 
-def revolve_mesh(
+def revolve_mesh_edges_silhouette(
     m: bmesh.types.BMesh,
-    geometry: list,
     center: Vec3,
     axis: Vec3,
     rot_angle_degs: float,
@@ -45,7 +44,7 @@ def revolve_mesh(
     ang = np.deg2rad(rot_angle_degs)
     bmesh.ops.spin(
         m,
-        geom=geometry,
+        geom=m.edges,
         cent=center.tup,
         axis=axis.tup,
         angle=ang,

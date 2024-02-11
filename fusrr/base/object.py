@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 import bpy
@@ -24,14 +26,14 @@ class FusrrSceneObject(FusrrBuildPipeline):
 
         self._setup()
 
-    def _setup(self) -> None:  # noqa: PLR6301
-        return
+    def _setup(self) -> None:
+        pass
 
-    def _construct(self, scene: "FusrrScene") -> None:
+    def _construct(self, scene: FusrrScene) -> None:
         if self.constructor is not None:
             self.constructor(scene)
 
-    def execute(self, scene: "FusrrScene"):
+    def execute(self, scene: FusrrScene):
         """Executes the FusrrSceneObject."""
         scene.execute_construct_object(self.name, self._construct)
         super().execute(scene)
@@ -48,7 +50,7 @@ def empty(name: str, location: Vec3, size: int = 1) -> FusrrSceneObject:
         size: Size of cube. Defaults to 1.
     """
 
-    def _construct(_scene: "FusrrScene") -> None:
+    def _construct(_scene: FusrrScene) -> None:
         bpy.ops.object.empty_add(location=location.tup, size=size)
 
     return FusrrSceneObject(
@@ -69,7 +71,7 @@ def cube(
         scale: Scale of cube. Defaults to Vec3.ONE.
     """
 
-    def _construct(_scene: "FusrrScene") -> None:
+    def _construct(_scene: FusrrScene) -> None:
         bpy.ops.mesh.primitive_cube_add(location=location.tup, size=size)
         bpy.context.object.scale = scale.tup
 
@@ -77,14 +79,3 @@ def cube(
         name,
         _construct,
     )
-
-
-# def add_mesh(name, verts, faces, edges=None, col_name="Collection"):
-#     if edges is None:
-#         edges = []
-#     mesh = bpy.data.meshes.new(name)
-#     obj = bpy.data.objects.new(mesh.name, mesh)
-#     col = bpy.data.collections[col_name]
-#     col.objects.link(obj)
-#     bpy.context.view_layer.objects.active = obj
-#     mesh.from_pydata(verts, edges, faces)
