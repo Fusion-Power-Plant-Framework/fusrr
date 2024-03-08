@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 class FusrrSceneObject(FusrrBuildPipeline):
     """A FusrrSceneObject is a object that can be added to a FusrrScene."""
 
-    def __init__(self, name: str, constructor: OptionalConstructor):
+    def __init__(self, name: str, constructor: OptionalConstructor = None):
         self.name = name
         self.constructor = constructor
         super().__init__(name)

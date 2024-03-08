@@ -10,6 +10,7 @@ from fusrr.base.object import FusrrSceneObject, empty
 from fusrr.base.scene import FusrrScene
 from fusrr.reactor.process.components.process_component import ProcessComponent
 from fusrr.reactor.process.process_adaptor import ProcessParams
+from fusrr.reactor.process.utils import process_rect_to_vec3_path
 
 
 class ProcessPFCoils(ProcessComponent):
@@ -37,10 +38,12 @@ class ProcessPFCoils(ProcessComponent):
             self.add_object(
                 ProcessPFCoil(
                     name=f"pf_{coil}",
-                    r=self.params.get_with(_rgx("rpf", coil)),
-                    z=self.params.get_with(_rgx("zpf", coil)),
-                    dr=self.params.get_with(_rgx("pfdr", coil)),
-                    dz=self.params.get_with(_rgx("pfdz", coil)),
+                    geom=RectangleGeometry(
+                        anchor_x=self.params.get_with(_rgx("rpf", coil)),
+                        anchor_z=self.params.get_with(_rgx("zpf", coil)),
+                        width=self.params.get_with(_rgx("pfdr", coil)),
+                        height=self.params.get_with(_rgx("pfdz", coil)),
+                    ),
                 )
             )
 
@@ -50,54 +53,26 @@ class ProcessPFCoils(ProcessComponent):
         self.add_object(ProcessCSCoil(central_coil_geom))
 
     def _construct(self, scene: FusrrScene) -> None:
+        # empty for the parent component, for now
         scene.execute_create_object(self.name)
 
 
 class ProcessPFCoil(FusrrSceneObject):
-    def __init__(self, name: str, r: float, z: float, dr: float, dz: float):
-        self.r = r
-        self.z = z
-        self.dr = dr / 2
-        self.dz = dz / 2
-        super().__init__(name, None)
-
-    def _setup(self) -> None:
-        tr = Vec3(self.r + self.dr, 0, self.z + self.dz)
-        br = Vec3(self.r + self.dr, 0, self.z - self.dz)
-        bl = Vec3(self.r - self.dr, 0, self.z - self.dz)
-        tl = Vec3(self.r - self.dr, 0, self.z + self.dz)
-
-        self.face_pts = [tr, br, bl, tl, tr]
-
-    def _construct(self, scene: FusrrScene) -> None:
-        obj = scene.execute_create_object(self.name)
-        with new_mesh_for(obj) as m:
-            add_edges_to_mesh_from_points(m, self.face_pts)
-            revolve_mesh_edges_silhouette(m, Vec3.ZERO, Vec3.Z, 360)
-        scene.select_object(self.name)
-
-
-class ProcessCSCoil(FusrrSceneObject):
-    def __init__(self, geom: RectangleGeometry):
+    def __init__(self, name: str, geom: RectangleGeometry):
         self.geom = geom
-        super().__init__("cs_coil", None)
+        super().__init__(name)
 
     def _setup(self) -> None:
-        x = self.geom.anchor_x
-        z = self.geom.anchor_z
-        dx = self.geom.width / 2
-        dz = self.geom.height / 2
-
-        tr = Vec3(x + dx, 0, z + dz)
-        br = Vec3(x + dx, 0, z - dz)
-        bl = Vec3(x - dx, 0, z - dz)
-        tl = Vec3(x - dx, 0, z + dz)
-
-        self.rec_pts = [tr, br, bl, tl, tr]
+        self.face_path_pts = process_rect_to_vec3_path(self.geom)
 
     def _construct(self, scene: FusrrScene) -> None:
         obj = scene.execute_create_object(self.name)
         with new_mesh_for(obj) as m:
-            add_edges_to_mesh_from_points(m, self.rec_pts)
+            add_edges_to_mesh_from_points(m, self.face_path_pts)
             revolve_mesh_edges_silhouette(m, Vec3.ZERO, Vec3.Z, 360)
         scene.select_object(self.name)
+
+
+class ProcessCSCoil(ProcessPFCoil):
+    def __init__(self, geom: RectangleGeometry):
+        super().__init__("cs_coil", geom)

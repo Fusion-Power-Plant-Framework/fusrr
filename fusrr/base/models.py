@@ -40,7 +40,7 @@ class Vec2:
         return self.x * other.x + self.y * other.y
 
 
-@dataclass
+@dataclass(eq=True, frozen=True, repr=True)
 class Vec3:
     x: float
     y: float

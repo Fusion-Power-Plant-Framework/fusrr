@@ -17,7 +17,7 @@ class ProcessParams:
         return self.mfile.data[name].get_scan(-1)
 
     def get(self, name: str, default=None):
-        if self.exists(name):
+        if self.has_key(name):
             return self[name]
         return default
 
@@ -25,20 +25,23 @@ class ProcessParams:
         k = self.get_key_with(s)
         return self[k]
 
-    def get_key_with(self, s: str) -> str:
-        k = self.get_keys_with(s)
+    def get_key_with(self, rgx: str) -> str:
+        k = self.get_keys_with(rgx)
         if not k:
-            raise KeyError(f"Key with {s} not found")
+            raise KeyError(f"Key with {rgx} not found")
         return k[0]
 
-    def get_keys_with(self, s: str | list[str]) -> list[str]:
-        if isinstance(s, str):
-            s = [s]
-        r = re.compile(r"^(" + "|".join(s) + ")$")
+    def get_keys_with(self, rgx: str | list[str]) -> list[str]:
+        if isinstance(rgx, str):
+            rgx = [rgx]
+        r = re.compile(r"^(" + "|".join(rgx) + ")$")
         return list(filter(r.match, self._keys))
 
     def n_keys_with(self, s: str) -> int:
         return len(self.get_keys_with(s))
 
-    def exists(self, name: str) -> bool:
+    def has_key(self, name: str) -> bool:
         return name in self._keys
+
+    def has_key_with(self, rgx: str) -> bool:
+        return bool(self.get_keys_with(rgx))
