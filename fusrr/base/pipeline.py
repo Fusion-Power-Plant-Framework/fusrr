@@ -76,6 +76,8 @@ class FusrrBuildPipeline(FusrrPipeline):
         if self.collection_name:
             created_objs = scene.select_objects(object_names)
             scene.create_collection(self.collection_name, created_objs)
+            scene.deselect_all()
 
 
-class FusrrViewPipeline(FusrrPipeline): ...
+class FusrrViewPipeline(FusrrPipeline):
+    ...

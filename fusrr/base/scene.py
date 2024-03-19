@@ -6,6 +6,7 @@ from pathlib import Path
 import bpy
 import bpy_types
 
+from fusrr.base.errors import SceneStopError
 from fusrr.base.pipeline import FusrrBuildPipeline
 from fusrr.base.types import Constructor
 
@@ -122,12 +123,22 @@ class FusrrScene(FusrrBuildPipeline):
         """Select objects in the scene by name."""
         self.deselect_all()
         for name in names:
-            bpy.data.objects[name].select_set(True)
+            obj = bpy.data.objects.get(name)
+            if obj is not None:
+                obj.select_set(True)
         return tuple(bpy.context.selected_objects)
 
     def select_object(self, name: str) -> bpy_types.Object:
-        """Select objects in the scene by name."""
+        """Select a single object in the scene by name."""
         return self.select_objects({name})[0]
+
+    def select_and_activate_object(self, name: str) -> bpy_types.Object:
+        """Select a single object in the scene by name
+        and make it the active object.
+        """
+        obj = self.select_objects({name})[0]
+        bpy.context.view_layer.objects.active = obj
+        return obj
 
     def deselect_all(self) -> None:
         """Deselect all objects in the scene."""
@@ -173,6 +184,9 @@ class FusrrScene(FusrrBuildPipeline):
         try:
             self.execute_clear_scene()
             super().execute(self)
+        except SceneStopError as e:
+            print(f"Stopping scene on: {e}")
         finally:
-            self.deselect_all()
+            # self.deselect_all()
+            print("saving scene...")
             self.save_scene()

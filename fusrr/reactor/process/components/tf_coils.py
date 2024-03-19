@@ -1,11 +1,18 @@
 from collections.abc import Iterable
+from math import radians
 
+import bpy  # noqa: F401
 import numpy as np
+import bmesh
+from bpy import context  # noqa: F401
+from bmesh.types import BMVert
+from mathutils import Matrix, Vector
 from process.geometry.tfcoil_geometry import (
     tfcoil_geometry_d_shape,
     tfcoil_geometry_rectangular_shape,
 )
 
+from fusrr.base.errors import SceneStopError
 from fusrr.base.mesh_tools import add_edges_to_mesh_from_points, new_mesh_for
 from fusrr.base.models import Vec3
 from fusrr.base.object import FusrrSceneObject
@@ -85,10 +92,6 @@ class ProcessTFCoils(ProcessComponent):
                 )
             )
 
-    def _construct(self, scene: FusrrScene) -> None:
-        # empty for the parent component, for now
-        scene.execute_create_object(self.name)
-
 
 class ProcessTFCoilD(FusrrSceneObject):
     def __init__(
@@ -104,6 +107,7 @@ class ProcessTFCoilD(FusrrSceneObject):
         super().__init__(name)
 
     def _construct(self, scene: FusrrScene) -> None:
+        scene.deselect_all()
         obj = scene.execute_create_object(self.name)
         with new_mesh_for(obj) as m:
             # Inner (straight) leg
@@ -113,3 +117,45 @@ class ProcessTFCoilD(FusrrSceneObject):
             # Outer (arch) leg
             for line_seg in self.ob_leg_arch_pts:
                 add_edges_to_mesh_from_points(m, line_seg)
+
+            edges = m.edges
+            extruded = bmesh.ops.extrude_face_region(m, geom=edges)
+            # Move extruded geometry
+            translate_verts = [
+                v for v in extruded["geom"] if isinstance(v, BMVert)
+            ]
+            bmesh.ops.translate(m, vec=Vec3.Y.tup, verts=translate_verts)
+
+            extruded = bmesh.ops.extrude_face_region(m, geom=m.faces)
+
+            # Get the new faces from the extruded geometry
+            new_faces = [
+                f for f in extruded["geom"] if isinstance(f, bmesh.types.BMFace)
+            ]
+
+            # Calculate the centroid of the faces
+            center = Vector((0, 0, 0))
+            for f in new_faces:
+                center += f.calc_center_median()
+            center /= len(new_faces)
+
+            verts = list({v for f in new_faces for v in f.verts})
+
+            # Scale the entire mesh by its center point
+            scale_factor = 1 - 0.1  # Change this to your desired scale factor
+            bmesh.ops.scale(
+                m,
+                vec=(Vec3.ONE * scale_factor).tup,
+                space=Matrix.Translation(-center),
+                verts=verts,
+            )
+
+            rotation_X = Matrix.Rotation(radians(45), 4, "Z")
+            bmesh.ops.rotate(
+                m, cent=Vec3.ZERO.tup, matrix=rotation_X, verts=m.verts
+            )
+
+        # context_override = context.copy()
+        # context_override["selected_objects"] = [obj]
+        # with context.temp_override(**context_override):
+        #     bpy.ops.object.convert(target="CURVE")

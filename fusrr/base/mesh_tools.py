@@ -1,7 +1,7 @@
 from collections.abc import Iterable
 from contextlib import contextmanager
 
-import bpy
+import bpy  # noqa: F401
 import numpy as np
 import bmesh
 
@@ -10,7 +10,7 @@ from fusrr.base.models import Vec3
 
 @contextmanager
 def new_mesh_for(obj):
-    """Create a new mesh and object to go with it.
+    """Create a new mesh for the obj.
 
     Use as a context manager.
     """
@@ -21,17 +21,41 @@ def new_mesh_for(obj):
     try:
         yield bm
     finally:
+        bm.normal_update()
         bm.to_mesh(mesh)
         bm.free()
 
 
-def add_edges_to_mesh_from_points(m: bmesh.types.BMesh, points: Iterable[Vec3]):
+@contextmanager
+def update_mesh_for(obj):
+    """Update a mesh from the obj.
+
+    Use as a context manager.
+    """
+    mesh = obj.data
+
+    bm = bmesh.new()
+    bm.from_mesh(mesh)
+
+    try:
+        yield bm
+    finally:
+        bm.normal_update()
+        bm.to_mesh(mesh)
+        bm.free()
+
+
+def add_edges_to_mesh_from_points(
+    m: bmesh.types.BMesh, points: Iterable[Vec3], *, close: bool = False
+):
     verts = [m.verts.new(p.tup) for p in points]
     m.verts.ensure_lookup_table()
     for i in range(len(verts)):
         if i == 0:
             continue
         m.edges.new((verts[i - 1], verts[i]))
+    if close:
+        m.edges.new((verts[-1], verts[0]))
 
 
 def revolve_mesh_edges_silhouette(
@@ -56,14 +80,3 @@ def revolve_mesh_edges_silhouette(
 
 
 # bmesh.ops.bisect_plane(bm, geom=[], dist=0, plane_co=mathutils.Vector(), plane_no=mathutils.Vector(), use_snap_center=False, clear_outer=False, clear_inner=False)
-
-# def spin_extrusion():
-#     """Spin extrudes around y axis in blender 2Pi radians"""
-#     bpy.ops.object.mode_set(mode="EDIT")
-#     bpy.ops.mesh.select_all(action="SELECT")
-#     bpy.ops.mesh.spin(
-#         angle=2 * np.pi, steps=100, axis=(0.0, 1.0, 0.0)
-#     )  # Polodial rotation
-#     bpy.ops.object.mode_set(mode="OBJECT")
-#     bpy.ops.object.shade_smooth()
-#     bpy.ops.object.select_all(action="DESELECT")

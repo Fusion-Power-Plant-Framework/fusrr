@@ -52,10 +52,6 @@ class ProcessPFCoils(ProcessComponent):
         )
         self.add_object(ProcessCSCoil(central_coil_geom))
 
-    def _construct(self, scene: FusrrScene) -> None:
-        # empty for the parent component, for now
-        scene.execute_create_object(self.name)
-
 
 class ProcessPFCoil(FusrrSceneObject):
     def __init__(self, name: str, geom: RectangleGeometry):

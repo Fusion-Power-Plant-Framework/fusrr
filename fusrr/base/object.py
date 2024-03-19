@@ -35,7 +35,9 @@ class FusrrSceneObject(FusrrBuildPipeline):
 
     def execute(self, scene: FusrrScene):
         """Executes the FusrrSceneObject."""
+        # first construct this object
         scene.execute_construct_object(self.name, self._construct)
+        # then execute the pipeline
         super().execute(scene)
 
 
