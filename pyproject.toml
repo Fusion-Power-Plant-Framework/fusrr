@@ -1,23 +1,28 @@
 [build-system]
-requires = ["hatchling", "hatch-vcs"]
+requires      = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "vcs"
+[tool.hatch.build.hooks.vcs]
+version-file = "fusrr/_version.py"
 
 [project]
 name = "fusrr"
-authors = [{ name = "The FusRR Pipeline project maintainers" }]
+authors = [{ name = "The FusRR project maintainers" }]
 description = ""
 readme = "README.md"
 dynamic = ['version']
 license = "MIT"
 requires-python = ">=3.10"
-keywords = ["tokamak", "blender", "rendering", "fusion"]
+keywords = ["tokamak", "blender", "rendering", "nuclear", "fusion"]
 classifiers = [
-    "Programming Language :: Python",
-    "Development Status :: 3 - Alpha",
-    "Natural Language :: English",
-    "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Development Status :: 3 - Alpha",
+  "Natural Language :: English",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
 ]
 
 dependencies = ["bpy", "numpy", "matplotlib"]
@@ -25,22 +30,18 @@ dependencies = ["bpy", "numpy", "matplotlib"]
 [project.optional-dependencies]
 dev = ["pre-commit", "jupyterlab"]
 test = [
-    "pytest",
-    "coverage[toml]",
-    "pytest-html",
-    "pytest-metadata",
-    "pytest-json-report",
+  "pytest",
+  "coverage[toml]",
+  "pytest-html",
+  "pytest-metadata",
+  "pytest-json-report",
 ]
+docs = ["mkdocs-material", "mkdocstrings[python]"]
 lint = ["ruff", "mypy"]
 [project.urls]
-Source = "https://github.com/Fusion-Power-Plant-Framework/fusrr"
+Source        = "https://github.com/Fusion-Power-Plant-Framework/fusrr"
 Documentation = "https://github.com/Fusion-Power-Plant-Framework/fusrr#readme"
-Issues = "https://github.com/Fusion-Power-Plant-Framework/fusrr/issues"
-
-[tool.hatch.version]
-source = "vcs"
-[tool.hatch.build.hooks.vcs]
-version-file = "fusrr/_version.py"
+Issues        = "https://github.com/Fusion-Power-Plant-Framework/fusrr/issues"
 
 # env: default
 [tool.hatch.envs.default]
@@ -50,100 +51,111 @@ features = ["dev", "test", "lint"]
 [tool.hatch.envs.test]
 features = ["test"]
 [tool.hatch.envs.test.scripts]
-tests = "pytest {args:tests}"
-tests-cov = "coverage run -m pytest {args:tests}"
+tests      = "pytest {args:tests}"
+tests-cov  = "coverage run -m pytest {args:tests}"
 cov-report = ["- coverage combine", "coverage report"]
-cov-all = ["tests-cov", "cov-report"]
+cov-all    = ["tests-cov", "cov-report"]
+
+# env: docs
+[tool.hatch.envs.docs]
+features = ["docs"]
+[tool.hatch.envs.docs.scripts]
+build = "mkdocs build"
+serve = "mkdocs serve"
 
 # env: lint
 [tool.hatch.envs.lint]
-detached = true                               # Don't inherit from default (does not download project dependencies)
+detached     = true                           # Don't inherit from default (does not download project dependencies)
 dependencies = ["ruff", "mypy", "pre-commit"]
 [tool.hatch.envs.lint.scripts]
 typing = "mypy --install-types --non-interactive {args:src/fusrr tests}"
-style = ["ruff {args:.}"]
-fmt = ["pre-commit run --all-files --hook-stage manual"]
-all = ["style", "typing"]
+style  = ["ruff {args:.}"]
+fmt    = ["pre-commit run --all-files --hook-stage manual"]
+all    = ["style", "typing"]
 
 # tool: ruff
 [tool.ruff]
 line-length = 80
-preview = true
 
 exclude = [
-    ".git",
-    "__pycache__",
-    "documentation",
-    ".env",
-    ".idea",
-    ".pytest_cache",
-    "htmlcov",
+  ".git",
+  "__pycache__",
+  "documentation",
+  ".env",
+  ".idea",
+  ".pytest_cache",
+  "htmlcov",
 ]
+
+[tool.ruff.lint]
 select = ["ALL"]
-extend-select = ["E241", "CPY001", "PLR0904"]
 ignore = [
-    "I001",
-    "D100",
-    "COM812",
-    "ISC001",
-    "CPY001",
-    "D104",
-    "D205",
-    "ANN206",
-    "ANN201",
-    "ANN204",
-    "ANN102",
-    "ANN101",
-    "T201",
-    "N803",
-    "N806",
-    "N815",
-    "TRY003",
-    "EM101",
-    "EM102",
-    # Allow non-abstract empty methods in abstract base classes
-    "B027",
-    # Allow boolean positional values in function calls, like `dict.get(... True)`
-    "FBT003",
-    # Ignore checks for possible passwords
-    "S105",
-    "S106",
-    "S107",
-    # Ignore complexity
-    "C901",
-    "PLR0911",
-    "PLR0912",
-    "PLR0913",
-    "PLR0915",
+  "INP001",  # Ignore requiring __init__.py files
+  "D105",   # Don't require docstrings for magic methods
+  "N802",   # Upper case function names are allowed
+  "ERA001",
+  "I001",
+  "D100",
+  "COM812",
+  "ISC001",
+  "D104",
+  "D205",
+  "ANN206",
+  "ANN201",
+  "ANN204",
+  "ANN102",
+  "ANN101",
+  "T201",
+  "N803",
+  "N806",
+  "N815",
+  "TRY003",
+  "EM101",
+  "EM102",
+  # Allow non-abstract empty methods in abstract base classes
+  "B027",
+  # Allow boolean positional values in function calls, like `dict.get(... True)`
+  "FBT003",
+  # Ignore checks for possible passwords
+  "S105",
+  "S106",
+  "S107",
+  # Ignore complexity
+  "C901",
+  "PLR0911",
+  "PLR0912",
+  "PLR0913",
+  "PLR0915",
 ]
 unfixable = [
-    # Don't touch unused imports
-    "F401",
+  # Don't touch unused imports
+  "F401",
 ]
 
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-first-party = ["fusrr"]
+force-to-top      = ["numpy", "matplotlib", "bpy"]
 
-[tool.ruff.flake8-tidy-imports]
+[tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = "all"
 
-[tool.ruff.mccabe]
+[tool.ruff.lint.mccabe]
 max-complexity = 20
 
-[tool.ruff.pydocstyle]
-convention = "numpy"
+[tool.ruff.lint.pydocstyle]
+convention = "google"
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 # Tests can use magic values, assertions, and relative imports
-"tests/**/*" = ["PLR2004", "S101", "TID252"]
+"tests/**/*"  = ["PLR2004", "S101", "TID252"]
 "__init__.py" = ["F401", "F403"]
 
 [tool.coverage.run]
 source_pkgs = ["fusrr", "tests"]
-branch = true
-parallel = true
-omit = ["fusrr/_version.py"]
+branch      = true
+parallel    = true
+omit        = ["fusrr/_version.py"]
 
 [tool.coverage.paths]
 fusrr = ["fusrr", "*/fusrr"]
@@ -151,7 +163,7 @@ tests = ["tests", "*/fusrr/tests"]
 
 [tool.coverage.report]
 exclude_lines = ["no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:"]
-"omit" = ["fusrr/_version.py"]
+"omit"        = ["fusrr/_version.py"]
 
 # [tool.pytest.ini_options]
 # addopts = "--html=report.html --self-contained-html --strict-markers -r fEX"
