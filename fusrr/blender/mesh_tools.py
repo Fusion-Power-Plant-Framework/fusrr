@@ -1,7 +1,7 @@
 from collections.abc import Iterable
 from contextlib import contextmanager
 
-import bpy  # noqa: F401
+import bpy
 import numpy as np
 import bmesh
 
@@ -9,7 +9,7 @@ from fusrr.base.models import Vec3
 
 
 @contextmanager
-def new_mesh_for(obj):
+def new_mesh_for(obj: bpy.types.Object):
     """Create a new mesh for the obj.
 
     Use as a context manager.
@@ -27,7 +27,7 @@ def new_mesh_for(obj):
 
 
 @contextmanager
-def update_mesh_for(obj):
+def update_mesh_for(obj: bpy.types.Object):
     """Update a mesh from the obj.
 
     Use as a context manager.
@@ -79,4 +79,15 @@ def revolve_mesh_edges_silhouette(
     )
 
 
-# bmesh.ops.bisect_plane(bm, geom=[], dist=0, plane_co=mathutils.Vector(), plane_no=mathutils.Vector(), use_snap_center=False, clear_outer=False, clear_inner=False)
+def add_empty(name: str, location: Vec3):
+    """Adds an empty object to the scene."""
+    bpy.ops.object.empty_add(location=location.tup)
+    obj = bpy.context.object
+    obj.name = name
+
+
+def add_cube(name: str, location: Vec3, scale: Vec3):
+    """Adds a cube to the scene."""
+    bpy.ops.mesh.primitive_cube_add(location=location.tup, scale=scale.tup)
+    obj = bpy.context.object
+    obj.name = name

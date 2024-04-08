@@ -1,83 +1,77 @@
 from __future__ import annotations
 
-import abc
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
+
+from fusrr.blender.scene_tools import deselect_all
 
 if TYPE_CHECKING:
-    from fusrr.base.object import FusrrSceneObject
-    from fusrr.base.scene import FusrrScene
+    from fusrr.base.collection import FusrrSceneCollection
+    from fusrr.base.entity import FusrrSceneEntity
+    from fusrr.base.object import FusrrSceneObject, FusrrSceneObjectWithContext
 
 
-class FusrrPipeline(abc.ABC):
-    """A FusrrPipeline defines a set of operations to be executed
-    on a FusrrScene.
+class FusrrBuildPipeline:
+    """A FusrrBuildPipeline defines a container with a deterministic ordering
+    for constructing FusrrSceneEntity's.
     """
 
-    @abc.abstractmethod
-    def execute(self, scene: FusrrScene):  # noqa: D102
-        pass
+    def __init__(self):
+        """Construct a new build pipeline."""
+        self._pipeline: list[FusrrSceneEntity] = []
 
+    def add(self, ent: FusrrSceneEntity):
+        """Add an entity to this pipeline."""
+        self._pipeline.append(ent)
 
-class FusrrBuildPipeline(FusrrPipeline):
-    """A FusrrBuildPipeline defines a container and a deterministic build order
-    for constructing `FusrrSceneObject`s.
-    """
+    @property
+    def objects(self) -> list[FusrrSceneObject | FusrrSceneObjectWithContext]:
+        """Get the names of all entities in this pipeline."""
+        from fusrr.base.object import (
+            FusrrSceneObject,
+            FusrrSceneObjectWithContext,
+        )
 
-    def __init__(self, collection_name: str | None = None):
-        """Construct a new build pipeline.
+        return [
+            ent
+            for ent in self._pipeline
+            if isinstance(ent, FusrrSceneObject | FusrrSceneObjectWithContext)
+        ]
 
-        Args:
-            collection_name: The name of the collection to create and add
-                objects to. If None, no collection will be created.
-        """
-        self.collection_name = collection_name
-        # had to do all this typing and tuple stuff due to circular imports
-        self._pipeline: list[
-            tuple[
-                Literal["obj"],
-                FusrrSceneObject,
-            ]
-            | tuple[
-                Literal["pipe"],
-                FusrrBuildPipeline,
-            ]
-        ] = []
+    @property
+    def collections(self) -> list[FusrrSceneCollection]:
+        """Get the names of all entities in this pipeline."""
+        from fusrr.base.collection import FusrrSceneCollection
 
-    def add_object(self, obj: FusrrSceneObject):
-        """Add an object to this pipeline."""
-        self._pipeline.append(("obj", obj))
+        return [
+            ent
+            for ent in self._pipeline
+            if isinstance(ent, FusrrSceneCollection)
+        ]
 
-    def add_pipe(self, pipe: FusrrBuildPipeline):
-        """Add a nested pipeline to this pipeline."""
-        self._pipeline.append(("pipe", pipe))
+    def entity_names(self) -> set[str]:
+        """Get the names of all entities in this pipeline."""
+        return {ent.name for ent in self._pipeline}
 
-    def execute(self, scene: FusrrScene):
+    def object_names(self) -> set[str]:
+        """Get the names of all entities in this pipeline."""
+        return {ent.name for ent in self.objects}
+
+    def collection_names(self) -> set[str]:
+        """Get the names of all entities in this pipeline."""
+        return {ent.name for ent in self.collections}
+
+    def execute(self):
         """Execute this pipeline.
 
-        This will execute every object and nested pipeline in this pipeline
+        This will execute every entity in this pipeline
         (in order), modifying the scene as it goes.
-
-        If a collection name was provided, this will also create a collection
-        and add all objects (and sub-collections) to it.
-
-        Args:
-            scene: The scene to execute this pipeline on.
         """
         if not self._pipeline:
             return
 
-        object_names = set()
-        for pipe_type, pipe_item in self._pipeline:
-            pipe_item.execute(scene)
-            if pipe_type == "obj":
-                obj: FusrrSceneObject = pipe_item  # type: ignore[assignment]
-                object_names.add(obj.name)
-
-        if self.collection_name:
-            created_objs = scene.select_objects(object_names)
-            scene.create_collection(self.collection_name, created_objs)
-            scene.deselect_all()
+        for ent in self._pipeline:
+            ent.execute()
+            deselect_all()
 
 
-class FusrrViewPipeline(FusrrPipeline):
-    ...
+# class FusrrViewPipeline(FusrrPipeline):

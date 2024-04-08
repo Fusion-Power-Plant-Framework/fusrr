@@ -191,10 +191,9 @@ fusrr_to_process_mapping = {
 
 
 def process_file_adaptor(process_mfile: MFile) -> FusrrReactorParams:
-    """Imports data from mfile and assigns name and value
+    """Imports data from mfile and assigns name and value.
 
     Returns:
-    -------
         Dictionary containing generic parameters and their values
     """
     fusrr_process_param_values = {}

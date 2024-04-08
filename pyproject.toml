@@ -2,6 +2,11 @@
 requires      = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
+[tool.hatch.version]
+source = "vcs"
+[tool.hatch.build.hooks.vcs]
+version-file = "fusrr/_version.py"
+
 [project]
 name = "fusrr"
 authors = [{ name = "The FusRR project maintainers" }]
@@ -37,11 +42,6 @@ lint = ["ruff", "mypy"]
 Source        = "https://github.com/Fusion-Power-Plant-Framework/fusrr"
 Documentation = "https://github.com/Fusion-Power-Plant-Framework/fusrr#readme"
 Issues        = "https://github.com/Fusion-Power-Plant-Framework/fusrr/issues"
-
-[tool.hatch.version]
-source = "vcs"
-[tool.hatch.build.hooks.vcs]
-version-file = "fusrr/_version.py"
 
 # env: default
 [tool.hatch.envs.default]
@@ -86,9 +86,11 @@ exclude = [
   ".pytest_cache",
   "htmlcov",
 ]
+
+[tool.ruff.lint]
 select = ["ALL"]
-extend-select = ["E241", "PLR0904"]
 ignore = [
+  "INP001",  # Ignore requiring __init__.py files
   "D105",   # Don't require docstrings for magic methods
   "N802",   # Upper case function names are allowed
   "ERA001",
@@ -131,20 +133,20 @@ unfixable = [
 ]
 
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-first-party = ["fusrr"]
 force-to-top      = ["numpy", "matplotlib", "bpy"]
 
-[tool.ruff.flake8-tidy-imports]
+[tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = "all"
 
-[tool.ruff.mccabe]
+[tool.ruff.lint.mccabe]
 max-complexity = 20
 
-[tool.ruff.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "google"
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 # Tests can use magic values, assertions, and relative imports
 "tests/**/*"  = ["PLR2004", "S101", "TID252"]
 "__init__.py" = ["F401", "F403"]

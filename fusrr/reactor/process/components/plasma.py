@@ -1,12 +1,10 @@
 from process.geometry.plasma_geometry import plasma_geometry
 
-from fusrr.base.mesh_tools import (
+from fusrr.base.models import Vec3
+from fusrr.blender.mesh_tools import (
     add_edges_to_mesh_from_points,
-    new_mesh_for,
     revolve_mesh_edges_silhouette,
 )
-from fusrr.base.models import Vec3
-from fusrr.base.scene import FusrrScene
 from fusrr.reactor.process import ProcessParams
 from fusrr.reactor.process.components.process_component import ProcessComponent
 
@@ -36,10 +34,7 @@ class ProcessPlasma(ProcessComponent):
         self.ib_pts = [Vec3(x, 0, z) for x, z in zip(rs_ib, zs_ib, strict=True)]
         self.ob_pts = [Vec3(x, 0, z) for x, z in zip(rs_ob, zs_ob, strict=True)]
 
-    def _construct(self, scene: FusrrScene) -> None:
-        obj = scene.execute_create_object(self.name)
-        with new_mesh_for(obj) as m:
-            add_edges_to_mesh_from_points(m, self.ib_pts)
-            add_edges_to_mesh_from_points(m, self.ob_pts)
-            revolve_mesh_edges_silhouette(m, Vec3.ZERO, Vec3.Z, 360)
-        scene.select_object(self.name)
+    def _construct(self, _obj, m) -> None:
+        add_edges_to_mesh_from_points(m, self.ib_pts)
+        add_edges_to_mesh_from_points(m, self.ob_pts)
+        revolve_mesh_edges_silhouette(m, Vec3.ZERO, Vec3.Z, 360)

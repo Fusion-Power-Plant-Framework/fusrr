@@ -1,4 +1,6 @@
-*/old/**
+# custom
+*.blend*
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -79,8 +81,6 @@ venv.bak/
 # Jupyter checkpoints
 .ipynb_checkpoints
 _pyproject.toml
-
-*.blend*
 
 # mkdocs doc build
 site

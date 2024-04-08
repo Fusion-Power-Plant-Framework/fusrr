@@ -3,7 +3,7 @@ from process.geometry.geometry_parameterisations import RectangleGeometry
 from fusrr.base.models import Vec3
 
 
-def process_rect_to_vec3_path(geom: RectangleGeometry):
+def process_rect_to_vec3_path_points(geom: RectangleGeometry):
     """Return closed points in Vec3 for the rectangle."""
     x = geom.anchor_x
     z = geom.anchor_z

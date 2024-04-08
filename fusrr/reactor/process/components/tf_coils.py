@@ -1,10 +1,9 @@
 from collections.abc import Iterable
+from dataclasses import dataclass
 from math import radians
 
-import bpy  # noqa: F401
 import numpy as np
 import bmesh
-from bpy import context  # noqa: F401
 from bmesh.types import BMVert
 from mathutils import Matrix, Vector
 from process.geometry.tfcoil_geometry import (
@@ -12,20 +11,22 @@ from process.geometry.tfcoil_geometry import (
     tfcoil_geometry_rectangular_shape,
 )
 
-from fusrr.base.errors import SceneStopError
-from fusrr.base.mesh_tools import add_edges_to_mesh_from_points, new_mesh_for
+from fusrr.base.frame import FusrrContextFrame
 from fusrr.base.models import Vec3
-from fusrr.base.object import FusrrSceneObject
-from fusrr.base.scene import FusrrScene
-from fusrr.reactor.process.components.process_component import ProcessComponent
+from fusrr.base.object import FusrrSceneObjectWithContext
+from fusrr.base.pipeline import FusrrBuildPipeline
+from fusrr.blender.mesh_tools import add_edges_to_mesh_from_points
+from fusrr.reactor.process.components.process_component import (
+    ProcessComponentCollection,
+)
 from fusrr.reactor.process.process_adaptor import ProcessParams
 
 
-class ProcessTFCoils(ProcessComponent):
+class ProcessTFCoils(ProcessComponentCollection):
     def __init__(self, reactor_params: ProcessParams):
         super().__init__("tf_coils", reactor_params)
 
-    def _setup(self):
+    def _setup(self, pipeline: FusrrBuildPipeline) -> None:
         tf_ib_tk = self.params.tfc_inleg
         rt_angle = np.pi / 2
         rt_angle2 = 2 * rt_angle
@@ -42,7 +43,8 @@ class ProcessTFCoils(ProcessComponent):
         y5 = self.params["yarc(5)"]
         if y3 != 0:
             print(
-                "TF coil geometry: The value of yarc(3) is not zero, but should be."
+                "TF coil geometry: The value of yarc(3) is not zero, "
+                "but should be."
             )
 
         # Check for TF coil shape
@@ -83,20 +85,34 @@ class ProcessTFCoils(ProcessComponent):
                     x, z = vert
                     seg_pts.append(Vec3(x, 0, z))
                 path_pts.append(seg_pts)
-            self.add_object(
-                ProcessTFCoilD(
-                    name="tf_coil_d",
-                    ib_leg_start=Vec3(x5, 0, y1),
-                    ib_leg_end=Vec3(x5, 0, y5),
-                    ob_leg_arch_pts=path_pts,
-                )
+
+            tf_d = ProcessTFCoilD(
+                name="tf_coil_d",
+                ctx=ProcessTFCoilContext(angle_deg=0),
+                ib_leg_start=Vec3(x5, 0, y1),
+                ib_leg_end=Vec3(x5, 0, y5),
+                ob_leg_arch_pts=path_pts,
             )
+            angle_per_coil = 360 / self.params["n_tf"]
+            for n in range(int(self.params["n_tf"])):
+                pipeline.add(
+                    tf_d.replicate_with_ctx(
+                        f"tf_coil_d_{n}",
+                        ProcessTFCoilContext(angle_deg=n * angle_per_coil),
+                    )
+                )
 
 
-class ProcessTFCoilD(FusrrSceneObject):
+@dataclass
+class ProcessTFCoilContext(FusrrContextFrame):
+    angle_deg: float
+
+
+class ProcessTFCoilD(FusrrSceneObjectWithContext[ProcessTFCoilContext]):
     def __init__(
         self,
         name: str,
+        ctx: ProcessTFCoilContext,
         ib_leg_start: Vec3,
         ib_leg_end: Vec3,
         ob_leg_arch_pts: Iterable[Iterable[Vec3]],
@@ -104,56 +120,49 @@ class ProcessTFCoilD(FusrrSceneObject):
         self.ib_leg_start = ib_leg_start
         self.ib_leg_end = ib_leg_end
         self.ob_leg_arch_pts = ob_leg_arch_pts
-        super().__init__(name)
+        super().__init__(name, ctx)
 
-    def _construct(self, scene: FusrrScene) -> None:
-        scene.deselect_all()
-        obj = scene.execute_create_object(self.name)
-        with new_mesh_for(obj) as m:
-            # Inner (straight) leg
-            add_edges_to_mesh_from_points(
-                m, [self.ib_leg_start, self.ib_leg_end]
-            )
-            # Outer (arch) leg
-            for line_seg in self.ob_leg_arch_pts:
-                add_edges_to_mesh_from_points(m, line_seg)
+    def _construct(self, ctx: ProcessTFCoilContext, obj, m) -> None:
+        # Inner (straight) leg
+        add_edges_to_mesh_from_points(m, [self.ib_leg_start, self.ib_leg_end])
+        # Outer (arch) leg
+        for line_seg in self.ob_leg_arch_pts:
+            add_edges_to_mesh_from_points(m, line_seg)
 
-            edges = m.edges
-            extruded = bmesh.ops.extrude_face_region(m, geom=edges)
-            # Move extruded geometry
-            translate_verts = [
-                v for v in extruded["geom"] if isinstance(v, BMVert)
-            ]
-            bmesh.ops.translate(m, vec=Vec3.Y.tup, verts=translate_verts)
+        edges = m.edges
+        extruded = bmesh.ops.extrude_face_region(m, geom=edges)
+        # Move extruded geometry
+        translate_verts = [v for v in extruded["geom"] if isinstance(v, BMVert)]
+        bmesh.ops.translate(m, vec=Vec3.Y.tup, verts=translate_verts)
 
-            extruded = bmesh.ops.extrude_face_region(m, geom=m.faces)
+        extruded = bmesh.ops.extrude_face_region(m, geom=m.faces)
 
-            # Get the new faces from the extruded geometry
-            new_faces = [
-                f for f in extruded["geom"] if isinstance(f, bmesh.types.BMFace)
-            ]
+        # Get the new faces from the extruded geometry
+        new_faces = [
+            f for f in extruded["geom"] if isinstance(f, bmesh.types.BMFace)
+        ]
 
-            # Calculate the centroid of the faces
-            center = Vector((0, 0, 0))
-            for f in new_faces:
-                center += f.calc_center_median()
-            center /= len(new_faces)
+        # Calculate the centroid of the faces
+        center = Vector((0, 0, 0))
+        for f in new_faces:
+            center += f.calc_center_median()
+        center /= len(new_faces)
 
-            verts = list({v for f in new_faces for v in f.verts})
+        verts = list({v for f in new_faces for v in f.verts})
 
-            # Scale the entire mesh by its center point
-            scale_factor = 1 - 0.1  # Change this to your desired scale factor
-            bmesh.ops.scale(
-                m,
-                vec=(Vec3.ONE * scale_factor).tup,
-                space=Matrix.Translation(-center),
-                verts=verts,
-            )
+        # Scale the entire mesh by its center point
+        scale_factor = 1 - 0.1  # Change this to your desired scale factor
+        bmesh.ops.scale(
+            m,
+            vec=(Vec3.ONE * scale_factor).tup,
+            space=Matrix.Translation(-center),
+            verts=verts,
+        )
 
-            rotation_X = Matrix.Rotation(radians(45), 4, "Z")
-            bmesh.ops.rotate(
-                m, cent=Vec3.ZERO.tup, matrix=rotation_X, verts=m.verts
-            )
+        rotation_X = Matrix.Rotation(radians(ctx.angle_deg), 4, "Z")
+        bmesh.ops.rotate(
+            m, cent=Vec3.ZERO.tup, matrix=rotation_X, verts=m.verts
+        )
 
         # context_override = context.copy()
         # context_override["selected_objects"] = [obj]

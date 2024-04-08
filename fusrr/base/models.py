@@ -3,7 +3,7 @@ from __future__ import annotations
 from attr import dataclass
 
 
-class staticproperty:
+class staticproperty:  # noqa: N801
     def __init__(self, func):
         self.fget = func
 
@@ -11,7 +11,7 @@ class staticproperty:
         return self.fget()
 
 
-class classproperty:
+class classproperty:  # noqa: N801
     def __init__(self, func):
         self.fget = func
 

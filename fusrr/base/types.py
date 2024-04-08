@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
 from collections.abc import Callable
+from typing import TypeVar
 
-if TYPE_CHECKING:
-    from fusrr.base.scene import FusrrScene
+from fusrr.base.frame import FusrrContextFrame
 
-Constructor = Callable[["FusrrScene"], None]
-OptionalConstructor = Constructor | None
+CFT = TypeVar("CFT", bound=FusrrContextFrame)
+
+ObjConstructor = Callable[[], None]

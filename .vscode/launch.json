@@ -1,15 +1,21 @@
 {
-  // Use IntelliSense to learn about possible attributes.
-  // Hover to view descriptions of existing attributes.
-  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
     {
       "name": "simple scene",
-      "type": "python",
+      "type": "debugpy",
       "request": "launch",
-      "program": "simple_scene.ex.py",
+      "program": "simple_scene.py",
       "cwd": "${workspaceFolder}/examples",
+      "console": "integratedTerminal",
+      "justMyCode": false
+    },
+    {
+      "name": "eudemo",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "eudemo.py",
+      "cwd": "${workspaceFolder}/examples/eudemo",
       "console": "integratedTerminal",
       "justMyCode": false
     }

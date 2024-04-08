@@ -1,3 +1,0 @@
-"""
-Initialise rendering pipeline
-"""

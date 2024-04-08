@@ -1,47 +1,126 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+import abc
+from typing import TYPE_CHECKING, Generic
 
-import bpy
-import numpy as np
-import bmesh
-import bpy_types
-import mathutils
-
+from fusrr.base.entity import FusrrSceneEntity
 from fusrr.base.models import Vec3
-from fusrr.base.pipeline import FusrrBuildPipeline
-from fusrr.base.types import OptionalConstructor
+from fusrr.base.types import CFT
+from fusrr.blender.mesh_tools import add_cube, add_empty, new_mesh_for
+from fusrr.blender.scene_tools import create_object
 
 if TYPE_CHECKING:
-    from fusrr.base.scene import FusrrScene
+    import bpy
+    import bmesh
+
+    from fusrr.base.types import ObjConstructor
 
 
-class FusrrSceneObject(FusrrBuildPipeline):
+class FusrrSceneObject(FusrrSceneEntity):
     """A FusrrSceneObject is a object that can be added to a FusrrScene."""
 
-    def __init__(self, name: str, constructor: OptionalConstructor = None):
-        self.name = name
-        self.constructor = constructor
+    def __init__(
+        self,
+        name: str,
+        constructor: ObjConstructor | None = None,
+    ):
+        """Initializes a FusrrSceneObject."""
         super().__init__(name)
-
+        self.constructor = constructor
         self._setup()
 
     def _setup(self) -> None:
-        pass
+        """Setup this object, caching any necessary data."""
 
-    def _construct(self, scene: FusrrScene) -> None:
+    def _construct(
+        self,
+        obj: bpy.types.Object,
+        mesh: bmesh.types.BMesh,
+    ) -> None:
+        """Constructs this object in the given context frame."""
+        raise NotImplementedError(
+            "Extend this class and implement this method."
+        )
+
+    def execute(self) -> None:
+        """Executes this object in the given context frame.
+
+        Args:
+            ctx:
+                The context frame to execute this object in.
+        """
         if self.constructor is not None:
-            self.constructor(scene)
+            self.constructor()
+            return
 
-    def execute(self, scene: FusrrScene):
-        """Executes the FusrrSceneObject."""
-        # first construct this object
-        scene.execute_construct_object(self.name, self._construct)
-        # then execute the pipeline
-        super().execute(scene)
+        obj = create_object(self.name)
+        with new_mesh_for(obj) as m:
+            self._construct(obj, m)
 
 
-def empty(name: str, location: Vec3, size: int = 1) -> FusrrSceneObject:
+class FusrrSceneObjectWithContext(FusrrSceneEntity, Generic[CFT], abc.ABC):
+    """A FusrrSceneObjectWithContext is a Blender object,
+    that can be added to a FusrrScene,
+    that uses some context during its execute phase.
+    """
+
+    def __init__(
+        self,
+        name: str,
+        ctx: CFT,
+    ):
+        """Initializes a FusrrSceneObject."""
+        super().__init__(name)
+        self._ctx = ctx
+        self._setup()
+
+    @property
+    def ctx(self) -> CFT:
+        """The context frame of this object."""
+        return self._ctx
+
+    def _setup(self) -> None:
+        """Setup this object, caching any necessary data."""
+
+    def _construct(
+        self,
+        ctx: CFT,
+        obj: bpy.types.Object,
+        mesh: bmesh.types.BMesh,
+    ) -> None:
+        """Constructs this object in the given context frame."""
+        raise NotImplementedError(
+            "Extend this class and implement this method."
+        )
+
+    def execute(self) -> None:
+        """Executes this object in the given context frame.
+
+        Args:
+            ctx:
+                The context frame to execute this object in.
+        """
+        obj = create_object(self.name)
+        with new_mesh_for(obj) as m:
+            self._construct(self.ctx, obj, m)
+
+    def replicate_with_ctx(
+        self, name: str, ctx: CFT
+    ) -> FusrrSceneObjectWithContext[CFT]:
+        """Replicates this object with a new name and context.
+
+        Args:
+            name:
+                The name of the new object.
+            ctx:
+                The context frame of the new object.
+        """
+        self = self.replicate(name)
+        self._ctx = ctx
+        return self
+
+
+def empty(name: str, location: Vec3) -> FusrrSceneObject:
     """Adds an empty object to the scene.
 
     Note: Useful for camera tracking purposes.
@@ -51,33 +130,15 @@ def empty(name: str, location: Vec3, size: int = 1) -> FusrrSceneObject:
         location: Location of the empty
         size: Size of cube. Defaults to 1.
     """
-
-    def _construct(_scene: FusrrScene) -> None:
-        bpy.ops.object.empty_add(location=location.tup, size=size)
-
-    return FusrrSceneObject(
-        name,
-        _construct,
-    )
+    return FusrrSceneObject(name, lambda: add_empty(name, location))
 
 
-def cube(
-    name: str, location: Vec3, size: int = 1, scale: Vec3 = Vec3.ONE
-) -> FusrrSceneObject:
+def cube(name: str, location: Vec3, scale: Vec3 = Vec3.ONE) -> FusrrSceneObject:
     """Adds a cube to the scene.
 
     Args:
         name: Name of cube
         location: Location of cube
-        size: Size of cube. Defaults to 1.
         scale: Scale of cube. Defaults to Vec3.ONE.
     """
-
-    def _construct(_scene: FusrrScene) -> None:
-        bpy.ops.mesh.primitive_cube_add(location=location.tup, size=size)
-        bpy.context.object.scale = scale.tup
-
-    return FusrrSceneObject(
-        name,
-        _construct,
-    )
+    return FusrrSceneObject(name, lambda: add_cube(name, location, scale))

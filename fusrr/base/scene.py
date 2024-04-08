@@ -1,17 +1,18 @@
 import time
-from collections.abc import Iterable
-from os import PathLike
+import traceback
 from pathlib import Path
 
-import bpy
-import bpy_types
-
+from fusrr.base.entity import FusrrSceneEntity
 from fusrr.base.errors import SceneStopError
 from fusrr.base.pipeline import FusrrBuildPipeline
-from fusrr.base.types import Constructor
+from fusrr.blender.scene_tools import (
+    clear_scene,
+    deselect_all,
+    save_blender_state_to_file,
+)
 
 
-class FusrrScene(FusrrBuildPipeline):
+class FusrrScene:
     """A FusrrScene represents the state of a Blender .blend file.
 
     It holds the names of all objects added to the scene, as well as
@@ -29,7 +30,7 @@ class FusrrScene(FusrrBuildPipeline):
         self,
         name: str,
         *,
-        project_directory: PathLike | None = None,
+        project_directory: Path | str | None = None,
         overwrite: bool = False,
     ):
         """Create a FusrrScene with a name.
@@ -44,47 +45,40 @@ class FusrrScene(FusrrBuildPipeline):
                 if it already exists.
         """
         self._scene_name = name
-        self._scene_object_names: set[str] = set()
         self._overwrite = overwrite
 
         self._project_directory = (
             Path(project_directory) if project_directory else Path.cwd()
         )
-        self._project_file_name = Path(
-            str(self._project_directory / self._scene_name) + ".blend"
+        self._scene_path = self._project_directory / (
+            self._scene_name + ".blend"
         )
-        super().__init__()
 
-        self._setup()
+        self._pipeline = FusrrBuildPipeline()
 
-    def _setup(self) -> None:
-        self.execute_clear_scene()
+    def _reset(self) -> None:
+        clear_scene()
 
     def _rename_scene_file_if_exists(self) -> None:
-        if self._project_file_name.is_file():
+        if self._scene_path.is_file():
             new_name = (
-                str(self._project_file_name.parent / self._scene_name)
+                str(self._project_directory / self._scene_name)
                 + "_"
                 + str(int(time.time()))
                 + ".blend"
             )
             Path.rename(
-                self._project_file_name,
+                self._scene_path,
                 new_name,
             )
 
     def _delete_scene_file_if_exists(self) -> None:
-        if self._project_file_name.is_file():
-            self._project_file_name.unlink()
+        if self._scene_path.is_file():
+            self._scene_path.unlink()
 
-    def _check_name_in_scene(self, name: str) -> None:
-        if name in self._scene_object_names:
-            raise ValueError(f"Object name {name} already exists in scene")
-
-    def _name_selected_object(self, name: str) -> None:
-        bpy.context.object.name = name
-        bpy.context.object.data.name = name
-        self._scene_object_names.add(name)
+    def add_entity(self, ent: FusrrSceneEntity):
+        """Add an entity to this scene."""
+        self._pipeline.add(ent)
 
     def save_scene(self) -> None:
         """Save the scene to a .blend file.
@@ -100,80 +94,10 @@ class FusrrScene(FusrrBuildPipeline):
             self._delete_scene_file_if_exists()
         else:
             self._rename_scene_file_if_exists()
-        bpy.ops.wm.save_as_mainfile(
-            filepath=str(self._project_file_name),
-            check_existing=False,
-            copy=False,
-        )
+        save_blender_state_to_file(self._scene_path)
 
-    def create_collection(
-        self, name: str, objects: Iterable[bpy_types.Object]
-    ) -> bpy_types.Collection:
-        """Create a collection and adds (links) objects to it."""
-        col = bpy.data.collections.new(name)
-        bpy.context.scene.collection.children.link(col)
-        for obj in objects:
-            for other_col in obj.users_collection:
-                other_col.objects.unlink(obj)
-            if obj.name not in col.objects:
-                col.objects.link(obj)
-        return col
-
-    def select_objects(self, names: set[str]) -> tuple[bpy_types.Object, ...]:
-        """Select objects in the scene by name."""
-        self.deselect_all()
-        for name in names:
-            obj = bpy.data.objects.get(name)
-            if obj is not None:
-                obj.select_set(True)
-        return tuple(bpy.context.selected_objects)
-
-    def select_object(self, name: str) -> bpy_types.Object:
-        """Select a single object in the scene by name."""
-        return self.select_objects({name})[0]
-
-    def select_and_activate_object(self, name: str) -> bpy_types.Object:
-        """Select a single object in the scene by name
-        and make it the active object.
-        """
-        obj = self.select_objects({name})[0]
-        bpy.context.view_layer.objects.active = obj
-        return obj
-
-    def deselect_all(self) -> None:
-        """Deselect all objects in the scene."""
-        bpy.ops.object.select_all(action="DESELECT")
-
-    def execute_create_object(self, name: str):
-        """Create a new object in the scene."""
-        self._check_name_in_scene(name)
-
-        mesh = bpy.data.meshes.new(name)
-        obj = bpy.data.objects.new(name, mesh)
-        bpy.context.collection.objects.link(obj)
-
-        # self.select_object(name)
-        # self._name_selected_object(name)
-        return obj
-
-    def execute_clear_scene(self):
-        """Clear the scene."""
-        for m in bpy.data.meshes:
-            bpy.data.meshes.remove(m)
-        for o in bpy.data.objects:
-            bpy.data.objects.remove(o)
-        for c in bpy.data.collections:
-            bpy.data.collections.remove(c)
-        self._scene_object_names.clear()
-
-    def execute_construct_object(self, name: str, constructor: Constructor):
-        """Construct an object in the scene."""
-        constructor(self)
-
-        # maybe do selecting objects here?
-
-    def execute(self):
-        """Execute the FusrrScene.
+    def run(self):
+        """Run the FusrrScene.
 
         This initially clears the scene, then executes the build phase,
         saving the result to a .blend file.
@@ -182,11 +106,16 @@ class FusrrScene(FusrrBuildPipeline):
             This will modify the state of the current Blender session.
         """
         try:
-            self.execute_clear_scene()
-            super().execute(self)
+            self._reset()
+            self._pipeline.execute()
         except SceneStopError as e:
             print(f"Stopping scene on: {e}")
+        # except Exception as e:
+        #     print()
+        #     print("An error occurred!")
+        #     traceback.print_exc()
+        #     raise
         finally:
-            # self.deselect_all()
+            deselect_all()
             print("saving scene...")
             self.save_scene()
