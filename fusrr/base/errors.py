@@ -1,2 +1,0 @@
-class SceneStopError(Exception):
-    pass

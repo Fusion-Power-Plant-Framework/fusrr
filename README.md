@@ -39,7 +39,7 @@ To start using Hatch, it must be installed and accessible from the command line.
 A simple way to install Hatch is to run:
 
 ```bash
-pip install hatch
+pip install -g hatch
 ```
 
 If you can run `hatch -h` then Hatch has been successfully installed.

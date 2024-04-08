@@ -1,1 +1,0 @@
-::: fusrr.base.pipeline
