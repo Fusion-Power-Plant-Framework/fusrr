@@ -19,28 +19,51 @@ if TYPE_CHECKING:
 class FusrrSceneObject(FusrrSceneEntity):
     """A FusrrSceneObject is a object that can be added to a FusrrScene."""
 
-    def __init__(
-        self,
-        name: str,
-        constructor: ObjConstructor | None = None,
-    ):
+    def __init__(self, name: str):
         """Initializes a FusrrSceneObject."""
         super().__init__(name)
-        self.constructor = constructor
         self._setup()
 
     def _setup(self) -> None:
         """Setup this object, caching any necessary data."""
 
+    @abc.abstractmethod
     def _construct(
         self,
         obj: bpy.types.Object,
         mesh: bmesh.types.BMesh,
     ) -> None:
-        """Constructs this object in the given context frame."""
-        raise NotImplementedError(
-            "Extend this class and implement this method."
-        )
+        """Constructs this object in the current scene.
+
+        bpy functions will be called during this method to construct the object.
+        """
+        raise NotImplementedError
+
+    def execute(self) -> None:
+        """Executes this object in the given context frame."""
+        obj = create_object(self.name)
+        with new_mesh_for(obj) as m:
+            self._construct(obj, m)
+
+
+class FusrrSceneObjectFromFunction(FusrrSceneObject):
+    """A FusrrSceneObjectFromFunction is a FusrrSceneObject that
+    is constructed from a given function.
+    """
+
+    def __init__(
+        self,
+        name: str,
+        constructor: ObjConstructor,
+    ):
+        """Initializes a FusrrSceneObject."""
+        self._constructor = constructor
+        super().__init__(name)
+
+    def _construct(
+        self, obj: bpy.types.Object, mesh: bmesh.types.BMesh
+    ) -> None:
+        pass
 
     def execute(self) -> None:
         """Executes this object in the given context frame.
@@ -49,16 +72,10 @@ class FusrrSceneObject(FusrrSceneEntity):
             ctx:
                 The context frame to execute this object in.
         """
-        if self.constructor is not None:
-            self.constructor()
-            return
-
-        obj = create_object(self.name)
-        with new_mesh_for(obj) as m:
-            self._construct(obj, m)
+        self._constructor()
 
 
-class FusrrSceneObjectWithContext(FusrrSceneEntity, Generic[CFT], abc.ABC):
+class FusrrSceneObjectWithContext(FusrrSceneObject, Generic[CFT], abc.ABC):
     """A FusrrSceneObjectWithContext is a Blender object,
     that can be added to a FusrrScene,
     that uses some context during its execute phase.
@@ -70,39 +87,13 @@ class FusrrSceneObjectWithContext(FusrrSceneEntity, Generic[CFT], abc.ABC):
         ctx: CFT,
     ):
         """Initializes a FusrrSceneObject."""
-        super().__init__(name)
         self._ctx = ctx
-        self._setup()
+        super().__init__(name)
 
     @property
     def ctx(self) -> CFT:
         """The context frame of this object."""
         return self._ctx
-
-    def _setup(self) -> None:
-        """Setup this object, caching any necessary data."""
-
-    def _construct(
-        self,
-        ctx: CFT,
-        obj: bpy.types.Object,
-        mesh: bmesh.types.BMesh,
-    ) -> None:
-        """Constructs this object in the given context frame."""
-        raise NotImplementedError(
-            "Extend this class and implement this method."
-        )
-
-    def execute(self) -> None:
-        """Executes this object in the given context frame.
-
-        Args:
-            ctx:
-                The context frame to execute this object in.
-        """
-        obj = create_object(self.name)
-        with new_mesh_for(obj) as m:
-            self._construct(self.ctx, obj, m)
 
     def replicate_with_ctx(
         self, name: str, ctx: CFT
@@ -130,7 +121,7 @@ def empty(name: str, location: Vec3) -> FusrrSceneObject:
         location: Location of the empty
         size: Size of cube. Defaults to 1.
     """
-    return FusrrSceneObject(name, lambda: add_empty(name, location))
+    return FusrrSceneObjectFromFunction(name, lambda: add_empty(name, location))
 
 
 def cube(name: str, location: Vec3, scale: Vec3 = Vec3.ONE) -> FusrrSceneObject:
@@ -141,4 +132,6 @@ def cube(name: str, location: Vec3, scale: Vec3 = Vec3.ONE) -> FusrrSceneObject:
         location: Location of cube
         scale: Scale of cube. Defaults to Vec3.ONE.
     """
-    return FusrrSceneObject(name, lambda: add_cube(name, location, scale))
+    return FusrrSceneObjectFromFunction(
+        name, lambda: add_cube(name, location, scale)
+    )

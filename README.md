@@ -24,6 +24,7 @@ Although any Python environment manager can be used, we recommend using the defa
 
 ### Without Hatch
 
+1
 Setup and activate your environment with your chosen Python environment manager (pyenv, conda, virtualenv, etc.)
 
 Run the following to install this project as a local editable install, with the necessary optional dependency groups:

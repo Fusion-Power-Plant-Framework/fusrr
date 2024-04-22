@@ -26,6 +26,7 @@ class FusrrSceneCollection(FusrrSceneEntity, abc.ABC):
     @abc.abstractmethod
     def _setup(self, pipeline: FusrrBuildPipeline) -> None:
         """Setup this collection, adding objects to the pipeline."""
+        raise NotImplementedError
 
     def execute(self):
         """Execute all objects in this collection's pipeline,
@@ -46,7 +47,7 @@ class FusrrSceneCollection(FusrrSceneEntity, abc.ABC):
         for c in sub_cs:
             link_collections(this_c, c)
 
-    def execute_no_cc(self):
+    def execute_no_create_collection(self):
         """Execute all objects in this collection's pipeline only.
 
         Note:

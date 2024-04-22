@@ -3,8 +3,6 @@ from __future__ import annotations
 import abc
 from copy import deepcopy
 
-# from typing import Self
-
 
 class FusrrSceneEntity(abc.ABC):
     """An entity in a FusrrScene, which is some object in Blender.
@@ -35,3 +33,4 @@ class FusrrSceneEntity(abc.ABC):
     @abc.abstractmethod
     def execute(self) -> None:
         """Execute this entity, mutating the Blender scene."""
+        raise NotImplementedError

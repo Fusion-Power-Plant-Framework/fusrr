@@ -97,7 +97,7 @@ class ProcessTFCoils(ProcessComponentCollection):
             for n in range(int(self.params["n_tf"])):
                 pipeline.add(
                     tf_d.replicate_with_ctx(
-                        f"tf_coil_d_{n}",
+                        f"tf_coil_d_{n+1}",
                         ProcessTFCoilContext(angle_deg=n * angle_per_coil),
                     )
                 )
@@ -122,7 +122,7 @@ class ProcessTFCoilD(FusrrSceneObjectWithContext[ProcessTFCoilContext]):
         self.ob_leg_arch_pts = ob_leg_arch_pts
         super().__init__(name, ctx)
 
-    def _construct(self, ctx: ProcessTFCoilContext, obj, m) -> None:
+    def _construct(self, _obj, m: bmesh.types.BMesh) -> None:
         # Inner (straight) leg
         add_edges_to_mesh_from_points(m, [self.ib_leg_start, self.ib_leg_end])
         # Outer (arch) leg
@@ -159,7 +159,7 @@ class ProcessTFCoilD(FusrrSceneObjectWithContext[ProcessTFCoilContext]):
             verts=verts,
         )
 
-        rotation_X = Matrix.Rotation(radians(ctx.angle_deg), 4, "Z")
+        rotation_X = Matrix.Rotation(radians(self.ctx.angle_deg), 4, "Z")
         bmesh.ops.rotate(
             m, cent=Vec3.ZERO.tup, matrix=rotation_X, verts=m.verts
         )

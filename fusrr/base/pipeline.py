@@ -7,7 +7,7 @@ from fusrr.blender.scene_tools import deselect_all
 if TYPE_CHECKING:
     from fusrr.base.collection import FusrrSceneCollection
     from fusrr.base.entity import FusrrSceneEntity
-    from fusrr.base.object import FusrrSceneObject, FusrrSceneObjectWithContext
+    from fusrr.base.object import FusrrSceneObject
 
 
 class FusrrBuildPipeline:
@@ -24,17 +24,12 @@ class FusrrBuildPipeline:
         self._pipeline.append(ent)
 
     @property
-    def objects(self) -> list[FusrrSceneObject | FusrrSceneObjectWithContext]:
+    def objects(self) -> list[FusrrSceneObject]:
         """Get the names of all entities in this pipeline."""
-        from fusrr.base.object import (
-            FusrrSceneObject,
-            FusrrSceneObjectWithContext,
-        )
+        from fusrr.base.object import FusrrSceneObject
 
         return [
-            ent
-            for ent in self._pipeline
-            if isinstance(ent, FusrrSceneObject | FusrrSceneObjectWithContext)
+            ent for ent in self._pipeline if isinstance(ent, FusrrSceneObject)
         ]
 
     @property
