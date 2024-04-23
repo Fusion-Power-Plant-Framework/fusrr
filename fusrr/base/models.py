@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from attr import dataclass
+from dataclasses import dataclass
 
 
 class staticproperty:  # noqa: N801
