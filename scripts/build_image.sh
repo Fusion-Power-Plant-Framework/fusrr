@@ -1,4 +1,3 @@
 #!/bin/bash
 
-# Build the Docker image
-docker build -t fusrr .
+docker compose up --build

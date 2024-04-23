@@ -89,7 +89,7 @@ cmake -S . -B build
 cmake --build build
 
 # make sure you have your FUSRR Python environment active
-pip install .
+pip install -e .
 ```
 
 ## Tests
