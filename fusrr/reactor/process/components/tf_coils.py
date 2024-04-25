@@ -151,7 +151,7 @@ class ProcessTFCoilD(FusrrSceneObjectWithContext[ProcessTFCoilContext]):
         verts = list({v for f in new_faces for v in f.verts})
 
         # Scale the entire mesh by its center point
-        scale_factor = 1 - 0.1  # Change this to your desired scale factor
+        scale_factor = 1 + 0.1  # Change this to your desired scale factor
         bmesh.ops.scale(
             m,
             vec=(Vec3.ONE * scale_factor).tup,
