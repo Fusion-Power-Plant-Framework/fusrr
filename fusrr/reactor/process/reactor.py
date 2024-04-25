@@ -5,7 +5,11 @@ from process.io.mfile import MFile
 
 from fusrr.base.pipeline import FusrrBuildPipeline
 from fusrr.reactor.process import ProcessParams
-from fusrr.reactor.process.components import ProcessPFCoils, ProcessPlasma
+from fusrr.reactor.process.components import (
+    ProcessPFCoils,
+    ProcessPlasma,
+    ProcessVacuumVessel,
+)
 from fusrr.reactor.process.components.process_component import (
     ProcessComponentCollection,
 )
@@ -32,3 +36,4 @@ class ProcessReactor(ProcessComponentCollection):
         pipeline.add(ProcessPlasma(self.params))
         pipeline.add(ProcessPFCoils(self.params))
         pipeline.add(ProcessTFCoils(self.params))
+        pipeline.add(ProcessVacuumVessel(self.params))
