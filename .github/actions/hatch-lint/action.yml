@@ -1,0 +1,12 @@
+name: Run linting task through Hatch
+description: Runs the lint:all and lint:fmt Hatch tasks, requires Hatch to be setup already
+runs:
+  using: "composite"
+  steps:
+    - name: Run linting
+      shell: bash
+      run: hatch run lint:all
+
+    - name: Run formatting (pre-commit)
+      shell: bash
+      run: hatch run lint:fmt

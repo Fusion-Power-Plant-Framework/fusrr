@@ -5,6 +5,9 @@ RUN mkdir /tmp/.X11-unix && \
 chmod 1777 /tmp/.X11-unix && \
 chown root:root /tmp/.X11-unix
 
+# An input ENV variable to be set during the container run
+ENV FUSRR_RUN_TYPE=tests
+
 ENV HATCH_ENV_TYPE_VIRTUAL_PATH=.venv
 
 WORKDIR /app
@@ -32,4 +35,4 @@ COPY examples ./examples
 COPY tests ./tests
 COPY fusrr ./fusrr
 
-CMD ["bash", "scripts/run_tests.sh"]
+CMD ["bash", "scripts/docker_entry.sh"]
