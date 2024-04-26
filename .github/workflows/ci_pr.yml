@@ -12,7 +12,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: ./.github/workflows/actions/build_docker_image
+      - uses: ./actions/build_docker_image
 
       - name: Run tests in Docker
         run: |
