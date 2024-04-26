@@ -1,11 +1,12 @@
-FROM linuxserver/blender:latest
+FROM linuxserver/blender:4.1.1
 
 # Create the /tmp/.X11-unix directory with the appropriate permissions
 RUN mkdir /tmp/.X11-unix && \
 chmod 1777 /tmp/.X11-unix && \
 chown root:root /tmp/.X11-unix
 
-# An input ENV variable to be set during the container run
+# Is read by the docker_entry.sh script
+# used to determine if tests or exmaples should be run
 ENV FUSRR_RUN_TYPE=tests
 
 ENV HATCH_ENV_TYPE_VIRTUAL_PATH=.venv
@@ -18,16 +19,11 @@ RUN apt-get update \
     && add-apt-repository -y ppa:deadsnakes/ppa \
     && apt-get update \
     && apt-get install -y python3.10 python3-pip \
-    && pip install --upgrade pip hatch
-
-RUN pip install pyxdg
+    && pip install --upgrade pip hatch \
+    # seems to help the Docker container to run without errors
+    && pip install pyxdg
 
 COPY pyproject.toml README.md ./
-
-# Due to the way hatch runs
-# we cannot create the environment prior
-# RUN mkdir ./fusrr && touch fusrr/_version.py
-# RUN hatch shell
 
 COPY scripts ./scripts
 
