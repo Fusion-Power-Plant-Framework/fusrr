@@ -3,8 +3,8 @@ name: FusRR CI - PR Update
 on: [pull_request]
 
 env:
-  DOCKER_TAG_SHA: fusrr/fusrr:${{ github.sha }}
-  DOCKER_TAG_LATEST: fusrr/fusrr:latest
+  IMAGE_NAME_W_SHA: "fusrr/fusrr:${{ github.sha }}"
+  IMAGE_NAME_LATEST: "fusrr/fusrr:latest"
 
 jobs:
   lint:
@@ -27,8 +27,8 @@ jobs:
       - name: Build FusRR Docker image
         uses: ./.github/actions/build_docker_image
         with:
-          image_name_latest: ${{ env.DOCKER_TAG_LATEST }}
-          image_name_sha: ${{ env.DOCKER_TAG_SHA }}
+          image_name_latest: ${{ env.IMAGE_NAME_W_SHA }}
+          image_name_sha: ${{ env.IMAGE_NAME_LATEST }}
 
   run_tests:
     runs-on: ubuntu-latest
@@ -36,7 +36,7 @@ jobs:
     steps:
       - name: Run tests in Docker
         run: |
-          docker run --rm -e FUSRR_RUN_TYPE=tests ${{ env.DOCKER_TAG_SHA }}
+          docker run --rm -e FUSRR_RUN_TYPE=tests ${{ env.IMAGE_NAME_W_SHA }}
 
   run_examples:
     runs-on: ubuntu-latest
@@ -44,4 +44,4 @@ jobs:
     steps:
       - name: Run tests in Docker
         run: |
-          docker run --rm -e FUSRR_RUN_TYPE=examples ${{ env.DOCKER_TAG_SHA }}
+          docker run --rm -e FUSRR_RUN_TYPE=examples ${{ env.IMAGE_NAME_W_SHA }}
