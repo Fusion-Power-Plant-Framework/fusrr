@@ -12,7 +12,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: ./actions/build_docker_image
+      - name: Build FusRR Docker image
+        uses: ./.github/actions/build_docker_image
 
       - name: Run tests in Docker
         run: |
