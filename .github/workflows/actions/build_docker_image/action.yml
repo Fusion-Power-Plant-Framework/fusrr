@@ -1,0 +1,24 @@
+name: Build FusRR Docker Image
+description: Builds the FusRR Docker Image with latest and commit sha tags
+runs:
+  using: "composite"
+  env:
+    DOCKER_TAG_SHA: fusrr/fusrr:${{ github.sha }}
+    DOCKER_TAG_LATEST: fusrr/fusrr:latest
+  steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: Dockerfile
+        load: true
+        tags: ${{ env.DOCKER_TAG_LATEST }}, ${{ env.DOCKER_TAG_SHA }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max

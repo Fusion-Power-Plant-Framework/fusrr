@@ -7,7 +7,8 @@ RUN apt-get update && \
     apt-get install -y software-properties-common && \
     add-apt-repository -y ppa:deadsnakes/ppa && \
     apt-get update && \
-    apt-get install -y python3.10 python3-pip
+    apt-get install -y python3.10 python3-pip \
+    && apt-get install python-xdg
 
 # Create the /tmp/.X11-unix directory with the appropriate permissions
 RUN mkdir /tmp/.X11-unix && \
