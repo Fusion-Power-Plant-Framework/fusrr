@@ -8,8 +8,11 @@ jobs:
       DOCKER_TAG_SHA: fusrr/fusrr:${{ github.sha }}
       DOCKER_TAG_LATEST: fusrr/fusrr:latest
     steps:
-      - name: Build FusRR Docker Image
-        uses: ./.github/workflows/actions/build_docker_image
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: ./.github/workflows/actions/build_docker_image
 
       - name: Run tests in Docker
         run: |
