@@ -23,7 +23,7 @@ RUN apt-get update \
     # seems to help the Docker container to run without errors
     && pip install pyxdg
 
-COPY pyproject.toml README.md ./
+COPY docker/docker_entry.sh pyproject.toml README.md ./
 
 COPY scripts ./scripts
 
@@ -31,4 +31,4 @@ COPY examples ./examples
 COPY tests ./tests
 COPY fusrr ./fusrr
 
-CMD ["bash", "scripts/docker_entry.sh"]
+ENTRYPOINT [ "./docker_entry.sh" ]
