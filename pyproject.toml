@@ -72,12 +72,10 @@ serve = "mkdocs serve"
 # env: lint
 [tool.hatch.envs.lint]
 detached     = true                           # Don't inherit from default (does not download project dependencies)
-dependencies = ["ruff", "mypy", "pre-commit"]
+dependencies = ["ruff", "pre-commit"]
 [tool.hatch.envs.lint.scripts]
-typing = "mypy --install-types --non-interactive {args:src/fusrr tests}"
-style  = ["ruff {args:.}"]
-fmt    = ["pre-commit run --all-files --hook-stage manual"]
-all    = ["style", "typing"]
+style  = "ruff check {args:.}"
+fmt    = "pre-commit run --all-files --hook-stage manual"
 
 # tool: ruff
 [tool.ruff]

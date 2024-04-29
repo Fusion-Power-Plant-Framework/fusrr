@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 if [[ $FUSRR_RUN_TYPE == "examples" ]]; then
     ./scripts/run_examples.sh
 elif [[ $FUSRR_RUN_TYPE == "tests" ]]; then
