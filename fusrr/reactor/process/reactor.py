@@ -10,7 +10,7 @@ from fusrr.reactor.process.components import (
     ProcessPlasma,
     ProcessVacuumVessel,
     ProcessBlanket,
-    ProcessRadiationShield,
+    ProcessThermalShield,
 )
 from fusrr.reactor.process.components.process_component import (
     ProcessComponentCollection,
@@ -40,4 +40,4 @@ class ProcessReactor(ProcessComponentCollection):
         pipeline.add(ProcessTFCoils(self.params))
         pipeline.add(ProcessVacuumVessel(self.params))
         pipeline.add(ProcessBlanket(self.params))
-        pipeline.add(ProcessRadiationShield(self.params))
+        pipeline.add(ProcessThermalShield(self.params))

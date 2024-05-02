@@ -13,9 +13,9 @@ from fusrr.reactor.process.components.process_component import ProcessComponent
 from fusrr.reactor.process.utils import cumul_setup, cumulative_radial_build
 
 
-class ProcessRadiationShield(ProcessComponent):
+class ProcessThermalShield(ProcessComponent):
     def __init__(self, reactor_params: ProcessParams):
-        super().__init__("radiation_shield", reactor_params)
+        super().__init__("thermal_shield", reactor_params)
 
     def _setup(self) -> None:
         i_single_null = bool(self.params.i_single_null)
@@ -75,4 +75,4 @@ class ProcessRadiationShield(ProcessComponent):
 
     def _construct(self, _obj, m) -> None:
         add_edges_to_mesh_from_points(m, self.pts)
-        revolve_mesh_edges_silhouette(m, Vec3.ZERO, Vec3.Z, 360)
+        # revolve_mesh_edges_silhouette(m, Vec3.ZERO, Vec3.Z, 360)
