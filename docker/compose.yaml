@@ -4,7 +4,7 @@ services:
     container_name: fusrr-v0.1
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: docker/Dockerfile
     security_opt:
       - seccomp:unconfined #optional
     environment:
@@ -13,7 +13,7 @@ services:
       - TZ=Etc/UTC
       - SUBFOLDER=/ #optional
     volumes:
-      - ./config:/config
+      - ./docker/container:/config
     ports:
       - 3000:3000
       - 3001:3001
