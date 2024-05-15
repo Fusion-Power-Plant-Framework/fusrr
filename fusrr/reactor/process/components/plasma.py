@@ -38,3 +38,4 @@ class ProcessPlasma(ProcessComponent):
         add_edges_to_mesh_from_points(m, self.ib_pts)
         add_edges_to_mesh_from_points(m, self.ob_pts)
         revolve_mesh_edges_silhouette(m, Vec3.ZERO, Vec3.Z, 360)
+        pass

@@ -1,5 +1,6 @@
 # custom
-*.blend
+*.blend*
+!*_lib.blend
 
 
 # Byte-compiled / optimized / DLL files

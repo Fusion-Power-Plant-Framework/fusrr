@@ -54,19 +54,6 @@ def name_selected_object(name: str) -> None:
     bpy.context.object.data.name = name
 
 
-def save_blender_state_to_file(path: Path) -> None:
-    """Save the scene to a .blend file.
-
-    Args:
-        path: The path to save the scene to.
-    """
-    bpy.ops.wm.save_as_mainfile(
-        filepath=path.as_posix(),
-        check_existing=False,
-        copy=False,
-    )
-
-
 def create_object(name: str):
     """Create a new object in the scene."""
     if check_object_in_scene(name):
