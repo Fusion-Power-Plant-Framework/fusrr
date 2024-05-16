@@ -5,6 +5,7 @@ from fusrr.blender.mesh_tools import (
     add_edges_to_mesh_from_points,
     revolve_mesh_edges_silhouette,
 )
+from fusrr.data_libs.materials import FusrrMaterials
 from fusrr.reactor.process import ProcessParams
 from fusrr.reactor.process.components.process_component import ProcessComponent
 
@@ -12,6 +13,10 @@ from fusrr.reactor.process.components.process_component import ProcessComponent
 class ProcessPlasma(ProcessComponent):
     def __init__(self, reactor_params: ProcessParams):
         super().__init__("plasma", reactor_params)
+
+    @property
+    def material(self) -> FusrrMaterials:
+        return FusrrMaterials.PLASMA_PINK
 
     def _setup(self) -> None:
         r_0 = self.params.rmajor
@@ -34,8 +39,7 @@ class ProcessPlasma(ProcessComponent):
         self.ib_pts = [Vec3(x, 0, z) for x, z in zip(rs_ib, zs_ib, strict=True)]
         self.ob_pts = [Vec3(x, 0, z) for x, z in zip(rs_ob, zs_ob, strict=True)]
 
-    def _construct(self, _obj, m) -> None:
+    def _construct(self, obj, m) -> None:
         add_edges_to_mesh_from_points(m, self.ib_pts)
         add_edges_to_mesh_from_points(m, self.ob_pts)
         revolve_mesh_edges_silhouette(m, Vec3.ZERO, Vec3.Z, 360)
-        pass

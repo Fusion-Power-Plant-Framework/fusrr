@@ -1,6 +1,6 @@
 from process.geometry.blanket_geometry import (
-    blanket_geometry_single_null,
     blanket_geometry_double_null,
+    blanket_geometry_single_null,
 )
 
 from fusrr.base.models import Vec3
@@ -8,6 +8,7 @@ from fusrr.blender.mesh_tools import (
     add_edges_to_mesh_from_points,
     revolve_mesh_edges_silhouette,
 )
+from fusrr.data_libs.materials import FusrrMaterials
 from fusrr.reactor.process import ProcessParams
 from fusrr.reactor.process.components.process_component import ProcessComponent
 from fusrr.reactor.process.utils import cumul_setup, cumulative_radial_build
@@ -16,6 +17,10 @@ from fusrr.reactor.process.utils import cumul_setup, cumulative_radial_build
 class ProcessBlanket(ProcessComponent):
     def __init__(self, reactor_params: ProcessParams):
         super().__init__("blanket", reactor_params)
+
+    @property
+    def material(self) -> FusrrMaterials:
+        return FusrrMaterials.METALLIC_BLUE_LIGHT_TEXTURED
 
     def _setup(self) -> None:
         self.i_single_null = bool(self.params.i_single_null)
@@ -90,7 +95,7 @@ class ProcessBlanket(ProcessComponent):
                 Vec3(x, 0, z) for x, z in zip(rs_ob, zs_ob, strict=True)
             ]
 
-    def _construct(self, _obj, m) -> None:
+    def _construct(self, obj, m) -> None:
         if self.i_single_null == 1:
             add_edges_to_mesh_from_points(m, self.pts)
         if self.i_single_null == 0:

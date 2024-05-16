@@ -3,6 +3,7 @@ import abc
 from fusrr.base.entity import FusrrSceneEntity
 from fusrr.base.pipeline import FusrrBuildPipeline
 from fusrr.blender.scene_tools import (
+    check_collection_in_scene,
     create_collection,
     get_collections,
     link_collections,
@@ -40,6 +41,11 @@ class FusrrSceneCollection(FusrrSceneEntity, abc.ABC):
 
         # select all created objects, create a collection and add them to it
         created_objs = select_objects(self._pipeline.object_names())
+
+        if check_collection_in_scene(self.name):
+            raise ValueError(
+                f"Collection with name {self.name} already exists in the scene."
+            )
         this_c = create_collection(self.name, created_objs)
 
         # get all sub-collections and link them to this collection
