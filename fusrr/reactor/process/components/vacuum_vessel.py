@@ -1,6 +1,6 @@
 from process.geometry.vacuum_vessel_geometry import (
-    vacuum_vessel_geometry_single_null,
     vacuum_vessel_geometry_double_null,
+    vacuum_vessel_geometry_single_null,
 )
 
 from fusrr.base.models import Vec3
@@ -8,6 +8,8 @@ from fusrr.blender.mesh_tools import (
     add_edges_to_mesh_from_points,
     revolve_mesh_edges_silhouette,
 )
+from fusrr.data_libs.materials import FusrrMaterialDataLabel
+from fusrr.materials.base import FusrrMaterial, MetallicMaterial
 from fusrr.reactor.process import ProcessParams
 from fusrr.reactor.process.components.process_component import ProcessComponent
 from fusrr.reactor.process.utils import cumul_setup, cumulative_radial_build
@@ -16,6 +18,14 @@ from fusrr.reactor.process.utils import cumul_setup, cumulative_radial_build
 class ProcessVacuumVessel(ProcessComponent):
     def __init__(self, reactor_params: ProcessParams):
         super().__init__("vacuum_vessel", reactor_params)
+
+    @property
+    def material(self) -> FusrrMaterial:
+        mat = MetallicMaterial()
+        mat.material_data_label = (
+            FusrrMaterialDataLabel.METALLIC_BLUE_LIGHT_TEXTURED
+        )
+        return mat
 
     def _setup(self) -> None:
         i_single_null = bool(self.params.i_single_null)
@@ -74,6 +84,6 @@ class ProcessVacuumVessel(ProcessComponent):
 
         self.pts = [Vec3(x, 0, z) for x, z in zip(rs, zs, strict=True)]
 
-    def _construct(self, _obj, m) -> None:
+    def _construct(self, obj, m) -> None:
         add_edges_to_mesh_from_points(m, self.pts)
         revolve_mesh_edges_silhouette(m, Vec3.ZERO, Vec3.Z, 360)

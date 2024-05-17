@@ -1,15 +1,12 @@
 import time
-import traceback
 from pathlib import Path
 
 from fusrr.base.entity import FusrrSceneEntity
 from fusrr.base.errors import SceneStopError
 from fusrr.base.pipeline import FusrrBuildPipeline
-from fusrr.blender.scene_tools import (
-    clear_scene,
-    deselect_all,
-    save_blender_state_to_file,
-)
+from fusrr.blender.file_tools import save_state_to_blend_file
+from fusrr.blender.scene_tools import clear_scene, deselect_all
+from fusrr.data_libs.materials import load_materials
 
 
 class FusrrScene:
@@ -94,7 +91,7 @@ class FusrrScene:
             self._delete_scene_file_if_exists()
         else:
             self._rename_scene_file_if_exists()
-        save_blender_state_to_file(self._scene_path)
+        save_state_to_blend_file(self._scene_path)
 
     def run(self):
         """Run the FusrrScene.
@@ -107,14 +104,10 @@ class FusrrScene:
         """
         try:
             self._reset()
+            load_materials()
             self._pipeline.execute()
         except SceneStopError as e:
             print(f"Stopping scene on: {e}")
-        # except Exception as e:
-        #     print()
-        #     print("An error occurred!")
-        #     traceback.print_exc()
-        #     raise
         finally:
             deselect_all()
             print("saving scene...")

@@ -7,6 +7,8 @@ from fusrr.blender.mesh_tools import (
     add_edges_to_mesh_from_points,
     revolve_mesh_edges_silhouette,
 )
+from fusrr.data_libs.materials import FusrrMaterialDataLabel
+from fusrr.materials.base import FusrrMaterial, MetallicMaterial
 from fusrr.reactor.process.components.process_component import (
     ProcessComponentCollection,
 )
@@ -59,6 +61,12 @@ class ProcessPFCoil(FusrrSceneObject):
         self.geom = geom
         super().__init__(name)
 
+    @property
+    def material(self) -> FusrrMaterial:
+        mat = MetallicMaterial()
+        mat.material_data_label = FusrrMaterialDataLabel.METALLIC_GOLD_SHINY
+        return mat
+
     def _setup(self) -> None:
         self.face_path_pts = process_rect_to_vec3_path_points(self.geom)
 
@@ -70,3 +78,9 @@ class ProcessPFCoil(FusrrSceneObject):
 class ProcessCSCoil(ProcessPFCoil):
     def __init__(self, geom: RectangleGeometry):
         super().__init__("cs_coil", geom)
+
+    @property
+    def material(self) -> FusrrMaterial:
+        mat = MetallicMaterial()
+        mat.material_data_label = FusrrMaterialDataLabel.METALLIC_RED_SHINY
+        return mat

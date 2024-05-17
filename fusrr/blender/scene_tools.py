@@ -1,5 +1,4 @@
 from collections.abc import Iterable
-from pathlib import Path
 
 import bpy
 
@@ -38,7 +37,7 @@ def select_and_activate_object(name: str) -> bpy.types.Object:
     """Select a single object in the scene by name
     and make it the active object.
     """
-    obj = select_objects({name})[0]
+    obj = select_object(name)
     bpy.context.view_layer.objects.active = obj
     return obj
 
@@ -54,25 +53,8 @@ def name_selected_object(name: str) -> None:
     bpy.context.object.data.name = name
 
 
-def save_blender_state_to_file(path: Path) -> None:
-    """Save the scene to a .blend file.
-
-    Args:
-        path: The path to save the scene to.
-    """
-    bpy.ops.wm.save_as_mainfile(
-        filepath=path.as_posix(),
-        check_existing=False,
-        copy=False,
-    )
-
-
 def create_object(name: str):
     """Create a new object in the scene."""
-    if check_object_in_scene(name):
-        raise ValueError(
-            f"Object with name {name} already exists in the scene."
-        )
     deselect_all()
 
     mesh = bpy.data.meshes.new(name)
@@ -120,10 +102,6 @@ def create_collection(
     name: str, objects: Iterable[bpy.types.Object]
 ) -> bpy.types.Collection:
     """Create a collection and adds (links) objects to it."""
-    if check_collection_in_scene(name):
-        raise ValueError(
-            f"Collection with name {name} already exists in the scene."
-        )
     deselect_all()
 
     col = bpy.data.collections.new(name)
