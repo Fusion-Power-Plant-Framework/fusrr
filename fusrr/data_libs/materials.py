@@ -6,13 +6,12 @@ from fusrr.blender.file_tools import (
     BlenderFileDataTypes,
     append_from_blend_file,
 )
-from fusrr.blender.object_tools import set_object_material
 from fusrr.data_libs import FUSRR_DATA_LIB_PATH
 
 FUSRR_MATERIALS_LIB_PATH = FUSRR_DATA_LIB_PATH / "materials_lib.blend"
 
 
-class FusrrMaterials(Enum):
+class FusrrMaterialDataLabel(Enum):
     """Enum class for materials in the materials library."""
 
     PLASMA_PINK = "plasma_pink"
@@ -23,10 +22,6 @@ class FusrrMaterials(Enum):
     METALLIC_RED_SHINY = "metallic_red_shiny"
     METALLIC_BLUE_DARK_TEXTURED = "metallic_blue_dark_textured"
     METALLIC_BLUE_LIGHT_TEXTURED = "metallic_blue_light_textured"
-
-    def apply_to(self, obj: bpy.types.Object):
-        """Applies the material to the object."""
-        set_object_material(obj, self.value)
 
 
 def load_materials():

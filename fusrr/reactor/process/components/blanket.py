@@ -8,7 +8,8 @@ from fusrr.blender.mesh_tools import (
     add_edges_to_mesh_from_points,
     revolve_mesh_edges_silhouette,
 )
-from fusrr.data_libs.materials import FusrrMaterials
+from fusrr.data_libs.materials import FusrrMaterialDataLabel
+from fusrr.materials.base import FusrrMaterial, MetallicMaterial
 from fusrr.reactor.process import ProcessParams
 from fusrr.reactor.process.components.process_component import ProcessComponent
 from fusrr.reactor.process.utils import cumul_setup, cumulative_radial_build
@@ -19,8 +20,12 @@ class ProcessBlanket(ProcessComponent):
         super().__init__("blanket", reactor_params)
 
     @property
-    def material(self) -> FusrrMaterials:
-        return FusrrMaterials.METALLIC_BLUE_LIGHT_TEXTURED
+    def material(self) -> FusrrMaterial:
+        mat = MetallicMaterial()
+        mat.material_data_label = (
+            FusrrMaterialDataLabel.METALLIC_BLUE_LIGHT_TEXTURED
+        )
+        return mat
 
     def _setup(self) -> None:
         self.i_single_null = bool(self.params.i_single_null)

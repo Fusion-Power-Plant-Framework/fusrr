@@ -5,7 +5,7 @@ import bpy
 
 def set_object_material(
     obj: bpy.types.Object, material_name: str, slot: int = 0
-):
+) -> bpy.types.Material:
     """Applies a material to an object at a specific.
 
     This will replace a material if it is already applied to the object.
@@ -33,3 +33,5 @@ def set_object_material(
     else:
         # no slots and slot is 0
         obj_mats.append(mat)
+
+    return mat

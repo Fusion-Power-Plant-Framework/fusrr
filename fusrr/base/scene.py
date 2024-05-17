@@ -108,11 +108,6 @@ class FusrrScene:
             self._pipeline.execute()
         except SceneStopError as e:
             print(f"Stopping scene on: {e}")
-        # except Exception as e:
-        #     print()
-        #     print("An error occurred!")
-        #     traceback.print_exc()
-        #     raise
         finally:
             deselect_all()
             print("saving scene...")

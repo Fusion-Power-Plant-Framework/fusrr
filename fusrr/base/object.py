@@ -8,7 +8,7 @@ from fusrr.base.models import Vec3
 from fusrr.base.types import CFT
 from fusrr.blender.mesh_tools import add_cube, add_empty, new_mesh_for
 from fusrr.blender.scene_tools import check_object_in_scene, create_object
-from fusrr.data_libs.materials import FusrrMaterials
+from fusrr.materials.base import FusrrMaterial
 
 if TYPE_CHECKING:
     import bpy
@@ -29,7 +29,7 @@ class FusrrSceneObject(FusrrSceneEntity):
         """Setup this object, caching any necessary data."""
 
     @property
-    def material(self) -> FusrrMaterials | None:
+    def material(self) -> FusrrMaterial | None:
         """The material of this object."""
         return None
 
@@ -56,8 +56,11 @@ class FusrrSceneObject(FusrrSceneEntity):
         with new_mesh_for(obj) as m:
             self._construct(obj, m)
 
-        if self.material is not None:
-            self.material.apply_to(obj)
+        mat = self.material
+        if callable(mat):
+            mat = mat()
+        if mat is not None:
+            mat.apply(obj)
 
 
 class FusrrSceneObjectFromFunction(FusrrSceneObject):

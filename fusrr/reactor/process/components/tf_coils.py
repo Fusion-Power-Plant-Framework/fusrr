@@ -16,7 +16,8 @@ from fusrr.base.models import Vec3
 from fusrr.base.object import FusrrSceneObjectWithContext
 from fusrr.base.pipeline import FusrrBuildPipeline
 from fusrr.blender.mesh_tools import add_edges_to_mesh_from_points
-from fusrr.data_libs.materials import FusrrMaterials
+from fusrr.data_libs.materials import FusrrMaterialDataLabel
+from fusrr.materials.base import FusrrMaterial, MetallicMaterial
 from fusrr.reactor.process.components.process_component import (
     ProcessComponentCollection,
 )
@@ -124,8 +125,10 @@ class ProcessTFCoilD(FusrrSceneObjectWithContext[ProcessTFCoilContext]):
         super().__init__(name, ctx)
 
     @property
-    def material(self) -> FusrrMaterials:
-        return FusrrMaterials.METALLIC_SILVER_MATT
+    def material(self) -> FusrrMaterial:
+        mat = MetallicMaterial()
+        mat.material_data_label = FusrrMaterialDataLabel.METALLIC_SILVER_GLOSSY
+        return mat
 
     def _construct(self, obj, m: bmesh.types.BMesh) -> None:
         # Inner (straight) leg
