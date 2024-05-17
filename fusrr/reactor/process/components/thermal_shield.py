@@ -75,4 +75,4 @@ class ProcessThermalShield(ProcessComponent):
 
     def _construct(self, _obj, m) -> None:
         add_edges_to_mesh_from_points(m, self.pts)
-        # revolve_mesh_edges_silhouette(m, Vec3.ZERO, Vec3.Z, 360)
+        revolve_mesh_edges_silhouette(m, Vec3.ZERO, Vec3.Z, 360)
