@@ -4,23 +4,54 @@ import bpy
 
 
 def set_object_material(
-    obj: bpy.types.Object, material_name: str, slot: int = 0
+    obj: bpy.types.Object,
+    material_name: str,
+    slot: int = 0,
+    *,
+    name_suffix_override: str | None = None,
 ) -> bpy.types.Material:
-    """Applies a material to an object at a specific.
+    """Applies a material to an object at a specific slot.
 
-    This will replace a material if it is already applied to the object.
+    This will replace the material at the slot if it exists.
+
+    Use name_suffix_override to set the same material on multiple objects.
 
     Note:
-        This will raise a ValueError if the material is not found.
+        The material will be copied and renamed to {material_name}.{obj.name}
+
+        However, if name_suffix_override is provided,
+        the material will not be copied if it already exists and the name
+        will be {material_name}.{name_suffix_override}.
+
+    Raises:
+        ValueError: If the material is not found or the slot is invalid.
 
     Args:
-        obj: The object to apply the material to.
-        material_name: The name of the material to apply.
-        slot: The material slot to apply the material to. Defaults to 0.
+        obj:
+            The object to apply the material to.
+        material_name:
+            The name of the material to apply.
+        slot:
+            The material slot to apply the material to. Defaults to 0.
+        name_suffix_override:
+            The suffix to append to the material name.
+            Defaults to None.
     """
-    mat = bpy.data.materials.get(material_name)
+    mat_name = (
+        f"{material_name}.{obj.name}"
+        if name_suffix_override is None
+        else f"{material_name}.{name_suffix_override}"
+    )
+
+    mat = None
+    if name_suffix_override:
+        mat = bpy.data.materials.get(mat_name)
     if mat is None:
-        raise ValueError(f"Material with name {material_name} not found.")
+        mat = bpy.data.materials.get(material_name)
+        if mat is None:
+            raise ValueError(f"Material with name {material_name} not found.")
+        mat = mat.copy()
+        mat.name = mat_name
 
     obj_mats = obj.data.materials
     if obj_mats and slot:

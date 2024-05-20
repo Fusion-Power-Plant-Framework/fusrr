@@ -22,7 +22,7 @@ class ProcessVacuumVessel(ProcessComponent):
     @property
     def material(self) -> FusrrMaterial:
         mat = MetallicMaterial()
-        mat.material_data_label = (
+        mat._material_data_label = (
             FusrrMaterialDataLabel.METALLIC_BLUE_LIGHT_TEXTURED
         )
         return mat

@@ -126,8 +126,9 @@ class ProcessTFCoilD(FusrrSceneObjectWithContext[ProcessTFCoilContext]):
 
     @property
     def material(self) -> FusrrMaterial:
-        mat = MetallicMaterial()
-        mat.material_data_label = FusrrMaterialDataLabel.METALLIC_SILVER_GLOSSY
+        mat = MetallicMaterial("tf_coil_d")
+        # todo: temp - should be settable via configuration
+        mat._material_data_label = FusrrMaterialDataLabel.METALLIC_SILVER_GLOSSY
         return mat
 
     def _construct(self, obj, m: bmesh.types.BMesh) -> None:

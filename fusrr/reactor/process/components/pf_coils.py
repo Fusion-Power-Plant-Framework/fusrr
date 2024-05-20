@@ -63,8 +63,9 @@ class ProcessPFCoil(FusrrSceneObject):
 
     @property
     def material(self) -> FusrrMaterial:
-        mat = MetallicMaterial()
-        mat.material_data_label = FusrrMaterialDataLabel.METALLIC_GOLD_SHINY
+        mat = MetallicMaterial("pf_coil")
+        # todo: temp
+        mat._material_data_label = FusrrMaterialDataLabel.METALLIC_GOLD_SHINY
         return mat
 
     def _setup(self) -> None:
@@ -82,5 +83,5 @@ class ProcessCSCoil(ProcessPFCoil):
     @property
     def material(self) -> FusrrMaterial:
         mat = MetallicMaterial()
-        mat.material_data_label = FusrrMaterialDataLabel.METALLIC_RED_SHINY
+        mat._material_data_label = FusrrMaterialDataLabel.METALLIC_RED_SHINY
         return mat
