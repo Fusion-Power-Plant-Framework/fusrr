@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 
 from fusrr.blender.object_tools import set_object_material
 from fusrr.data_libs.materials import FusrrMaterialDataLabel
+from fusrr.materials.models import MaterialColour, MaterialMetallic, MaterialRoughness
 
 if TYPE_CHECKING:
     import bpy
@@ -52,21 +53,46 @@ class FusrrMaterial(abc.ABC):
 
 
 class PlasmaMaterial(FusrrMaterial):
-    def __init__(self, name_suffix_override: str | None = None):
+    def __init__(self, name_suffix_override: str | None = None, base_colour: MaterialColour | None = None, colour_ramp: MaterialColour | None = None):
+        self.base_colour = base_colour
+        self.colour_ramp = colour_ramp
         super().__init__(
-            FusrrMaterialDataLabel.PLASMA_PINK, name_suffix_override
+            FusrrMaterialDataLabel.PLASMA_PINK, name_suffix_override 
         )
 
     def _configure(self, mat: bpy.types.Material):
         mat.use_nodes = True
-        bsdf = mat.node_tree.nodes.get("Principled BSDF")
-        bsdf.inputs["Base Color"].default_value = (0.8, 0.2, 0.8, 1)
-        bsdf.inputs["Metallic"].default_value = 0.0
-        bsdf.inputs["Roughness"].default_value = 0.5
+
+        if self.base_colour:
+            bsdf = mat.node_tree.nodes.get("Principled BSDF")
+            bsdf.inputs["Base Color"].default_value = self.base_colour.tup
+
+        # testing how to change color ramp inputs
+        if self.colour_ramp:
+            ramp_colour = mat.node_tree.nodes.get("Color Ramp Y Axis")
+            ramp_colour.color_ramp.elements[1].color = self.colour_ramp.tup
 
 
 class MetallicMaterial(FusrrMaterial):
-    def __init__(self, name_suffix_override: str | None = None):
+    def __init__(self, name_suffix_override: str | None = None, base_colour: MaterialColour | None = None, metallic: MaterialMetallic | None = None, roughness: MaterialRoughness | None = None):
+        self.base_colour = base_colour
+        self.metallic = metallic
+        self.roughness = roughness
         super().__init__(
-            FusrrMaterialDataLabel.METALLIC_GOLD_SHINY, name_suffix_override
+            FusrrMaterialDataLabel.METALLIC, name_suffix_override
         )
+    
+    def _configure(self, mat: bpy.types.Material):
+        mat.use_nodes = True
+
+        if self.base_colour:
+            bsdf = mat.node_tree.nodes.get("main_node")
+            bsdf.inputs["Base Color"].default_value = self.base_colour.tup
+        
+        if self.metallic:
+            bsdf = mat.node_tree.nodes.get("main_node")
+            bsdf.inputs["Metallic"].default_value = self.metallic.tup
+
+        if self.roughness:
+            bsdf = mat.node_tree.nodes.get("main_node")
+            bsdf.inputs["Roughness"].default_value = self.roughness.tup
