@@ -15,6 +15,7 @@ class FusrrMaterialDataLabel(Enum):
     """Enum class for materials in the materials library."""
 
     PLASMA_PINK = "plasma_pink"
+    METALLIC = "metallic"
     METALLIC_SILVER_MATT = "metallic_silver_matt"
     METALLIC_SILVER_GLOSSY = "metallic_silver_glossy"
     METALLIC_SILVER_SHINY = "metallic_silver_shiny"

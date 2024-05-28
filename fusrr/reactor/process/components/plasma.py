@@ -6,6 +6,7 @@ from fusrr.blender.mesh_tools import (
     revolve_mesh_edges_silhouette,
 )
 from fusrr.materials.base import FusrrMaterial, PlasmaMaterial
+from fusrr.materials.models import MaterialColour
 from fusrr.reactor.process import ProcessParams
 from fusrr.reactor.process.components.process_component import ProcessComponent
 
@@ -16,7 +17,11 @@ class ProcessPlasma(ProcessComponent):
 
     @property
     def material(self) -> FusrrMaterial:
-        return PlasmaMaterial()
+        return PlasmaMaterial(
+            #testing the colour of the plasma
+            base_colour= MaterialColour(0.7, 0.01, 0.01, 1),
+            colour_ramp= MaterialColour(0.1, 0.1, 0.9, 1)
+        )
 
     def _setup(self) -> None:
         r_0 = self.params.rmajor
