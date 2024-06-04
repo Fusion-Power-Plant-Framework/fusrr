@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 
 from fusrr.base.models import Vec3
-
 from fusrr.blender.mesh_tools import (
     add_edges_to_mesh_from_points,
     revolve_mesh_edges_silhouette,
 )
+from fusrr.materials.base import FusrrMaterial, GlassMaterial, MetallicMaterial
 from fusrr.reactor.process import ProcessParams
 from fusrr.reactor.process.components.process_component import (
     ProcessComponent,
@@ -22,6 +22,10 @@ class CryostatGeometry:
 class ProcessCryostat(ProcessComponent):
     def __init__(self, reactor_params: ProcessParams):
         super().__init__("cryostat", reactor_params)
+
+    @property
+    def material(self) -> FusrrMaterial:
+        return GlassMaterial()
 
     def _setup(self) -> None:
         rdewex = self.params.rdewex

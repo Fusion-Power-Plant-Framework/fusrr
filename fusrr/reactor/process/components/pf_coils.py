@@ -7,9 +7,8 @@ from fusrr.blender.mesh_tools import (
     add_edges_to_mesh_from_points,
     revolve_mesh_edges_silhouette,
 )
-from fusrr.data_libs.materials import FusrrMaterialDataLabel
 from fusrr.materials.base import FusrrMaterial, MetallicMaterial
-from fusrr.materials.models import MaterialColour, MaterialMetallic, MaterialRoughness
+from fusrr.materials.models import MaterialColour, MaterialValueZeroToOne
 from fusrr.reactor.process.components.process_component import (
     ProcessComponentCollection,
 )
@@ -64,17 +63,11 @@ class ProcessPFCoil(FusrrSceneObject):
 
     @property
     def material(self) -> FusrrMaterial:
-        # Uncomment below code and comment the return MetallicMaterial.. to use the default option
-        # mat = MetallicMaterial("pf_coil")
-        # mat._material_data_label = FusrrMaterialDataLabel.METALLIC_GOLD_SHINY
-        # return mat
-
-        # returns a custom metal material
-        return MetallicMaterial (
-            name_suffix_override= "pf_coil",
-            base_colour= MaterialColour(1, 0.2, 0.2, 1),
-            metallic = MaterialMetallic(1),
-            roughness= MaterialRoughness(0.2)
+        return MetallicMaterial(
+            object_name_override="pf_coil",
+            base_colour=MaterialColour(1, 0.2, 0.2, 1),
+            metallicness=MaterialValueZeroToOne(1),
+            roughness=MaterialValueZeroToOne(0.2),
         )
 
     def _setup(self) -> None:
@@ -91,6 +84,6 @@ class ProcessCSCoil(ProcessPFCoil):
 
     @property
     def material(self) -> FusrrMaterial:
-        mat = MetallicMaterial()
-        mat._material_data_label = FusrrMaterialDataLabel.METALLIC_RED_SHINY
-        return mat
+        return MetallicMaterial(
+            base_colour=MaterialColour(0.9, 0.2, 1, 1),
+        )

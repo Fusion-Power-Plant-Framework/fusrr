@@ -1,7 +1,5 @@
 from enum import Enum
 
-import bpy
-
 from fusrr.blender.file_tools import (
     BlenderFileDataTypes,
     append_from_blend_file,
@@ -14,15 +12,10 @@ FUSRR_MATERIALS_LIB_PATH = FUSRR_DATA_LIB_PATH / "materials_lib.blend"
 class FusrrMaterialDataLabel(Enum):
     """Enum class for materials in the materials library."""
 
-    PLASMA_PINK = "plasma_pink"
+    PLASMA = "plasma"
     METALLIC = "metallic"
-    METALLIC_SILVER_MATT = "metallic_silver_matt"
-    METALLIC_SILVER_GLOSSY = "metallic_silver_glossy"
-    METALLIC_SILVER_SHINY = "metallic_silver_shiny"
-    METALLIC_GOLD_SHINY = "metallic_gold_shiny"
-    METALLIC_RED_SHINY = "metallic_red_shiny"
-    METALLIC_BLUE_DARK_TEXTURED = "metallic_blue_dark_textured"
-    METALLIC_BLUE_LIGHT_TEXTURED = "metallic_blue_light_textured"
+    METALLIC_BLUE_DARK_TEXTURED = "metallic_textured"
+    GLASS = "glass"
 
 
 def load_materials():

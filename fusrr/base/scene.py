@@ -102,13 +102,18 @@ class FusrrScene:
         Note:
             This will modify the state of the current Blender session.
         """
+        completed_successfully = False
         try:
             self._reset()
             load_materials()
             self._pipeline.execute()
         except SceneStopError as e:
             print(f"Stopping scene on: {e}")
+        else:
+            completed_successfully = True
         finally:
             deselect_all()
             print("saving scene...")
+            if not completed_successfully:
+                print("Errors occurred during the run.")
             self.save_scene()

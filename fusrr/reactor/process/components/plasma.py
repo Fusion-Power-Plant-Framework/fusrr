@@ -18,9 +18,9 @@ class ProcessPlasma(ProcessComponent):
     @property
     def material(self) -> FusrrMaterial:
         return PlasmaMaterial(
-            #testing the colour of the plasma
-            base_colour= MaterialColour(0.7, 0.01, 0.01, 1),
-            colour_ramp= MaterialColour(0.1, 0.1, 0.9, 1)
+            # testing the colour of the plasma
+            base_colour=MaterialColour(0.7, 0.01, 0.01, 1),
+            colour_ramp=MaterialColour(0.1, 0.1, 0.9, 1),
         )
 
     def _setup(self) -> None:

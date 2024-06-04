@@ -5,10 +5,11 @@ from typing import TYPE_CHECKING
 
 from fusrr.blender.object_tools import set_object_material
 from fusrr.data_libs.materials import FusrrMaterialDataLabel
-from fusrr.materials.models import MaterialColour, MaterialMetallic, MaterialRoughness
 
 if TYPE_CHECKING:
     import bpy
+
+    from fusrr.materials.models import MaterialColour, MaterialValueZeroToOne
 
 
 class FusrrMaterial(abc.ABC):
@@ -17,23 +18,23 @@ class FusrrMaterial(abc.ABC):
     This class should be subclassed to create new materials.
     """
 
-    @abc.abstractmethod  # prevents the Ruff warning for no abstract methods
-    def __init__(
-        self,
-        data_label: FusrrMaterialDataLabel,
-        name_suffix_override: str | None = None,
-    ):
+    def __init__(self, object_name_override: str | None = None):
         """Initializes the material with the given data label.
 
         Args:
-            data_label:
-                The data label to use for the material.
-            name_suffix_override:
-                The suffix to append to the material name.
-                Defaults to None.
+            object_name_override:
+                Overrides the object name when applying the material, allowing
+                the same material to be applied to multiple objects.
+
+                Defaults to None
+                (each material applied will be new and unique to the object).
         """
-        self._material_data_label = data_label
-        self._name_suffix_override = name_suffix_override
+        self._object_name_override = object_name_override
+
+    @property
+    @abc.abstractmethod
+    def material_label(self) -> FusrrMaterialDataLabel:
+        """The material label for this material."""
 
     def _configure(self, mat: bpy.types.Material) -> None:
         """Applies the material configuration to the given material."""
@@ -46,25 +47,32 @@ class FusrrMaterial(abc.ABC):
         """
         mat = set_object_material(
             obj,
-            self._material_data_label.value,
-            name_suffix_override=self._name_suffix_override,
+            self.material_label.value,
+            object_name_override=self._object_name_override,
         )
         self._configure(mat)
 
 
 class PlasmaMaterial(FusrrMaterial):
-    def __init__(self, name_suffix_override: str | None = None, base_colour: MaterialColour | None = None, colour_ramp: MaterialColour | None = None):
+    def __init__(
+        self,
+        object_name_override: str | None = None,
+        base_colour: MaterialColour | None = None,
+        colour_ramp: MaterialColour | None = None,
+    ):
         self.base_colour = base_colour
         self.colour_ramp = colour_ramp
-        super().__init__(
-            FusrrMaterialDataLabel.PLASMA_PINK, name_suffix_override 
-        )
+        super().__init__(object_name_override)
+
+    @property
+    def material_label(self) -> FusrrMaterialDataLabel:
+        return FusrrMaterialDataLabel.PLASMA
 
     def _configure(self, mat: bpy.types.Material):
         mat.use_nodes = True
 
         if self.base_colour:
-            bsdf = mat.node_tree.nodes.get("Principled BSDF")
+            bsdf = mat.node_tree.nodes.get("Core Plasma Color")
             bsdf.inputs["Base Color"].default_value = self.base_colour.tup
 
         # testing how to change color ramp inputs
@@ -74,25 +82,44 @@ class PlasmaMaterial(FusrrMaterial):
 
 
 class MetallicMaterial(FusrrMaterial):
-    def __init__(self, name_suffix_override: str | None = None, base_colour: MaterialColour | None = None, metallic: MaterialMetallic | None = None, roughness: MaterialRoughness | None = None):
+    def __init__(
+        self,
+        object_name_override: str | None = None,
+        base_colour: MaterialColour | None = None,
+        metallicness: MaterialValueZeroToOne | None = None,
+        roughness: MaterialValueZeroToOne | None = None,
+    ):
         self.base_colour = base_colour
-        self.metallic = metallic
+        self.metallicness = metallicness
         self.roughness = roughness
-        super().__init__(
-            FusrrMaterialDataLabel.METALLIC, name_suffix_override
-        )
-    
+        super().__init__(object_name_override)
+
+    @property
+    def material_label(self) -> FusrrMaterialDataLabel:
+        return FusrrMaterialDataLabel.METALLIC
+
     def _configure(self, mat: bpy.types.Material):
         mat.use_nodes = True
 
+        main_node_label = "main"
+
         if self.base_colour:
-            bsdf = mat.node_tree.nodes.get("main_node")
+            bsdf = mat.node_tree.nodes.get(main_node_label)
             bsdf.inputs["Base Color"].default_value = self.base_colour.tup
-        
-        if self.metallic:
-            bsdf = mat.node_tree.nodes.get("main_node")
-            bsdf.inputs["Metallic"].default_value = self.metallic.tup
+
+        if self.metallicness:
+            bsdf = mat.node_tree.nodes.get(main_node_label)
+            bsdf.inputs["Metallic"].default_value = self.metallicness.tup
 
         if self.roughness:
-            bsdf = mat.node_tree.nodes.get("main_node")
+            bsdf = mat.node_tree.nodes.get(main_node_label)
             bsdf.inputs["Roughness"].default_value = self.roughness.tup
+
+
+class GlassMaterial(FusrrMaterial):
+    def __init__(self, object_name_override: str | None = None):
+        super().__init__(object_name_override)
+
+    @property
+    def material_label(self) -> FusrrMaterialDataLabel:
+        return FusrrMaterialDataLabel.GLASS

@@ -67,7 +67,7 @@ def cumulative_radial_build(section, component_shape):
     component_shape :
         Instance of dataclass
 
-    Returns
+    Returns:
     -------
     Radial build section
 

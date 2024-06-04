@@ -14,23 +14,17 @@ class MaterialColour:
     def tup(self):
         """Return the vector as a tuple."""
         return (self.r, self.g, self.b, self.alpha)
-    
+
+
 @dataclass
-class MaterialRoughness:
-    # entering the roughness value (between 0-1) for material
-    roughness_val: float
+class MaterialValueZeroToOne:
+    value: float
+
+    def __post_init__(self):
+        if self.value < 0 or self.value > 1:
+            raise ValueError("Value must be between 0 and 1.")
 
     @property
     def tup(self):
         """Return the vector as a tuple."""
-        return (self.roughness_val)
-    
-@dataclass
-class MaterialMetallic:
-    # entering the metallic value (between 0-1) for material 
-    metallic_val: float
-
-    @property
-    def tup(self):
-        """Return the vector as a tuple."""
-        return (self.metallic_val)
+        return self.value

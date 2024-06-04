@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v4.5.0
     hooks:
       - id: trailing-whitespace
         exclude: test_data
@@ -12,8 +12,7 @@ repos:
         exclude: test_data
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    # Ruff version.
-    rev: v0.1.11
+    rev: v0.4.4
     hooks:
       - id: ruff
         args: [--fix]
@@ -23,5 +22,5 @@ repos:
     rev: v2.5.1
     hooks:
       - id: prettier
-        types_or: [json]
+        types_or: [json, yaml]
         args: [--tab-width=2]
