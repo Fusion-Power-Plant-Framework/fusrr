@@ -8,7 +8,7 @@ def set_object_material(
     material_name: str,
     slot: int = 0,
     *,
-    name_suffix_override: str | None = None,
+    object_name_override: str | None = None,
 ) -> bpy.types.Material:
     """Applies a material to an object at a specific slot.
 
@@ -39,12 +39,12 @@ def set_object_material(
     """
     mat_name = (
         f"{material_name}.{obj.name}"
-        if name_suffix_override is None
-        else f"{material_name}.{name_suffix_override}"
+        if object_name_override is None
+        else f"{material_name}.{object_name_override}"
     )
 
     mat = None
-    if name_suffix_override:
+    if object_name_override:
         mat = bpy.data.materials.get(mat_name)
     if mat is None:
         mat = bpy.data.materials.get(material_name)
