@@ -50,6 +50,10 @@ def set_object_material(
         mat = bpy.data.materials.get(material_name)
         if mat is None:
             raise ValueError(f"Material with name {material_name} not found.")
+
+        # create a copy of the material and rename it
+        # this usually happens when applying a material from the library
+        # hence the copy and rename
         mat = mat.copy()
         mat.name = mat_name
 

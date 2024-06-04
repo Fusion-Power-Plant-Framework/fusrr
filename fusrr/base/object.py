@@ -56,6 +56,7 @@ class FusrrSceneObject(FusrrSceneEntity):
         with new_mesh_for(obj) as m:
             self._construct(obj, m)
 
+        # apply material after constructing the object
         mat = self.material
         if callable(mat):
             mat = mat()
