@@ -20,10 +20,10 @@ jobs:
           fetch-depth: 0
 
       - name: Setup python and Hatch
-        uses: ./.github/wrokflows/actions/setup-hatch
+        uses: ./.github/workflows/actions/setup-hatch
 
       - name: Run Hatch linting tasks
-        uses: ./.github/wrokflows/actions/hatch-lint
+        uses: ./.github/workflows/actions/hatch-lint
 
   build_image_and_run:
     runs-on: ubuntu-latest
@@ -33,7 +33,7 @@ jobs:
           fetch-depth: 0
 
       - name: Build FusRR Docker image
-        uses: ./.github/wrokflows/actions/build-docker-image
+        uses: ./.github/workflows/actions/build-docker-image
         with:
           image_name_latest: ${{ env.IMAGE_NAME_W_SHA }}
           image_name_sha: ${{ env.IMAGE_NAME_LATEST }}
