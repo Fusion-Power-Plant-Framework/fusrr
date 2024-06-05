@@ -1,4 +1,4 @@
-name: Setup Hatch
+name: setup-hatch
 description: Sets up Hatch for use in the current workflow, supports pip caching and py3.10, 3.11, 3.12
 runs:
   using: "composite"

@@ -9,7 +9,6 @@ on: [pull_request]
 
 env:
   IMAGE_NAME_W_SHA: fusrr/fusrr:${{ github.sha }}
-  IMAGE_NAME_LATEST: fusrr/fusrr:latest
 
 jobs:
   lint:
@@ -35,8 +34,7 @@ jobs:
       - name: Build FusRR Docker image
         uses: ./.github/workflows/actions/build-docker-image
         with:
-          image_name_latest: ${{ env.IMAGE_NAME_W_SHA }}
-          image_name_sha: ${{ env.IMAGE_NAME_LATEST }}
+          image_tags: ${{ env.IMAGE_NAME_W_SHA }}
 
       - name: Run tests in Docker
         run: |

@@ -43,8 +43,8 @@ RUN git clone --depth 1 --branch v3.1.0 https://github.com/ukaea/PROCESS
 WORKDIR /app
 
 # This script is the entrypoint for the Docker container
-# which will run the scripts in the /scripts directory
-# pyproject.toml and README.md are needed to run the Hatch virtual environments
+# which will run the Hatch scripts for the examples or tests
+# pyproject.toml and README.md are needed to run the Hatch shells
 COPY docker/docker_entry.sh pyproject.toml README.md ./
 
 # The main source files

@@ -31,8 +31,7 @@ jobs:
       - name: Build FusRR Docker image
         uses: ./.github/workflows/actions/build-docker-image
         with:
-          image_name_latest: ${{ env.IMAGE_NAME_LATEST }}
-          image_name_sha: ${{ env.IMAGE_NAME_W_SHA }}
+          image_tags: ${{ env.IMAGE_NAME_LATEST }}, ${{ env.IMAGE_NAME_W_SHA }}
 
       - name: Run tests in Docker
         run: |
@@ -45,5 +44,4 @@ jobs:
       - name: Push FusRR Docker image
         uses: ./.github/workflows/actions/push-docker-image
         with:
-          image_name_latest: ${{ env.IMAGE_NAME_LATEST }}
-          image_name_sha: ${{ env.IMAGE_NAME_W_SHA }}
+          image_tags: ${{ env.IMAGE_NAME_LATEST }}, ${{ env.IMAGE_NAME_W_SHA }}

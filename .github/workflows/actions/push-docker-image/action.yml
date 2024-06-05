@@ -1,12 +1,9 @@
-name: Push FusRR Docker Image to GHCR
-description: Push the FusRR Docker Image with latest and commit sha tags to GitHub Container Registry
+name: push-docker-image
+description: Push the FusRR Docker Image with latest and commit sha tags to GitHub Container Registry (GHCR)
 
 inputs:
-  image_name_latest:
-    description: "The name of the Docker image with the :latest tag"
-    required: true
-  image_name_sha:
-    description: "The name of the Docker image with the :commit_sha tag"
+  image_tags:
+    description: "The comma separted tag(s) for the Docker image, format: <image_name>:<tag>, ..."
     required: true
 
 runs:
