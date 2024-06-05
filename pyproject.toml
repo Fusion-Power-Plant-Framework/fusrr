@@ -3,11 +3,14 @@ requires      = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [tool.hatch.version]
-source = "vcs"
+source           = "vcs"
 fallback-version = "0.0.0"
 
 [tool.hatch.build.hooks.vcs]
 version-file = "fusrr/_version.py"
+
+[tool.hatch.metadata]
+allow-direct-references = true
 
 [project]
 name = "fusrr"
@@ -48,8 +51,12 @@ Issues        = "https://github.com/Fusion-Power-Plant-Framework/fusrr/issues"
 # env: default
 [tool.hatch.envs.default]
 features = ["dev", "test", "lint"]
-[tool.hatch.envs.default.scripts]
-examples = "python examples/simple_scene.py && python examples/eudemo/eudemo.py"
+
+[tool.hatch.envs.docker-examples]
+dependencies = ["process @ file:///PROCESS"]
+[tool.hatch.envs.docker-examples.scripts]
+# super hacky for now
+run = "cd examples && python simple_scene.py && cd eudemo && python eudemo.py"
 
 # env: test
 [tool.hatch.envs.test]
@@ -71,11 +78,11 @@ serve = "mkdocs serve"
 
 # env: lint
 [tool.hatch.envs.lint]
-detached     = true                           # Don't inherit from default (does not download project dependencies)
+detached     = true                   # Don't inherit from default (does not download project dependencies)
 dependencies = ["ruff", "pre-commit"]
 [tool.hatch.envs.lint.scripts]
-style  = "ruff check {args:.}"
-fmt    = "pre-commit run --all-files --hook-stage manual"
+style = "ruff check {args:.}"
+fmt   = "pre-commit run --all-files --hook-stage manual"
 
 # tool: ruff
 [tool.ruff]
@@ -94,7 +101,7 @@ exclude = [
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [
-  "INP001",  # Ignore requiring __init__.py files
+  "INP001", # Ignore requiring __init__.py files
   "D105",   # Don't require docstrings for magic methods
   "N802",   # Upper case function names are allowed
   "ERA001",

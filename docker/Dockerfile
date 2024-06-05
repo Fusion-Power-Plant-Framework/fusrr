@@ -30,18 +30,17 @@ RUN apt-get install -y \
     lcov \
     poppler-utils
 
-# -- Build and setup PROCESS --
+# -- Setup and build PROCESS --
 
 RUN git clone --depth 1 --branch v3.1.0 https://github.com/ukaea/PROCESS
-RUN cd PROCESS
-RUN cmake -S . -B build && cmake --build build
+# for now, we don't need to build and install PROCESS
+# as we use only the python side
+#! do not remove - could be useful in the future
+# RUN cd PROCESS && cmake -S . -B build -DRELEASE=TRUE && cmake --build build
 
 # -- Copy in FusRR files --
 
 WORKDIR /app
-
-# These scripts run the tests and examples inside a Hatch virtual environment
-COPY scripts ./scripts
 
 # This script is the entrypoint for the Docker container
 # which will run the scripts in the /scripts directory

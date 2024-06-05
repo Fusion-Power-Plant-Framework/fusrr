@@ -1,4 +1,4 @@
-name: Push FusRR Docker Image to GCR
+name: Push FusRR Docker Image to GHCR
 description: Push the FusRR Docker Image with latest and commit sha tags to GitHub Container Registry
 
 inputs:
