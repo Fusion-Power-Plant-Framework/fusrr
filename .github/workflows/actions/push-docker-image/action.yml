@@ -15,4 +15,4 @@ runs:
         context: .
         file: docker/Dockerfile
         push: true
-        tags: ${{ inputs.image_name }}:latest, ${{ inputs.image_name }}:${{ github.sha }}
+        tags: ${{ inputs.image_tags }}
