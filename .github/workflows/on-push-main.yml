@@ -1,8 +1,8 @@
-name: FusRR - on-push-main-dev
+name: FusRR - on-push-main
 
 on:
   push:
-    branches: [develop, main]
+    branches: [main]
 
 env:
   IMAGE_NAME_W_SHA: fusrr/fusrr:${{ github.sha }}
@@ -38,8 +38,3 @@ jobs:
       - name: Run examples in Docker
         run: |
           docker run --rm -e FUSRR_RUN_TYPE=examples ${{ env.IMAGE_NAME_W_SHA }}
-
-      - name: Push FusRR Docker image
-        uses: ./.github/workflows/actions/push-docker-image
-        with:
-          image_tags: ${{ env.IMAGE_NAME_W_SHA }}
