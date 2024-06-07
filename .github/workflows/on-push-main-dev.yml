@@ -1,14 +1,12 @@
-name: FusRR - On PR
+name: FusRR - on-push-main-dev
 
-# TODO: Rename the docker image tag to pr-<pr_number>
-# upload it and then download it in each job
-
-# or run test -> examples serially
-
-on: [pull_request]
+on:
+  push:
+    branches: [develop, main]
 
 env:
-  IMAGE_NAME_W_PR_NUMBER: fusrr/fusrr:pr-${{ github.event.number }}
+  IMAGE_NAME_W_SHA: fusrr/fusrr:${{ github.sha }}
+  IMAGE_NAME_LATEST: fusrr/fusrr:latest
 
 jobs:
   lint:
@@ -17,14 +15,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Setup python and Hatch
         uses: ./.github/workflows/actions/setup-hatch
-
       - name: Run Hatch linting tasks
         uses: ./.github/workflows/actions/hatch-lint
 
-  build_image_and_run:
+  build_image_run_and_push:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -34,12 +30,17 @@ jobs:
       - name: Build FusRR Docker image
         uses: ./.github/workflows/actions/build-docker-image
         with:
-          image_tags: ${{ env.IMAGE_NAME_W_PR_NUMBER }}
+          image_tags: ${{ env.IMAGE_NAME_LATEST }}, ${{ env.IMAGE_NAME_W_SHA }}
 
       - name: Run tests in Docker
         run: |
-          docker run --rm -e FUSRR_RUN_TYPE=tests ${{ env.IMAGE_NAME_W_PR_NUMBER }}
+          docker run --rm -e FUSRR_RUN_TYPE=tests ${{ env.IMAGE_NAME_W_SHA }}
 
       - name: Run examples in Docker
         run: |
-          docker run --rm -e FUSRR_RUN_TYPE=examples ${{ env.IMAGE_NAME_W_PR_NUMBER }}
+          docker run --rm -e FUSRR_RUN_TYPE=examples ${{ env.IMAGE_NAME_W_SHA }}
+
+      - name: Push FusRR Docker image
+        uses: ./.github/workflows/actions/push-docker-image
+        with:
+          image_tags: ${{ env.IMAGE_NAME_LATEST }}, ${{ env.IMAGE_NAME_W_SHA }}
