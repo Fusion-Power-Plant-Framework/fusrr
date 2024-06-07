@@ -1,0 +1,45 @@
+name: FusRR - on-pr
+
+# TODO: create separate jobs for tests and examples
+# by having them depend on a build_image job
+# which would upload the image to the GitHub Container Registry
+# and then the tests and examples jobs would pull the image from the registry
+
+on: [pull_request]
+
+env:
+  IMAGE_NAME_W_PR_NUMBER: fusrr/fusrr:pr-${{ github.event.number }}
+
+jobs:
+  lint:
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup python and Hatch
+        uses: ./.github/workflows/actions/setup-hatch
+
+      - name: Run Hatch linting tasks
+        uses: ./.github/workflows/actions/hatch-lint
+
+  build_image_and_run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build FusRR Docker image
+        uses: ./.github/workflows/actions/build-docker-image
+        with:
+          image_tags: ${{ env.IMAGE_NAME_W_PR_NUMBER }}
+
+      - name: Run tests in Docker
+        run: |
+          docker run --rm -e FUSRR_RUN_TYPE=tests ${{ env.IMAGE_NAME_W_PR_NUMBER }}
+
+      - name: Run examples in Docker
+        run: |
+          docker run --rm -e FUSRR_RUN_TYPE=examples ${{ env.IMAGE_NAME_W_PR_NUMBER }}

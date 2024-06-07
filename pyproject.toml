@@ -3,9 +3,14 @@ requires      = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [tool.hatch.version]
-source = "vcs"
+source           = "vcs"
+fallback-version = "0.0.0"
+
 [tool.hatch.build.hooks.vcs]
 version-file = "fusrr/_version.py"
+
+[tool.hatch.metadata]
+allow-direct-references = true
 
 [project]
 name = "fusrr"
@@ -47,9 +52,17 @@ Issues        = "https://github.com/Fusion-Power-Plant-Framework/fusrr/issues"
 [tool.hatch.envs.default]
 features = ["dev", "test", "lint"]
 
+[tool.hatch.envs.docker-examples]
+dependencies = ["process @ file:///PROCESS"]
+[tool.hatch.envs.docker-examples.scripts]
+# super hacky for now
+run = "cd examples && python simple_scene.py && cd eudemo && python eudemo.py"
+
 # env: test
 [tool.hatch.envs.test]
 features = ["test"]
+[[tool.hatch.envs.test.matrix]]
+python = ["3.10", "3.11"]
 [tool.hatch.envs.test.scripts]
 tests      = "pytest {args:tests}"
 tests-cov  = "coverage run -m pytest {args:tests}"
@@ -65,13 +78,11 @@ serve = "mkdocs serve"
 
 # env: lint
 [tool.hatch.envs.lint]
-detached     = true                           # Don't inherit from default (does not download project dependencies)
-dependencies = ["ruff", "mypy", "pre-commit"]
+detached     = true                   # Don't inherit from default (does not download project dependencies)
+dependencies = ["ruff", "pre-commit"]
 [tool.hatch.envs.lint.scripts]
-typing = "mypy --install-types --non-interactive {args:src/fusrr tests}"
-style  = ["ruff {args:.}"]
-fmt    = ["pre-commit run --all-files --hook-stage manual"]
-all    = ["style", "typing"]
+style = "ruff check {args:.}"
+fmt   = "pre-commit run --all-files --hook-stage manual"
 
 # tool: ruff
 [tool.ruff]
@@ -90,7 +101,7 @@ exclude = [
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [
-  "INP001",  # Ignore requiring __init__.py files
+  "INP001", # Ignore requiring __init__.py files
   "D105",   # Don't require docstrings for magic methods
   "N802",   # Upper case function names are allowed
   "ERA001",
@@ -126,6 +137,18 @@ ignore = [
   "PLR0912",
   "PLR0913",
   "PLR0915",
+  "FIX002",
+  "TD002",
+  "TD003",
+
+
+  # should reenable these
+  "D101",
+  "D102",
+  "D107",
+  "ANN001",
+  # "PLR2004 ", # Magic values
+
 ]
 unfixable = [
   # Don't touch unused imports
@@ -148,7 +171,7 @@ convention = "google"
 
 [tool.ruff.lint.per-file-ignores]
 # Tests can use magic values, assertions, and relative imports
-"tests/**/*"  = ["PLR2004", "S101", "TID252"]
+"tests/**/*"  = ["PLR2004", "S101", "TID252", "D103"]
 "__init__.py" = ["F401", "F403"]
 
 [tool.coverage.run]

@@ -1,0 +1,23 @@
+name: build-docker-image
+description: Builds the FusRR Docker Image with latest and commit sha tags
+
+inputs:
+  image_tags:
+    description: "The comma separted tag(s) for the Docker image, format: <image_name>:<tag>, ..."
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: docker/Dockerfile
+        load: true
+        tags: ${{ inputs.image_tags }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max

@@ -44,7 +44,7 @@ class ProcessPlasma(ProcessComponent):
         self.ib_pts = [Vec3(x, 0, z) for x, z in zip(rs_ib, zs_ib, strict=True)]
         self.ob_pts = [Vec3(x, 0, z) for x, z in zip(rs_ob, zs_ob, strict=True)]
 
-    def _construct(self, obj, m) -> None:
+    def _construct(self, _obj, m) -> None:
         add_edges_to_mesh_from_points(m, self.ib_pts)
         add_edges_to_mesh_from_points(m, self.ob_pts)
         revolve_mesh_edges_silhouette(m, Vec3.ZERO, Vec3.Z, 360)

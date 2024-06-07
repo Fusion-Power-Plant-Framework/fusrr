@@ -1,8 +1,10 @@
-version: "3"
 services:
   fusrr:
     image: fusrr:latest
-    container_name: fusrr-v0.1 # will make this a variable in the future
+    container_name: fusrr-v0.1
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
     security_opt:
       - seccomp:unconfined #optional
     environment:
@@ -11,8 +13,8 @@ services:
       - TZ=Etc/UTC
       - SUBFOLDER=/ #optional
     volumes:
-      - /path/to/config:/config
+      - ./docker/container:/config
     ports:
       - 3000:3000
       - 3001:3001
-    restart: unless-stopped
+    restart: "no"

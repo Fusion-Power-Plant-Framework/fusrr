@@ -8,13 +8,13 @@ from fusrr.base.models import Vec3
 from fusrr.base.types import CFT
 from fusrr.blender.mesh_tools import add_cube, add_empty, new_mesh_for
 from fusrr.blender.scene_tools import check_object_in_scene, create_object
-from fusrr.materials.base import FusrrMaterial
 
 if TYPE_CHECKING:
     import bpy
     import bmesh
 
     from fusrr.base.types import ObjConstructor
+    from fusrr.materials.base import FusrrMaterial
 
 
 class FusrrSceneObject(FusrrSceneEntity):

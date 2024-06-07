@@ -8,7 +8,6 @@ from fusrr.blender.mesh_tools import (
     add_edges_to_mesh_from_points,
     revolve_mesh_edges_silhouette,
 )
-from fusrr.data_libs.materials import FusrrMaterialDataLabel
 from fusrr.materials.base import FusrrMaterial, MetallicMaterial
 from fusrr.materials.models import MaterialColour
 from fusrr.reactor.process import ProcessParams
@@ -99,7 +98,7 @@ class ProcessBlanket(ProcessComponent):
                 Vec3(x, 0, z) for x, z in zip(rs_ob, zs_ob, strict=True)
             ]
 
-    def _construct(self, obj, m) -> None:
+    def _construct(self, _obj, m) -> None:
         if self.i_single_null == 1:
             add_edges_to_mesh_from_points(m, self.pts)
         if self.i_single_null == 0:
