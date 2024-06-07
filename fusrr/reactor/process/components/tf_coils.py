@@ -127,7 +127,7 @@ class ProcessTFCoilD(FusrrSceneObjectWithContext[ProcessTFCoilContext]):
     @property
     def material(self) -> FusrrMaterial:
         return MetallicMaterial(
-            roughness=MaterialValueZeroToOne(0.1),
+            "tf_coil_d", roughness=MaterialValueZeroToOne(0.1)
         )
 
     def _construct(self, _obj, m: bmesh.types.BMesh) -> None:
