@@ -68,7 +68,7 @@ class PlasmaMaterial(FusrrMaterial):
     def material_label(self) -> FusrrMaterialDataLabel:
         return FusrrMaterialDataLabel.PLASMA
 
-    def _configure(self, mat: bpy.types.Material):
+    def _configure(self, mat: bpy.types.Material) -> None:
         mat.use_nodes = True
 
         if self.base_colour:
@@ -98,7 +98,7 @@ class MetallicMaterial(FusrrMaterial):
     def material_label(self) -> FusrrMaterialDataLabel:
         return FusrrMaterialDataLabel.METALLIC
 
-    def _configure(self, mat: bpy.types.Material):
+    def _configure(self, mat: bpy.types.Material) -> None:
         mat.use_nodes = True
 
         main_node_label = "main"

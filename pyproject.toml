@@ -137,6 +137,18 @@ ignore = [
   "PLR0912",
   "PLR0913",
   "PLR0915",
+  "FIX002",
+  "TD002",
+  "TD003",
+
+
+  # should reenable these
+  "D101",
+  "D102",
+  "D107",
+  "ANN001",
+  # "PLR2004 ", # Magic values
+
 ]
 unfixable = [
   # Don't touch unused imports
@@ -159,7 +171,7 @@ convention = "google"
 
 [tool.ruff.lint.per-file-ignores]
 # Tests can use magic values, assertions, and relative imports
-"tests/**/*"  = ["PLR2004", "S101", "TID252"]
+"tests/**/*"  = ["PLR2004", "S101", "TID252", "D103"]
 "__init__.py" = ["F401", "F403"]
 
 [tool.coverage.run]

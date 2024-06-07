@@ -14,14 +14,14 @@ def set_object_material(
 
     This will replace the material at the slot if it exists.
 
-    Use name_suffix_override to set the same material on multiple objects.
+    Use object_name_override to set the same material on multiple objects.
 
     Note:
         The material will be copied and renamed to {material_name}.{obj.name}
 
-        However, if name_suffix_override is provided,
+        However, if object_name_override is provided,
         the material will not be copied if it already exists and the name
-        will be {material_name}.{name_suffix_override}.
+        will be {material_name}.{object_name_override}.
 
     Raises:
         ValueError: If the material is not found or the slot is invalid.
@@ -33,8 +33,9 @@ def set_object_material(
             The name of the material to apply.
         slot:
             The material slot to apply the material to. Defaults to 0.
-        name_suffix_override:
-            The suffix to append to the material name.
+        object_name_override:
+            The name to override the object name in the material,
+            after being applied.
             Defaults to None.
     """
     mat_name = (

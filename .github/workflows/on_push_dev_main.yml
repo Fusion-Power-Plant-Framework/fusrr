@@ -2,9 +2,8 @@ name: FusRR - On push to develop/main
 
 on:
   push:
-    branches:
-      - develop
-      - main
+    branches: [develop, main]
+
 env:
   IMAGE_NAME_W_SHA: fusrr/fusrr:${{ github.sha }}
   IMAGE_NAME_LATEST: fusrr/fusrr:latest

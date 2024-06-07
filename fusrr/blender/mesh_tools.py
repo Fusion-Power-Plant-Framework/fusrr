@@ -48,6 +48,15 @@ def update_mesh_for(obj: bpy.types.Object):
 def add_edges_to_mesh_from_points(
     m: bmesh.types.BMesh, points: Iterable[Vec3], *, close: bool = False
 ):
+    """Add edges to the mesh from the given points.
+
+    If close is True, the last point will be connected to the first point.
+
+    Args:
+        m: The bmesh mesh to add the edges to.
+        points: An iterable of Vec3 points.
+        close: Whether to connect the last point to the first point.
+    """
     verts = [m.verts.new(p.tup) for p in points]
     m.verts.ensure_lookup_table()
     for i in range(len(verts)):
@@ -65,6 +74,17 @@ def revolve_mesh_edges_silhouette(
     rot_angle_degs: float,
     resolution: int = 100,
 ):
+    """Revolve the edges of the mesh around the axis.
+
+    The edges are revolved around the axis by the given angle.
+
+    Args:
+        m: The bmesh mesh to revolve.
+        center: The center of the revolve.
+        axis: The axis to revolve around.
+        rot_angle_degs: The angle to revolve by in degrees.
+        resolution: The number of steps to revolve.
+    """
     ang = np.deg2rad(rot_angle_degs)
     bmesh.ops.spin(
         m,
