@@ -15,7 +15,7 @@ from fusrr.base.frame import FusrrContextFrame
 from fusrr.base.models import Vec3
 from fusrr.base.object import FusrrSceneObjectWithContext
 from fusrr.base.pipeline import FusrrBuildPipeline
-from fusrr.blender.mesh_tools import add_edges_to_mesh_from_points
+from fusrr.blender.mesh_tools import mesh_add_edges_from_points
 from fusrr.materials.base import FusrrMaterial, MetallicMaterial
 from fusrr.materials.models import MaterialValueZeroToOne
 from fusrr.reactor.process.components.process_component import (
@@ -132,10 +132,10 @@ class ProcessTFCoilD(FusrrSceneObjectWithContext[ProcessTFCoilContext]):
 
     def _construct(self, _obj, m: bmesh.types.BMesh) -> None:
         # Inner (straight) leg
-        add_edges_to_mesh_from_points(m, [self.ib_leg_start, self.ib_leg_end])
+        mesh_add_edges_from_points(m, [self.ib_leg_start, self.ib_leg_end])
         # Outer (arch) leg
         for line_seg in self.ob_leg_arch_pts:
-            add_edges_to_mesh_from_points(m, line_seg)
+            mesh_add_edges_from_points(m, line_seg)
 
         edges = m.edges
         extruded = bmesh.ops.extrude_face_region(m, geom=edges)

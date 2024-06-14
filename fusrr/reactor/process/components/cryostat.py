@@ -2,8 +2,8 @@ from dataclasses import dataclass
 
 from fusrr.base.models import Vec3
 from fusrr.blender.mesh_tools import (
-    add_edges_to_mesh_from_points,
-    revolve_mesh_edges_silhouette,
+    mesh_add_edges_from_points,
+    mesh_revolve,
 )
 from fusrr.materials.base import FusrrMaterial, GlassMaterial
 from fusrr.reactor.process import ProcessParams
@@ -58,5 +58,5 @@ class ProcessCryostat(ProcessComponent):
         self.pts = [Vec3(x, 0, z) for x, z in zip(rs, zs, strict=True)]
 
     def _construct(self, _obj, m) -> None:
-        add_edges_to_mesh_from_points(m, self.pts)
-        revolve_mesh_edges_silhouette(m, Vec3.ZERO, Vec3.Z, 360)
+        mesh_add_edges_from_points(m, self.pts)
+        mesh_revolve(m, Vec3.ZERO, Vec3.Z, 360)

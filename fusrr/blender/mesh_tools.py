@@ -45,7 +45,7 @@ def update_mesh_for(obj: bpy.types.Object):
         bm.free()
 
 
-def add_edges_to_mesh_from_points(
+def mesh_add_edges_from_points(
     m: bmesh.types.BMesh, points: Iterable[Vec3], *, close: bool = False
 ):
     """Add edges to the mesh from the given points.
@@ -67,12 +67,12 @@ def add_edges_to_mesh_from_points(
         m.edges.new((verts[-1], verts[0]))
 
 
-def revolve_mesh_edges_silhouette(
+def mesh_revolve(
     m: bmesh.types.BMesh,
     center: Vec3,
     axis: Vec3,
     rot_angle_degs: float,
-    resolution: int = 100,
+    resolution: int = 50,
 ):
     """Revolve the edges of the mesh around the axis.
 

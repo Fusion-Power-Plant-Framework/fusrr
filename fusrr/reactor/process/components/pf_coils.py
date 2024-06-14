@@ -4,8 +4,8 @@ from fusrr.base.models import Vec3
 from fusrr.base.object import FusrrSceneObject
 from fusrr.base.pipeline import FusrrBuildPipeline
 from fusrr.blender.mesh_tools import (
-    add_edges_to_mesh_from_points,
-    revolve_mesh_edges_silhouette,
+    mesh_add_edges_from_points,
+    mesh_revolve,
 )
 from fusrr.materials.base import FusrrMaterial, MetallicMaterial
 from fusrr.materials.models import MaterialColour, MaterialValueZeroToOne
@@ -74,8 +74,8 @@ class ProcessPFCoil(FusrrSceneObject):
         self.face_path_pts = process_rect_to_vec3_path_points(self.geom)
 
     def _construct(self, _obj, m) -> None:
-        add_edges_to_mesh_from_points(m, self.face_path_pts)
-        revolve_mesh_edges_silhouette(m, Vec3.ZERO, Vec3.Z, 360)
+        mesh_add_edges_from_points(m, self.face_path_pts)
+        mesh_revolve(m, Vec3.ZERO, Vec3.Z, 360)
 
 
 class ProcessCSCoil(ProcessPFCoil):

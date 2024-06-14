@@ -54,7 +54,7 @@ class FusrrSceneCollection(FusrrSceneEntity, abc.ABC):
             link_collections(this_c, c)
 
     def execute_no_create_collection(self):
-        """Execute all objects in this collection's pipeline only.
+        """Execute all objects in this collection's pipeline.
 
         Note:
             This will not create a collection or add the objects to it.

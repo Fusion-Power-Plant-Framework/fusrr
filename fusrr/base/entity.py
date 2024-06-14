@@ -20,7 +20,7 @@ class FusrrSceneEntity(abc.ABC):
         return self._name
 
     def replicate(self, name: str):
-        """Replicates this object with a new name.
+        """Replicates this entity with a new name.
 
         Args:
             name:
@@ -32,5 +32,5 @@ class FusrrSceneEntity(abc.ABC):
 
     @abc.abstractmethod
     def execute(self) -> None:
-        """Execute this entity, mutating the Blender scene."""
+        """Executes this entity, mutating the Blender scene."""
         raise NotImplementedError

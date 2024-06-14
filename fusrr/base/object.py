@@ -5,8 +5,16 @@ from typing import TYPE_CHECKING, Generic
 
 from fusrr.base.entity import FusrrSceneEntity
 from fusrr.base.models import Vec3
+from fusrr.base.object_properties import (
+    CommonMeshModelProperties,
+    CommonObjTransformProperties,
+)
 from fusrr.base.types import CFT
-from fusrr.blender.mesh_tools import add_cube, add_empty, new_mesh_for
+from fusrr.blender.mesh_tools import (
+    add_cube,
+    add_empty,
+    new_mesh_for,
+)
 from fusrr.blender.scene_tools import check_object_in_scene, create_object
 
 if TYPE_CHECKING:
@@ -20,9 +28,20 @@ if TYPE_CHECKING:
 class FusrrSceneObject(FusrrSceneEntity):
     """A FusrrSceneObject is a object that can be added to a FusrrScene."""
 
-    def __init__(self, name: str):
+    def __init__(
+        self,
+        name: str,
+        material: FusrrMaterial | None = None,
+        transform_props: CommonObjTransformProperties | None = None,
+        mesh_mod_props: CommonMeshModelProperties | None = None,
+    ):
         """Initializes a FusrrSceneObject."""
         super().__init__(name)
+        self._material = material
+        self._transform_props = (
+            transform_props or CommonObjTransformProperties()
+        )
+        self._mesh_mod_props = mesh_mod_props or CommonMeshModelProperties()
         self._setup()
 
     def _setup(self) -> None:
@@ -31,7 +50,7 @@ class FusrrSceneObject(FusrrSceneEntity):
     @property
     def material(self) -> FusrrMaterial | None:
         """The material of this object."""
-        return None
+        return self._material
 
     @abc.abstractmethod
     def _construct(
@@ -56,41 +75,16 @@ class FusrrSceneObject(FusrrSceneEntity):
         with new_mesh_for(obj) as m:
             self._construct(obj, m)
 
+            # apply properties
+            self._mesh_mod_props.apply_to(m)
+            self._transform_props.apply_to(obj)
+
         # apply material after constructing the object
         mat = self.material
         if callable(mat):
             mat = mat()
         if mat is not None:
             mat.apply(obj)
-
-
-class FusrrSceneObjectFromFunction(FusrrSceneObject):
-    """A FusrrSceneObjectFromFunction is a FusrrSceneObject that
-    is constructed from a given function.
-    """
-
-    def __init__(
-        self,
-        name: str,
-        constructor: ObjConstructor,
-    ):
-        """Initializes a FusrrSceneObject."""
-        self._constructor = constructor
-        super().__init__(name)
-
-    def _construct(
-        self, obj: bpy.types.Object, mesh: bmesh.types.BMesh
-    ) -> None:
-        pass
-
-    def execute(self) -> None:
-        """Executes this object in the given context frame.
-
-        Args:
-            ctx:
-                The context frame to execute this object in.
-        """
-        self._constructor()
 
 
 class FusrrSceneObjectWithContext(FusrrSceneObject, Generic[CFT], abc.ABC):
@@ -127,6 +121,35 @@ class FusrrSceneObjectWithContext(FusrrSceneObject, Generic[CFT], abc.ABC):
         self = self.replicate(name)
         self._ctx = ctx
         return self
+
+
+class FusrrSceneObjectFromFunction(FusrrSceneObject):
+    """A FusrrSceneObjectFromFunction is a FusrrSceneObject that
+    is constructed from a given function.
+    """
+
+    def __init__(
+        self,
+        name: str,
+        constructor: ObjConstructor,
+    ):
+        """Initializes a FusrrSceneObject."""
+        self._constructor = constructor
+        super().__init__(name)
+
+    def _construct(
+        self, obj: bpy.types.Object, mesh: bmesh.types.BMesh
+    ) -> None:
+        pass
+
+    def execute(self) -> None:
+        """Executes this object in the given context frame.
+
+        Args:
+            ctx:
+                The context frame to execute this object in.
+        """
+        self._constructor()
 
 
 def empty(name: str, location: Vec3) -> FusrrSceneObject:

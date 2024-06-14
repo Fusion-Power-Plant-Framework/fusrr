@@ -5,8 +5,8 @@ from process.geometry.blanket_geometry import (
 
 from fusrr.base.models import Vec3
 from fusrr.blender.mesh_tools import (
-    add_edges_to_mesh_from_points,
-    revolve_mesh_edges_silhouette,
+    mesh_add_edges_from_points,
+    mesh_revolve,
 )
 from fusrr.materials.base import FusrrMaterial, MetallicMaterial
 from fusrr.materials.models import MaterialColour
@@ -100,8 +100,8 @@ class ProcessBlanket(ProcessComponent):
 
     def _construct(self, _obj, m) -> None:
         if self.i_single_null == 1:
-            add_edges_to_mesh_from_points(m, self.pts)
+            mesh_add_edges_from_points(m, self.pts)
         if self.i_single_null == 0:
-            add_edges_to_mesh_from_points(m, self.ib_pts)
-            add_edges_to_mesh_from_points(m, self.ob_pts)
-        revolve_mesh_edges_silhouette(m, Vec3.ZERO, Vec3.Z, 360)
+            mesh_add_edges_from_points(m, self.ib_pts)
+            mesh_add_edges_from_points(m, self.ob_pts)
+        mesh_revolve(m, Vec3.ZERO, Vec3.Z, 360)
