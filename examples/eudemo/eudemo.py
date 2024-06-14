@@ -8,8 +8,8 @@ from fusrr.base.models import Vec3
 from fusrr.base.project import FusrrProject
 from fusrr.base.scene import (
     FusrrScene,
-    FusrrSceneConfigForCamera,
-    FusrrSceneConfigForObject,
+    FusrrWorldSceneCameraConfig,
+    FusrrWorldSceneObjectConfig,
 )
 from fusrr.reactor.process import ProcessReactor
 
@@ -27,14 +27,14 @@ fusrr.add_entity(
 fusrr.add_scene(
     FusrrScene(
         "test1",
-        camera=FusrrSceneConfigForCamera(
+        camera=FusrrWorldSceneCameraConfig(
             transform=CommonObjTransformProperties(
                 position=Vec3(0, 0, 10),
             ),
             look_at="plasma",
         ),
         objects=[
-            FusrrSceneConfigForObject(
+            FusrrWorldSceneObjectConfig(
                 name="plasma",
                 model=CommonMeshModelProperties(
                     revolve_z_deg=270,

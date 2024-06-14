@@ -30,7 +30,7 @@ classifiers = [
   "Operating System :: OS Independent",
 ]
 
-dependencies = ["bpy", "numpy", "matplotlib"]
+dependencies = ["bpy", "numpy", "matplotlib", "kink>=0.8.0"]
 
 [project.optional-dependencies]
 dev = ["pre-commit", "jupyterlab"]

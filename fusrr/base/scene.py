@@ -1,15 +1,19 @@
 from dataclasses import dataclass
 from pathlib import Path
 
+from kink import di
+
+from fusrr.base.entity.entity import FusrrWorldEntity
 from fusrr.base.entity.object_properties import (
     CommonMeshModelProperties,
     CommonObjTransformProperties,
 )
+from fusrr.base.world_state import FusrrWorldState
 from fusrr.blender.scene_tools import add_scene
 
 
 @dataclass
-class FusrrSceneConfigForObject:
+class FusrrWorldSceneObjectConfig:
     """A FusrrSceneObjectsConfig is a configuration for a FusrrSceneObjects."""
 
     name: str
@@ -19,7 +23,7 @@ class FusrrSceneConfigForObject:
 
 
 @dataclass
-class FusrrSceneConfigForCamera:
+class FusrrWorldSceneCameraConfig:
     """A FusrrSceneCameraConfig is a configuration for a FusrrSceneCamera."""
 
     transform: CommonObjTransformProperties | None = None
@@ -27,16 +31,16 @@ class FusrrSceneConfigForCamera:
 
 
 @dataclass
-class FusrrSceneConfig:
+class FusrrWorldSceneConfig:
     """A FusrrSceneConfig is a configuration for a FusrrScene."""
 
     name: str
-    camera: FusrrSceneConfigForCamera
+    camera: FusrrWorldSceneCameraConfig
     based_on: str | None = None
-    objects: list[FusrrSceneConfigForObject] | None = None
+    objects: list[FusrrWorldSceneObjectConfig] | None = None
 
 
-class FusrrScene:
+class FusrrScene(FusrrWorldEntity):
     """A FusrrScene is a specific arrangement of objects in the project,
     in a new scene.
 
@@ -48,11 +52,11 @@ class FusrrScene:
     def __init__(
         self,
         name: str,
-        camera: FusrrSceneConfigForCamera,
+        camera: FusrrWorldSceneCameraConfig,
         based_on: str | None = None,
-        objects: list[FusrrSceneConfigForObject] | None = None,
-        *,
+        objects: list[FusrrWorldSceneObjectConfig] | None = None,
         output_directory: Path | str | None = None,
+        world_state: FusrrWorldState | None = None,
     ):
         self._name = name
         self._camera_config = camera
@@ -61,11 +65,15 @@ class FusrrScene:
         self._output_directory = (
             Path(output_directory) if output_directory else Path.cwd()
         )
+        self._world_state = world_state or di[FusrrWorldState]
 
     @property
     def name(self) -> str:
         """The name of the scene."""
         return self._name
+
+    def prepare(self) -> None:
+        pass
 
     def execute(self):
         """Execute this scene."""

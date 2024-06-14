@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import abc
 
-from fusrr.base.entity.entity import FusrrSceneEntity
+from fusrr.base.entity.entity import FusrrWorldEntity
 from fusrr.base.pipeline import FusrrBuildPipeline
 from fusrr.blender.scene_tools import (
     check_collection_in_scene,
@@ -11,7 +13,7 @@ from fusrr.blender.scene_tools import (
 )
 
 
-class FusrrSceneCollection(FusrrSceneEntity, abc.ABC):
+class FusrrWorldCollection(FusrrWorldEntity, abc.ABC):
     """A FusrrSceneCollection defines a Blender collection
     of FusrrSceneObject's.
     """

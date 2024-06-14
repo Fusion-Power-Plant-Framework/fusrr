@@ -3,7 +3,7 @@ from __future__ import annotations
 import abc
 from typing import TYPE_CHECKING, Generic
 
-from fusrr.base.entity.entity import FusrrSceneEntity
+from fusrr.base.entity.entity import FusrrWorldEntity
 from fusrr.base.entity.object_properties import (
     CommonMeshModelProperties,
     CommonObjTransformProperties,
@@ -25,8 +25,8 @@ if TYPE_CHECKING:
     from fusrr.materials.base import FusrrMaterial
 
 
-class FusrrSceneObject(FusrrSceneEntity):
-    """A FusrrSceneObject is a object that can be added to a FusrrScene."""
+class FusrrWorldObject(FusrrWorldEntity):
+    """A FusrrWorldObject is a object that can be added to a FusrrScene."""
 
     def __init__(
         self,
@@ -35,7 +35,7 @@ class FusrrSceneObject(FusrrSceneEntity):
         transform_props: CommonObjTransformProperties | None = None,
         mesh_mod_props: CommonMeshModelProperties | None = None,
     ):
-        """Initializes a FusrrSceneObject."""
+        """Initializes a FusrrWorldObject."""
         super().__init__(name)
         self._material = material
         self._transform_props = (
@@ -90,8 +90,8 @@ class FusrrSceneObject(FusrrSceneEntity):
             mat.apply_to(obj)
 
 
-class FusrrSceneObjectWithContext(FusrrSceneObject, Generic[CFT], abc.ABC):
-    """A FusrrSceneObjectWithContext is a Blender object,
+class FusrrWorldObjectWithContext(FusrrWorldObject, Generic[CFT], abc.ABC):
+    """A FusrrWorldObjectWithContext is a Blender object,
     that can be added to a FusrrScene,
     that uses some context during its execute phase.
     """
@@ -112,7 +112,7 @@ class FusrrSceneObjectWithContext(FusrrSceneObject, Generic[CFT], abc.ABC):
 
     def replicate_with_ctx(
         self, name: str, ctx: CFT
-    ) -> FusrrSceneObjectWithContext[CFT]:
+    ) -> FusrrWorldObjectWithContext[CFT]:
         """Replicates this object with a new name and context.
 
         Args:
@@ -126,8 +126,8 @@ class FusrrSceneObjectWithContext(FusrrSceneObject, Generic[CFT], abc.ABC):
         return self
 
 
-class FusrrSceneObjectFromFunction(FusrrSceneObject):
-    """A FusrrSceneObjectFromFunction is a FusrrSceneObject that
+class FusrrWorldObjectFromFunction(FusrrWorldObject):
+    """A FusrrWorldObjectFromFunction is a FusrrSceneObject that
     is constructed from a given function.
     """
 
@@ -144,16 +144,11 @@ class FusrrSceneObjectFromFunction(FusrrSceneObject):
         pass
 
     def execute(self) -> None:
-        """Executes this object in the given context frame.
-
-        Args:
-            ctx:
-                The context frame to execute this object in.
-        """
+        """Executes this object using the constructor function."""
         self._constructor()
 
 
-def empty(name: str, location: Vec3) -> FusrrSceneObject:
+def empty(name: str, location: Vec3) -> FusrrWorldObject:
     """Adds an empty object to the scene.
 
     Note: Useful for camera tracking purposes.
@@ -163,10 +158,10 @@ def empty(name: str, location: Vec3) -> FusrrSceneObject:
         location: Location of the empty
         size: Size of cube. Defaults to 1.
     """
-    return FusrrSceneObjectFromFunction(name, lambda: add_empty(name, location))
+    return FusrrWorldObjectFromFunction(name, lambda: add_empty(name, location))
 
 
-def cube(name: str, location: Vec3, scale: Vec3 = Vec3.ONE) -> FusrrSceneObject:
+def cube(name: str, location: Vec3, scale: Vec3 = Vec3.ONE) -> FusrrWorldObject:
     """Adds a cube to the scene.
 
     Args:
@@ -174,6 +169,6 @@ def cube(name: str, location: Vec3, scale: Vec3 = Vec3.ONE) -> FusrrSceneObject:
         location: Location of cube
         scale: Scale of cube. Defaults to Vec3.ONE.
     """
-    return FusrrSceneObjectFromFunction(
+    return FusrrWorldObjectFromFunction(
         name, lambda: add_cube(name, location, scale)
     )

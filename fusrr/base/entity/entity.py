@@ -4,7 +4,7 @@ import abc
 from copy import deepcopy
 
 
-class FusrrSceneEntity(abc.ABC):
+class FusrrWorldEntity(abc.ABC):
     """An entity in a FusrrScene, which is some object in Blender.
 
     This is a base class for all entities that can be added to a FusrrScene.

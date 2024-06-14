@@ -3,14 +3,17 @@ from __future__ import annotations
 import abc
 from typing import TYPE_CHECKING, Generic, TypeVar
 
-from fusrr.base.entity.entity import FusrrSceneEntity
+from kink import di
+
+from fusrr.base.entity.entity import FusrrWorldEntity
+from fusrr.base.entity.object import FusrrWorldObject
 from fusrr.base.scene import FusrrScene
 from fusrr.base.utils import run_list_async_concurrently
+from fusrr.base.world_state import FusrrWorldState
 from fusrr.blender.scene_tools import deselect_all
 
 if TYPE_CHECKING:
-    from fusrr.base.entity.collection import FusrrSceneCollection
-    from fusrr.base.entity.object import FusrrSceneObject
+    from fusrr.base.entity.collection import FusrrWorldCollection
 
 T = TypeVar("T")
 
@@ -18,9 +21,10 @@ T = TypeVar("T")
 class FusrrPipeline(Generic[T], abc.ABC):
     """A FusrrPipeline defines a container with a deterministic ordering."""
 
-    def __init__(self):
+    def __init__(self, world_state: FusrrWorldState | None = None):
         """Construct a new build pipeline."""
         self._pipeline: list[T] = []
+        self._world_state = world_state or di[FusrrWorldState]
 
     def add(self, ent: T):
         """Add an entity to this pipeline."""
@@ -34,29 +38,28 @@ class FusrrPipeline(Generic[T], abc.ABC):
         """
 
 
-class FusrrBuildPipeline(FusrrPipeline[FusrrSceneEntity]):
+class FusrrBuildPipeline(FusrrPipeline[FusrrWorldEntity]):
     """A FusrrBuildPipeline defines a container with a deterministic ordering
     for constructing FusrrSceneEntity's.
     """
 
     @property
-    def objects(self) -> list[FusrrSceneObject]:
+    def objects(self) -> list[FusrrWorldObject]:
         """Get the names of all entities in this pipeline."""
-        from fusrr.base.entity.object import FusrrSceneObject
-
         return [
-            ent for ent in self._pipeline if isinstance(ent, FusrrSceneObject)
+            ent for ent in self._pipeline if isinstance(ent, FusrrWorldObject)
         ]
 
     @property
-    def collections(self) -> list[FusrrSceneCollection]:
+    def collections(self) -> list[FusrrWorldCollection]:
         """Get the names of all entities in this pipeline."""
-        from fusrr.base.entity.collection import FusrrSceneCollection
+        # avoid circular imports
+        from fusrr.base.entity.collection import FusrrWorldCollection
 
         return [
             ent
             for ent in self._pipeline
-            if isinstance(ent, FusrrSceneCollection)
+            if isinstance(ent, FusrrWorldCollection)
         ]
 
     def entity_names(self) -> set[str]:
@@ -92,6 +95,9 @@ class FusrrBuildPipeline(FusrrPipeline[FusrrSceneEntity]):
             ent.execute()
             deselect_all()
 
+            if isinstance(ent, FusrrWorldObject):
+                self._world_state.add_object(ent)
+
 
 class FusrrViewPipeline(FusrrPipeline[FusrrScene]):
     """A FusrrViewPipeline defines a container with a deterministic ordering
@@ -110,3 +116,5 @@ class FusrrViewPipeline(FusrrPipeline[FusrrScene]):
         for scene in self._pipeline:
             scene.execute()
             deselect_all()
+
+            self._world_state.add_scene(scene)

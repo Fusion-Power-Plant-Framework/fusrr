@@ -1,11 +1,14 @@
 import time
 from pathlib import Path
 
-from fusrr.base.entity.entity import FusrrSceneEntity
+from kink import di
+
+from fusrr.base.entity.entity import FusrrWorldEntity
 from fusrr.base.errors import SceneStopError
 from fusrr.base.pipeline import FusrrBuildPipeline, FusrrViewPipeline
 from fusrr.base.scene import FusrrScene
 from fusrr.base.utils import load_fusrr_config
+from fusrr.base.world_state import FusrrWorldState
 from fusrr.blender.file_tools import save_state_to_blend_file
 from fusrr.blender.scene_tools import clear_scene, deselect_all
 from fusrr.data_libs.materials import load_materials
@@ -59,6 +62,10 @@ class FusrrProject:
 
         self._overwrite = overwrite
 
+        # dep. inj. the world state for the project
+        # this is like using a singleton
+        di[FusrrWorldState] = FusrrWorldState()
+
         self._build_pipeline = FusrrBuildPipeline()
         self._view_pipeline = FusrrViewPipeline()
 
@@ -86,7 +93,7 @@ class FusrrProject:
         if self._project_path.is_file():
             self._project_path.unlink()
 
-    def add_entity(self, *ent: FusrrSceneEntity):
+    def add_entity(self, *ent: FusrrWorldEntity):
         """Add an entity(ies) to the project."""
         for e in ent:
             self._build_pipeline.add(e)
