@@ -10,7 +10,7 @@ from fusrr.base.scene import FusrrScene
 from fusrr.base.utils import load_fusrr_config
 from fusrr.base.world_state import FusrrWorldState
 from fusrr.blender.file_tools import save_state_to_blend_file
-from fusrr.blender.scene_tools import clear_scene, deselect_all
+from fusrr.blender.scene_tools import clear_scene, deselect_all, switch_to_scene
 from fusrr.data_libs.materials import load_materials
 
 
@@ -144,12 +144,14 @@ class FusrrProject:
             self._reset()
             load_materials()
             self._build_pipeline.execute()
+            self._view_pipeline.execute()
         except SceneStopError as e:
             print(f"Stopping scene on: {e}")
         else:
             completed_successfully = True
         finally:
             deselect_all()
+            # switch_to_scene("Scene")
             print("saving scene...")
             if not completed_successfully:
                 print("Errors occurred during the run.")

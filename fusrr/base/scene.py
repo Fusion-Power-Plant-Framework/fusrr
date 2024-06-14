@@ -77,4 +77,6 @@ class FusrrScene(FusrrWorldEntity):
 
     def execute(self):
         """Execute this scene."""
-        add_scene(self.name)
+        add_scene(self.name, link=True)
+        p = self._world_state.get_object("plasma")
+        pass

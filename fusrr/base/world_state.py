@@ -18,8 +18,16 @@ class FusrrWorldState:
             raise ValueError(f"Entity with name {obj.name} already exists.")
         self._objs[obj.name] = obj
 
+    def get_object(self, name: str) -> FusrrWorldObject:
+        """Get an object from the world state."""
+        return self._objs[name]
+
     def add_scene(self, scene: FusrrScene):
         """Add a scene to the world state."""
         if scene.name in self._scenes:
             raise ValueError(f"Scene with name {scene.name} already exists.")
         self._scenes[scene.name] = scene
+
+    def get_scene(self, name: str) -> FusrrScene:
+        """Get a scene from the world state."""
+        return self._scenes[name]
