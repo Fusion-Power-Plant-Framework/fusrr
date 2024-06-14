@@ -71,3 +71,15 @@ def set_object_material(
         obj_mats.append(mat)
 
     return mat
+
+
+def add_camera(name: str) -> bpy.types.Object:
+    """Add a camera to the scene.
+
+    Args:
+        name: The name of the camera to add.
+    """
+    cam_data = bpy.data.cameras.new(name)
+    cam = bpy.data.objects.new(name, cam_data)
+    bpy.context.scene.collection.objects.link(cam)
+    return cam

@@ -1,4 +1,4 @@
-from fusrr.base.entities.object import cube
+from fusrr.base.entity.object import cube
 from fusrr.base.models import Vec3
 from fusrr.base.project import FusrrProject
 

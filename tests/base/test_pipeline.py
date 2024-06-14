@@ -1,5 +1,5 @@
+from fusrr.base.entity.object import cube
 from fusrr.base.models import Vec3
-from fusrr.base.object import cube
 from fusrr.base.pipeline import FusrrBuildPipeline
 
 

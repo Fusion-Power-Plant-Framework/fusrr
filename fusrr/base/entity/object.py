@@ -3,8 +3,8 @@ from __future__ import annotations
 import abc
 from typing import TYPE_CHECKING, Generic
 
-from fusrr.base.entities.entity import FusrrSceneEntity
-from fusrr.base.entities.object_properties import (
+from fusrr.base.entity.entity import FusrrSceneEntity
+from fusrr.base.entity.object_properties import (
     CommonMeshModelProperties,
     CommonObjTransformProperties,
 )

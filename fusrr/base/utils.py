@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import TYPE_CHECKING, Any, Iterable, TypeVar
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -23,11 +23,11 @@ T = TypeVar("T")
 
 
 def run_list_async_concurrently(
-    l: list[T], func_getter: Callable[[T], Callable]
+    itr: Iterable[T], func_getter: Callable[[T], Callable]
 ) -> list:
     """Run a list of functions concurrently."""
     with ThreadPoolExecutor() as executor:
-        futures = [executor.submit(func_getter(li)) for li in l]
+        futures = [executor.submit(func_getter(i)) for i in itr]
         results = []
         for future in as_completed(futures):
             results.append(future.result())  # noqa: PERF401, better exception handling

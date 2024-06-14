@@ -1,6 +1,6 @@
 import abc
 
-from fusrr.base.entities.entity import FusrrSceneEntity
+from fusrr.base.entity.entity import FusrrSceneEntity
 from fusrr.base.pipeline import FusrrBuildPipeline
 from fusrr.blender.scene_tools import (
     check_collection_in_scene,

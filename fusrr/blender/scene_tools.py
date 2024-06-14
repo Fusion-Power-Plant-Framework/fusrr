@@ -229,3 +229,12 @@ def add_scene(name: str, *, empty: bool = False):
     else:
         bpy.ops.scene.new(type="FULL_COPY")
     bpy.context.scene.name = name
+
+
+def switch_to_scene(name: str):
+    """Switch to a scene by name.
+
+    Args:
+        name: The name of the scene to switch to.
+    """
+    bpy.context.window.scene = bpy.data.scenes[name]

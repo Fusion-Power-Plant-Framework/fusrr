@@ -1,6 +1,6 @@
 from process.geometry.geometry_parameterisations import RectangleGeometry
 
-from fusrr.base.entities.object import FusrrSceneObject
+from fusrr.base.entity.object import FusrrSceneObject
 from fusrr.base.models import Vec3
 from fusrr.base.pipeline import FusrrBuildPipeline
 from fusrr.blender.mesh_tools import (

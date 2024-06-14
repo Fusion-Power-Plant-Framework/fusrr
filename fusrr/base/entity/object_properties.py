@@ -38,15 +38,16 @@ class CommonObjTransformProperties:
 class CommonMeshModelProperties:
     """Common properties for object mesh models."""
 
-    revolution_x_angle_deg: float | None = None
-    revolution_y_angle_deg: float | None = None
-    revolution_z_angle_deg: float | None = None
+    revolve_x_deg: float | None = None
+    revolve_y_deg: float | None = None
+    revolve_z_deg: float | None = None
+    revolve_center: Vec3 = Vec3.ZERO
 
     def apply_to(self, m: bmesh.types.BMesh) -> None:
         """Applies the mesh model properties to the mesh."""
-        if self.revolution_x_angle_deg is not None:
-            mesh_revolve(m, Vec3.ZERO, Vec3.X, self.revolution_x_angle_deg)
-        if self.revolution_y_angle_deg is not None:
-            mesh_revolve(m, Vec3.ZERO, Vec3.Y, self.revolution_y_angle_deg)
-        if self.revolution_z_angle_deg is not None:
-            mesh_revolve(m, Vec3.ZERO, Vec3.Z, self.revolution_z_angle_deg)
+        if self.revolve_x_deg is not None:
+            mesh_revolve(m, self.revolve_center, Vec3.X, self.revolve_x_deg)
+        if self.revolve_y_deg is not None:
+            mesh_revolve(m, self.revolve_center, Vec3.Y, self.revolve_y_deg)
+        if self.revolve_z_deg is not None:
+            mesh_revolve(m, self.revolve_center, Vec3.Z, self.revolve_z_deg)

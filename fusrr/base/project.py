@@ -1,9 +1,10 @@
 import time
 from pathlib import Path
 
-from fusrr.base.entities.entity import FusrrSceneEntity
+from fusrr.base.entity.entity import FusrrSceneEntity
 from fusrr.base.errors import SceneStopError
-from fusrr.base.pipeline import FusrrBuildPipeline
+from fusrr.base.pipeline import FusrrBuildPipeline, FusrrViewPipeline
+from fusrr.base.scene import FusrrScene
 from fusrr.base.utils import load_fusrr_config
 from fusrr.blender.file_tools import save_state_to_blend_file
 from fusrr.blender.scene_tools import clear_scene, deselect_all
@@ -58,7 +59,8 @@ class FusrrProject:
 
         self._overwrite = overwrite
 
-        self._pipeline = FusrrBuildPipeline()
+        self._build_pipeline = FusrrBuildPipeline()
+        self._view_pipeline = FusrrViewPipeline()
 
     @property
     def project_name(self) -> str:
@@ -84,9 +86,15 @@ class FusrrProject:
         if self._project_path.is_file():
             self._project_path.unlink()
 
-    def add_entity(self, ent: FusrrSceneEntity):
-        """Add an entity to the project."""
-        self._pipeline.add(ent)
+    def add_entity(self, *ent: FusrrSceneEntity):
+        """Add an entity(ies) to the project."""
+        for e in ent:
+            self._build_pipeline.add(e)
+
+    def add_scene(self, *scene: FusrrScene):
+        """Add an entity(ies) to the project."""
+        for s in scene:
+            self._view_pipeline.add(s)
 
     def save(self) -> None:
         """Save the project to a .blend file.
@@ -122,13 +130,13 @@ class FusrrProject:
         Note:
             This will modify the state of the current Blender session.
         """
-        self._pipeline.prepare()
+        self._build_pipeline.prepare()
 
         completed_successfully = False
         try:
             self._reset()
             load_materials()
-            self._pipeline.execute()
+            self._build_pipeline.execute()
         except SceneStopError as e:
             print(f"Stopping scene on: {e}")
         else:

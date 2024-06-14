@@ -12,7 +12,7 @@ class ProcessPlasma(ProcessComponent):
     def __init__(self, reactor_params: ProcessParams):
         super().__init__("plasma", reactor_params)
         # todo: temp
-        self._mesh_mod_props.revolution_z_angle_deg = 180
+        self._mesh_mod_props.revolve_z_deg = 180
 
     @property
     def material(self) -> FusrrMaterial:

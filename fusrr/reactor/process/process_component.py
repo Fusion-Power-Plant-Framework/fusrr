@@ -1,5 +1,5 @@
-from fusrr.base.entities.collection import FusrrSceneCollection
-from fusrr.base.entities.object import (
+from fusrr.base.entity.collection import FusrrSceneCollection
+from fusrr.base.entity.object import (
     FusrrSceneObject,
     FusrrSceneObjectWithContext,
 )

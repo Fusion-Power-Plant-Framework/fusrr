@@ -11,7 +11,7 @@ from process.geometry.tfcoil_geometry import (
     tfcoil_geometry_rectangular_shape,
 )
 
-from fusrr.base.entities.object import FusrrSceneObjectWithContext
+from fusrr.base.entity.object import FusrrSceneObjectWithContext
 from fusrr.base.frame import FusrrContextFrame
 from fusrr.base.models import Vec3
 from fusrr.base.pipeline import FusrrBuildPipeline
