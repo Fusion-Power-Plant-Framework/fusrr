@@ -31,6 +31,11 @@ class FusrrSceneEntity(abc.ABC):
         return self
 
     @abc.abstractmethod
+    def prepare(self) -> None:
+        """Prepare this entity for execution."""
+        raise NotImplementedError
+
+    @abc.abstractmethod
     def execute(self) -> None:
         """Executes this entity, mutating the Blender scene."""
         raise NotImplementedError

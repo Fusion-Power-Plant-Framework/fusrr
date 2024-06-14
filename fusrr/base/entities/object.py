@@ -3,12 +3,12 @@ from __future__ import annotations
 import abc
 from typing import TYPE_CHECKING, Generic
 
-from fusrr.base.entity import FusrrSceneEntity
-from fusrr.base.models import Vec3
-from fusrr.base.object_properties import (
+from fusrr.base.entities.entity import FusrrSceneEntity
+from fusrr.base.entities.object_properties import (
     CommonMeshModelProperties,
     CommonObjTransformProperties,
 )
+from fusrr.base.models import Vec3
 from fusrr.base.types import CFT
 from fusrr.blender.mesh_tools import (
     add_cube,
@@ -42,10 +42,13 @@ class FusrrSceneObject(FusrrSceneEntity):
             transform_props or CommonObjTransformProperties()
         )
         self._mesh_mod_props = mesh_mod_props or CommonMeshModelProperties()
-        self._setup()
 
-    def _setup(self) -> None:
-        """Setup this object, caching any necessary data."""
+    def prepare(self) -> None:
+        """Prepares this object.
+
+        All calculations should happen here
+        and results stored in the object's state.
+        """
 
     @property
     def material(self) -> FusrrMaterial | None:
@@ -53,7 +56,7 @@ class FusrrSceneObject(FusrrSceneEntity):
         return self._material
 
     @abc.abstractmethod
-    def _construct(
+    def construct(
         self,
         obj: bpy.types.Object,
         mesh: bmesh.types.BMesh,
@@ -73,7 +76,7 @@ class FusrrSceneObject(FusrrSceneEntity):
         obj = create_object(self.name)
 
         with new_mesh_for(obj) as m:
-            self._construct(obj, m)
+            self.construct(obj, m)
 
             # apply properties
             self._mesh_mod_props.apply_to(m)
@@ -84,7 +87,7 @@ class FusrrSceneObject(FusrrSceneEntity):
         if callable(mat):
             mat = mat()
         if mat is not None:
-            mat.apply(obj)
+            mat.apply_to(obj)
 
 
 class FusrrSceneObjectWithContext(FusrrSceneObject, Generic[CFT], abc.ABC):
@@ -137,9 +140,7 @@ class FusrrSceneObjectFromFunction(FusrrSceneObject):
         self._constructor = constructor
         super().__init__(name)
 
-    def _construct(
-        self, obj: bpy.types.Object, mesh: bmesh.types.BMesh
-    ) -> None:
+    def construct(self, obj: bpy.types.Object, mesh: bmesh.types.BMesh) -> None:
         pass
 
     def execute(self) -> None:

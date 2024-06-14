@@ -39,7 +39,7 @@ class FusrrMaterial(abc.ABC):
     def _configure(self, mat: bpy.types.Material) -> None:
         """Applies the material configuration to the given material."""
 
-    def apply(self, obj: bpy.types.Object):
+    def apply_to(self, obj: bpy.types.Object):
         """Applies the material to the object.
 
         Args:

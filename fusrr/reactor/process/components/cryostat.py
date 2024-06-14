@@ -7,7 +7,7 @@ from fusrr.blender.mesh_tools import (
 )
 from fusrr.materials.base import FusrrMaterial, GlassMaterial
 from fusrr.reactor.process import ProcessParams
-from fusrr.reactor.process.components.process_component import (
+from fusrr.reactor.process.process_component import (
     ProcessComponent,
 )
 
@@ -27,7 +27,7 @@ class ProcessCryostat(ProcessComponent):
     def material(self) -> FusrrMaterial:
         return GlassMaterial()
 
-    def _setup(self) -> None:
+    def prepare(self) -> None:
         rdewex = self.params.rdewex
         ddwex = self.params.ddwex
         zdewex = self.params.zdewex
@@ -57,6 +57,6 @@ class ProcessCryostat(ProcessComponent):
         ]
         self.pts = [Vec3(x, 0, z) for x, z in zip(rs, zs, strict=True)]
 
-    def _construct(self, _obj, m) -> None:
+    def construct(self, _obj, m) -> None:
         mesh_add_edges_from_points(m, self.pts)
         mesh_revolve(m, Vec3.ZERO, Vec3.Z, 360)

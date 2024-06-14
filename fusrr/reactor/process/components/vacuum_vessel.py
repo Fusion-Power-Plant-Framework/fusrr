@@ -11,7 +11,7 @@ from fusrr.blender.mesh_tools import (
 from fusrr.materials.base import FusrrMaterial, MetallicMaterial
 from fusrr.materials.models import MaterialColour
 from fusrr.reactor.process import ProcessParams
-from fusrr.reactor.process.components.process_component import ProcessComponent
+from fusrr.reactor.process.process_component import ProcessComponent
 from fusrr.reactor.process.utils import cumul_setup, cumulative_radial_build
 
 
@@ -25,7 +25,7 @@ class ProcessVacuumVessel(ProcessComponent):
             base_colour=MaterialColour(0.2, 0.0, 1, 1),
         )
 
-    def _setup(self) -> None:
+    def prepare(self) -> None:
         i_single_null = bool(self.params.i_single_null)
         triang_95 = self.params.triang95
         cumulative_upper, cumulative_lower, upper, lower = cumul_setup(
@@ -82,6 +82,6 @@ class ProcessVacuumVessel(ProcessComponent):
 
         self.pts = [Vec3(x, 0, z) for x, z in zip(rs, zs, strict=True)]
 
-    def _construct(self, _obj, m) -> None:
+    def construct(self, _obj, m) -> None:
         mesh_add_edges_from_points(m, self.pts)
         mesh_revolve(m, Vec3.ZERO, Vec3.Z, 360)

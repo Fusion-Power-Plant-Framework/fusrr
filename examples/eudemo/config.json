@@ -1,0 +1,27 @@
+{
+  "scenes": [
+    {
+      "name": "scene1",
+      "objects": [
+        {
+          "name": "object1",
+          "position": [0, 0, 0],
+          "rotation": [0, 0, 0],
+          "scale": [1, 1, 1]
+        }
+      ]
+    },
+    {
+      "name": "scene2",
+      "basedOn": "scene1",
+      "objects": [
+        {
+          "name": "object2",
+          "position_delta": [0, 0, 0],
+          "rotation_delta": [0, 0, 0],
+          "scale_delta": [1, 1, 1]
+        }
+      ]
+    }
+  ]
+}

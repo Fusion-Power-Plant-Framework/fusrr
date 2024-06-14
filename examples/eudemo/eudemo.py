@@ -1,11 +1,18 @@
 from pathlib import Path
 
-from fusrr.base.scene import FusrrScene
+from fusrr.base.project import FusrrProject
 from fusrr.reactor.process import ProcessReactor
 
-scene = FusrrScene("EUDEMO", overwrite=True)
-scene.add_entity(
-    ProcessReactor("EUDEMO", mfile_filepath=Path.cwd() / "EUDEMO_MFILE.DAT")
+fusrr = FusrrProject(
+    "EUDEMO",
+    config_path=Path.cwd() / "config.json",
+    overwrite=True,
+)
+fusrr.add_entity(
+    ProcessReactor(
+        "EUDEMO",
+        mfile_filepath=Path.cwd() / "EUDEMO_MFILE.DAT",
+    )
 )
 
-scene.run()
+fusrr.run()

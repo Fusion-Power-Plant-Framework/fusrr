@@ -1,7 +1,7 @@
 from process.geometry.geometry_parameterisations import RectangleGeometry
 
+from fusrr.base.entities.object import FusrrSceneObject
 from fusrr.base.models import Vec3
-from fusrr.base.object import FusrrSceneObject
 from fusrr.base.pipeline import FusrrBuildPipeline
 from fusrr.blender.mesh_tools import (
     mesh_add_edges_from_points,
@@ -9,10 +9,10 @@ from fusrr.blender.mesh_tools import (
 )
 from fusrr.materials.base import FusrrMaterial, MetallicMaterial
 from fusrr.materials.models import MaterialColour, MaterialValueZeroToOne
-from fusrr.reactor.process.components.process_component import (
+from fusrr.reactor.process.process_adaptor import ProcessParams
+from fusrr.reactor.process.process_component import (
     ProcessComponentCollection,
 )
-from fusrr.reactor.process.process_adaptor import ProcessParams
 from fusrr.reactor.process.utils import process_rect_to_vec3_path_points
 
 
@@ -20,7 +20,7 @@ class ProcessPFCoils(ProcessComponentCollection):
     def __init__(self, reactor_params: ProcessParams):
         super().__init__("pf_coils", reactor_params)
 
-    def _setup(self, pipeline: FusrrBuildPipeline) -> None:
+    def setup(self, pipeline: FusrrBuildPipeline) -> None:
         bore = float(self.params.bore)
         ohcth = float(self.params.ohcth)
         ohdz = float(self.params.ohdz)
@@ -58,8 +58,8 @@ class ProcessPFCoils(ProcessComponentCollection):
 
 class ProcessPFCoil(FusrrSceneObject):
     def __init__(self, name: str, geom: RectangleGeometry):
-        self.geom = geom
         super().__init__(name)
+        self.geom = geom
 
     @property
     def material(self) -> FusrrMaterial:
@@ -70,10 +70,10 @@ class ProcessPFCoil(FusrrSceneObject):
             roughness=MaterialValueZeroToOne(0.2),
         )
 
-    def _setup(self) -> None:
+    def prepare(self) -> None:
         self.face_path_pts = process_rect_to_vec3_path_points(self.geom)
 
-    def _construct(self, _obj, m) -> None:
+    def construct(self, _obj, m) -> None:
         mesh_add_edges_from_points(m, self.face_path_pts)
         mesh_revolve(m, Vec3.ZERO, Vec3.Z, 360)
 

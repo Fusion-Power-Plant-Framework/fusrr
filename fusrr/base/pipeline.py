@@ -2,12 +2,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from fusrr.base.utils import run_list_async_concurrently
 from fusrr.blender.scene_tools import deselect_all
 
 if TYPE_CHECKING:
-    from fusrr.base.collection import FusrrSceneCollection
-    from fusrr.base.entity import FusrrSceneEntity
-    from fusrr.base.object import FusrrSceneObject
+    from fusrr.base.entities.collection import FusrrSceneCollection
+    from fusrr.base.entities.entity import FusrrSceneEntity
+    from fusrr.base.entities.object import FusrrSceneObject
 
 
 class FusrrBuildPipeline:
@@ -26,7 +27,7 @@ class FusrrBuildPipeline:
     @property
     def objects(self) -> list[FusrrSceneObject]:
         """Get the names of all entities in this pipeline."""
-        from fusrr.base.object import FusrrSceneObject
+        from fusrr.base.entities.object import FusrrSceneObject
 
         return [
             ent for ent in self._pipeline if isinstance(ent, FusrrSceneObject)
@@ -35,7 +36,7 @@ class FusrrBuildPipeline:
     @property
     def collections(self) -> list[FusrrSceneCollection]:
         """Get the names of all entities in this pipeline."""
-        from fusrr.base.collection import FusrrSceneCollection
+        from fusrr.base.entities.collection import FusrrSceneCollection
 
         return [
             ent
@@ -54,6 +55,13 @@ class FusrrBuildPipeline:
     def collection_names(self) -> set[str]:
         """Get the names of all entities in this pipeline."""
         return {ent.name for ent in self.collections}
+
+    def prepare(self):
+        """Prepare all entities in this pipeline."""
+        if not self._pipeline:
+            return
+
+        run_list_async_concurrently(self._pipeline, lambda ent: ent.prepare)
 
     def execute(self):
         """Execute this pipeline.

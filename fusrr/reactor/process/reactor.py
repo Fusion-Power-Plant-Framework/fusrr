@@ -6,16 +6,16 @@ from process.io.mfile import MFile
 from fusrr.base.pipeline import FusrrBuildPipeline
 from fusrr.reactor.process import ProcessParams
 from fusrr.reactor.process.components import (
+    ProcessBlanket,
+    ProcessCryostat,
     ProcessPFCoils,
     ProcessPlasma,
     ProcessVacuumVessel,
-    ProcessBlanket,
-    ProcessCryostat,
-)
-from fusrr.reactor.process.components.process_component import (
-    ProcessComponentCollection,
 )
 from fusrr.reactor.process.components.tf_coils import ProcessTFCoils
+from fusrr.reactor.process.process_component import (
+    ProcessComponentCollection,
+)
 
 
 class ProcessReactor(ProcessComponentCollection):
@@ -34,7 +34,7 @@ class ProcessReactor(ProcessComponentCollection):
             )
         return ProcessParams(MFile(filename=fp.as_posix()))
 
-    def _setup(self, pipeline: FusrrBuildPipeline) -> None:
+    def setup(self, pipeline: FusrrBuildPipeline) -> None:
         pipeline.add(ProcessPlasma(self.params))
         pipeline.add(ProcessPFCoils(self.params))
         pipeline.add(ProcessTFCoils(self.params))

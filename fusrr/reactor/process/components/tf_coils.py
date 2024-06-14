@@ -11,24 +11,24 @@ from process.geometry.tfcoil_geometry import (
     tfcoil_geometry_rectangular_shape,
 )
 
+from fusrr.base.entities.object import FusrrSceneObjectWithContext
 from fusrr.base.frame import FusrrContextFrame
 from fusrr.base.models import Vec3
-from fusrr.base.object import FusrrSceneObjectWithContext
 from fusrr.base.pipeline import FusrrBuildPipeline
 from fusrr.blender.mesh_tools import mesh_add_edges_from_points
 from fusrr.materials.base import FusrrMaterial, MetallicMaterial
 from fusrr.materials.models import MaterialValueZeroToOne
-from fusrr.reactor.process.components.process_component import (
+from fusrr.reactor.process.process_adaptor import ProcessParams
+from fusrr.reactor.process.process_component import (
     ProcessComponentCollection,
 )
-from fusrr.reactor.process.process_adaptor import ProcessParams
 
 
 class ProcessTFCoils(ProcessComponentCollection):
     def __init__(self, reactor_params: ProcessParams):
         super().__init__("tf_coils", reactor_params)
 
-    def _setup(self, pipeline: FusrrBuildPipeline) -> None:
+    def setup(self, pipeline: FusrrBuildPipeline) -> None:
         tf_ib_tk = self.params.tfc_inleg
         rt_angle = np.pi / 2
         rt_angle2 = 2 * rt_angle
@@ -130,7 +130,7 @@ class ProcessTFCoilD(FusrrSceneObjectWithContext[ProcessTFCoilContext]):
             "tf_coil_d", roughness=MaterialValueZeroToOne(0.1)
         )
 
-    def _construct(self, _obj, m: bmesh.types.BMesh) -> None:
+    def construct(self, _obj, m: bmesh.types.BMesh) -> None:
         # Inner (straight) leg
         mesh_add_edges_from_points(m, [self.ib_leg_start, self.ib_leg_end])
         # Outer (arch) leg

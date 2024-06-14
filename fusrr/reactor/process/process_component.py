@@ -1,5 +1,8 @@
-from fusrr.base.collection import FusrrSceneCollection
-from fusrr.base.object import FusrrSceneObject, FusrrSceneObjectWithContext
+from fusrr.base.entities.collection import FusrrSceneCollection
+from fusrr.base.entities.object import (
+    FusrrSceneObject,
+    FusrrSceneObjectWithContext,
+)
 from fusrr.base.types import CFT
 from fusrr.reactor.process.process_adaptor import ProcessParams
 

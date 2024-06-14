@@ -1,6 +1,6 @@
 import abc
 
-from fusrr.base.entity import FusrrSceneEntity
+from fusrr.base.entities.entity import FusrrSceneEntity
 from fusrr.base.pipeline import FusrrBuildPipeline
 from fusrr.blender.scene_tools import (
     check_collection_in_scene,
@@ -19,15 +19,21 @@ class FusrrSceneCollection(FusrrSceneEntity, abc.ABC):
     def __init__(self, collection_name: str):
         """Initializes a FusrrSceneCollection."""
         super().__init__(collection_name)
-
-        pipeline = FusrrBuildPipeline()
-        self._setup(pipeline)
-        self._pipeline = pipeline
+        self._pipeline = FusrrBuildPipeline()
 
     @abc.abstractmethod
-    def _setup(self, pipeline: FusrrBuildPipeline) -> None:
-        """Setup this collection, adding objects to the pipeline."""
+    def setup(self, pipeline: FusrrBuildPipeline) -> None:
+        """Setup this collection.
+
+        All sub-entities should be added to the pipeline here.
+        All calculations should happen here.
+        """
         raise NotImplementedError
+
+    def prepare(self) -> None:
+        """Prepare this collection for execution."""
+        self.setup(self._pipeline)
+        self._pipeline.prepare()
 
     def execute(self):
         """Execute all objects in this collection's pipeline,
