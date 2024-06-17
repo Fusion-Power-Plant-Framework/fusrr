@@ -202,6 +202,28 @@ def link_collections(
     parent_col.children.link(child_col)
 
 
+def remove_collection_if_exists(name: str):
+    """Remove a collection by name.
+
+    Args:
+        name: The name of the collection to remove.
+    """
+    col = get_collection(name)
+    if col is not None:
+        bpy.data.collections.remove(col)
+
+
+def remove_object_if_exists(name: str):
+    """Remove an object by name.
+
+    Args:
+        name: The name of the object to remove.
+    """
+    obj = get_object(name)
+    if obj is not None:
+        bpy.data.objects.remove(obj)
+
+
 def clear_scene():
     """Clear the scene."""
     for m in bpy.data.meshes:
@@ -212,7 +234,7 @@ def clear_scene():
         bpy.data.collections.remove(c)
 
 
-def add_scene(name: str, *, empty: bool = False, link: bool = False):
+def add_scene(name: str, *, empty: bool = False):
     """Add a new scene to the blend file.
 
     Note:
@@ -223,18 +245,10 @@ def add_scene(name: str, *, empty: bool = False, link: bool = False):
     Args:
         name: The name of the scene.
         empty: Create an empty scene. Defaults to False.
-        link:
-            Link the scene instead of copying. Defaults to False.
-            This will save memory, but changes to the scene
-            will affect all linked scenes.
-            Always links from the base "Scene" scene.
 
     """
     if empty:
         bpy.ops.scene.new(type="EMPTY")
-    elif link:
-        switch_to_scene("Scene")
-        bpy.ops.scene.new(type="LINK_COPY")
     else:
         bpy.ops.scene.new(type="FULL_COPY")
     # renames the new (now context) scene

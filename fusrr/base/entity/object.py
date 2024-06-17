@@ -15,7 +15,10 @@ from fusrr.blender.mesh_tools import (
     add_empty,
     new_mesh_for,
 )
-from fusrr.blender.scene_tools import check_object_in_scene, create_object
+from fusrr.blender.scene_tools import (
+    check_object_in_scene,
+    create_object,
+)
 
 if TYPE_CHECKING:
     import bpy
@@ -41,7 +44,22 @@ class FusrrWorldObject(FusrrWorldEntity):
         self._transform_props = (
             transform_props or CommonObjTransformProperties()
         )
-        self._mesh_mod_props = mesh_mod_props or CommonMeshModelProperties()
+        self._mesh_model_props = mesh_mod_props or CommonMeshModelProperties()
+
+    @property
+    def material(self) -> FusrrMaterial | None:
+        """The material of this object."""
+        return self._material
+
+    @property
+    def transform_props(self) -> CommonObjTransformProperties:
+        """The transformation properties of this object."""
+        return self._transform_props
+
+    @property
+    def mesh_model_props(self) -> CommonMeshModelProperties:
+        """The mesh model properties of this object."""
+        return self._mesh_model_props
 
     def prepare(self) -> None:
         """Prepares this object.
@@ -49,11 +67,6 @@ class FusrrWorldObject(FusrrWorldEntity):
         All calculations should happen here
         and results stored in the object's state.
         """
-
-    @property
-    def material(self) -> FusrrMaterial | None:
-        """The material of this object."""
-        return self._material
 
     @abc.abstractmethod
     def construct(
@@ -79,7 +92,7 @@ class FusrrWorldObject(FusrrWorldEntity):
             self.construct(obj, m)
 
             # apply properties
-            self._mesh_mod_props.apply_to(m)
+            self._mesh_model_props.apply_to(m)
             self._transform_props.apply_to(obj)
 
         # apply material after constructing the object

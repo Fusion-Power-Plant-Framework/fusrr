@@ -3,7 +3,6 @@ from pathlib import Path
 
 from kink import di
 
-from fusrr.base.entity.entity import FusrrWorldEntity
 from fusrr.base.entity.object_properties import (
     CommonMeshModelProperties,
     CommonObjTransformProperties,
@@ -40,7 +39,7 @@ class FusrrWorldSceneConfig:
     objects: list[FusrrWorldSceneObjectConfig] | None = None
 
 
-class FusrrScene(FusrrWorldEntity):
+class FusrrScene:
     """A FusrrScene is a specific arrangement of objects in the project,
     in a new scene.
 
@@ -72,11 +71,8 @@ class FusrrScene(FusrrWorldEntity):
         """The name of the scene."""
         return self._name
 
-    def prepare(self) -> None:
-        pass
-
     def execute(self):
         """Execute this scene."""
-        add_scene(self.name, link=True)
+        add_scene(self.name)
         p = self._world_state.get_object("plasma")
-        pass
+        p.mesh_model_props.revolve_z_deg = 360

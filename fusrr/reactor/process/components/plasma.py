@@ -11,8 +11,6 @@ from fusrr.reactor.process.process_component import ProcessComponent
 class ProcessPlasma(ProcessComponent):
     def __init__(self, reactor_params: ProcessParams):
         super().__init__("plasma", reactor_params)
-        # todo: temp
-        self._mesh_mod_props.revolve_z_deg = 180
 
     @property
     def material(self) -> FusrrMaterial:
@@ -42,6 +40,9 @@ class ProcessPlasma(ProcessComponent):
 
         self.ib_pts = [Vec3(x, 0, z) for x, z in zip(rs_ib, zs_ib, strict=True)]
         self.ob_pts = [Vec3(x, 0, z) for x, z in zip(rs_ob, zs_ob, strict=True)]
+
+        # todo: temp
+        self._mesh_model_props.revolve_z_deg = 360
 
     def construct(self, _obj, m) -> None:
         mesh_add_edges_from_points(m, self.ib_pts)
