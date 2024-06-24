@@ -17,7 +17,7 @@ from fusrr.base.models import Vec3
 from fusrr.base.pipeline import FusrrBuildPipeline
 from fusrr.blender.mesh_tools import mesh_add_edges_from_points
 from fusrr.materials.base import FusrrMaterial, MetallicMaterial
-from fusrr.materials.models import MaterialValueZeroToOne
+from fusrr.materials.models import MaterialColour, MaterialValueZeroToOne
 from fusrr.reactor.process.process_adaptor import ProcessParams
 from fusrr.reactor.process.process_component import (
     ProcessComponentCollection,
@@ -127,7 +127,9 @@ class ProcessTFCoilD(FusrrWorldObjectWithContext[ProcessTFCoilContext]):
     @property
     def material(self) -> FusrrMaterial:
         return MetallicMaterial(
-            "tf_coil_d", roughness=MaterialValueZeroToOne(0.1)
+            "tf_coil_d",
+            base_colour=MaterialColour(0.1, 0.1, 0.1, 1),
+            roughness=MaterialValueZeroToOne(0.1),
         )
 
     def construct(self, _obj, m: bmesh.types.BMesh) -> None:

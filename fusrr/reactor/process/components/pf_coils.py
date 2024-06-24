@@ -74,7 +74,7 @@ class ProcessPFCoil(FusrrWorldObject):
         self.face_path_pts = process_rect_to_vec3_path_points(self.geom)
 
     def construct(self, _obj, m) -> None:
-        mesh_add_edges_from_points(m, self.face_path_pts)
+        mesh_add_edges_from_points(m, self.face_path_pts, close=True)
         mesh_revolve(m, Vec3.ZERO, Vec3.Z, 360)
 
 

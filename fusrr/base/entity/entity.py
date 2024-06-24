@@ -39,3 +39,8 @@ class FusrrWorldEntity(abc.ABC):
     def execute(self) -> None:
         """Executes this entity, mutating the Blender scene."""
         raise NotImplementedError
+
+    def run(self):
+        """Runs the entity."""
+        self.prepare()
+        self.execute()

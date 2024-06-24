@@ -1,3 +1,4 @@
+import re
 from collections.abc import Iterable
 
 import bpy
@@ -114,6 +115,32 @@ def get_object_f(name: str) -> bpy.types.Object:
     return o
 
 
+def get_objects(names: set[str]) -> list[bpy.types.Object]:
+    """Get objects by name.
+
+    Args:
+        names: The names of the objects to get.
+    """
+    rtn = []
+    for name in names:
+        obj = get_object(name)
+        if obj is not None:
+            rtn.append(obj)
+    return rtn
+
+
+def get_objects_by_pattern(pattern: str) -> list[bpy.types.Object]:
+    """Get all objects whose name matches the given pattern.
+
+    Args:
+        pattern: The regular expression pattern to match.
+
+    Returns:
+        A list of matching objects.
+    """
+    return [obj for obj in bpy.data.objects if re.match(pattern, obj.name)]
+
+
 def get_collection(name: str) -> bpy.types.Collection | None:
     """Get a collection by name.
 
@@ -151,9 +178,7 @@ def get_collections(names: set[str]) -> tuple[bpy.types.Collection, ...]:
     return tuple(cols)
 
 
-def create_collection(
-    name: str, objects: Iterable[bpy.types.Object]
-) -> bpy.types.Collection:
+def create_collection(name: str) -> bpy.types.Collection:
     """Create a collection and adds (links) objects to it.
 
     Args:
@@ -164,12 +189,24 @@ def create_collection(
 
     col = bpy.data.collections.new(name)
     bpy.context.scene.collection.children.link(col)
+    return col
+
+
+def link_objects_to_collection(
+    col: bpy.types.Collection,
+    objects: Iterable[bpy.types.Object],
+):
+    """Link objects to a collection.
+
+    Args:
+        col: The collection to link the objects to.
+        objects: The objects to link to the collection.
+    """
     for obj in objects:
         # unlink from all other collections
         for other_col in obj.users_collection:
             other_col.objects.unlink(obj)
         col.objects.link(obj)
-    return col
 
 
 def parent_collection_of(
@@ -191,7 +228,7 @@ def link_collections(
     parent_col: bpy.types.Collection,
     child_col: bpy.types.Collection,
 ):
-    """Create a collection and adds (links) objects to it.
+    """Adds (links) child_col to parent_col.
 
     Args:
         parent_col: The parent collection.
@@ -234,7 +271,7 @@ def clear_scene():
         bpy.data.collections.remove(c)
 
 
-def add_scene(name: str, *, empty: bool = False):
+def add_scene(name: str, *, empty: bool = False, linked_copy: bool = False):
     """Add a new scene to the blend file.
 
     Note:
@@ -243,12 +280,19 @@ def add_scene(name: str, *, empty: bool = False):
         will be a full copy of the current scene.
 
     Args:
-        name: The name of the scene.
-        empty: Create an empty scene. Defaults to False.
+        name:
+            The name of the scene.
+        empty:
+            Create an empty scene. Defaults to False.
+        linked_copy:
+            Create a linked copy of the current scene.
+            Defaults to False.
 
     """
     if empty:
         bpy.ops.scene.new(type="EMPTY")
+    elif linked_copy:
+        bpy.ops.scene.new(type="LINK_COPY")
     else:
         bpy.ops.scene.new(type="FULL_COPY")
     # renames the new (now context) scene

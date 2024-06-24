@@ -104,14 +104,20 @@ class Vec3:
         """Return the vector as a tuple."""
         return (self.x, self.y, self.z)
 
-    def __add__(self, other: Vec3):
-        return Vec3(self.x + other.x, self.y + other.y, self.z + other.z)
+    def __add__(self, other: float | Vec3):
+        if isinstance(other, Vec3):
+            return Vec3(self.x + other.x, self.y + other.y, self.z + other.z)
+        return Vec3(self.x + other, self.y + other, self.z + other)
 
-    def __sub__(self, other: Vec3):
-        return Vec3(self.x - other.x, self.y - other.y, self.z - other.z)
+    def __sub__(self, other: float | Vec3):
+        if isinstance(other, Vec3):
+            return Vec3(self.x - other.x, self.y - other.y, self.z - other.z)
+        return Vec3(self.x - other, self.y - other, self.z - other)
 
-    def __mul__(self, scalar: float):
-        return Vec3(self.x * scalar, self.y * scalar, self.z * scalar)
+    def __mul__(self, other: float | Vec3):
+        if isinstance(other, Vec3):
+            return Vec3(self.x * other.x, self.y * other.y, self.z * other.z)
+        return Vec3(self.x * other, self.y * other, self.z * other)
 
     def dot(self, other: Vec3):
         """Return the dot product of this vector and another."""

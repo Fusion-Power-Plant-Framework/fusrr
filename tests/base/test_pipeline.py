@@ -1,10 +1,11 @@
 from fusrr.base.entity.object import cube
 from fusrr.base.models import Vec3
 from fusrr.base.pipeline import FusrrBuildPipeline
+from fusrr.base.world_state import FusrrWorldState
 
 
 def test_pipeline():
-    pipeline = FusrrBuildPipeline()
+    pipeline = FusrrBuildPipeline(world_state=FusrrWorldState())
     assert pipeline.entity_names() == set()
     assert pipeline.object_names() == set()
     assert pipeline.collection_names() == set()

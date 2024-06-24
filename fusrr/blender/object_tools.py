@@ -1,5 +1,7 @@
 """Collection of functions that operate on Blender objects."""
 
+from typing import Literal
+
 import bpy
 
 
@@ -71,6 +73,40 @@ def set_object_material(
         obj_mats.append(mat)
 
     return mat
+
+
+def add_boolean_modifier(
+    obj: bpy.types.Object,
+    modifier_object: bpy.types.Object,
+    modifier_name: str,
+    operation: Literal["INTERSECT", "UNION", "DIFFERENCE"] = "DIFFERENCE",
+) -> bpy.types.Modifier:
+    """Add a boolean modifier to an object.
+
+    Args:
+        obj: The object to add the modifier to.
+        target: The target object to use for the boolean operation.
+        operation: The boolean operation to perform.
+        modifier_name: The name of the modifier.
+    """
+    mod = obj.modifiers.new(modifier_name, type="BOOLEAN")
+    mod.object = modifier_object
+    mod.operation = operation
+    return mod
+
+
+def set_object_visibility(obj: bpy.types.Object, *, visibility: bool) -> None:
+    """Set the visibility of an object.
+
+    This includes the viewport and render visibility.
+
+    Args:
+        obj: The object to set the visibility of.
+        visibility: The visibility state to set.
+    """
+    # obj.hide_viewport = not visibility
+    obj.hide_render = not visibility
+    obj.hide_set(not visibility)
 
 
 def add_camera(name: str) -> bpy.types.Object:

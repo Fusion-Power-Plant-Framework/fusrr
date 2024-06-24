@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 @dataclass
-class CommonObjTransformProperties:
+class ObjTransformProperties:
     """Common properties for object transforms."""
 
     center_point: Vec3 | Literal["centroid"] = Vec3.ZERO
@@ -32,22 +32,3 @@ class CommonObjTransformProperties:
         #     bpy.ops.object.origin_set(type="ORIGIN_CENTER_OF_MASS", center="BOUNDS")
         # else:
         #     obj.location = self.center_point.tup
-
-
-@dataclass
-class CommonMeshModelProperties:
-    """Common properties for object mesh models."""
-
-    revolve_x_deg: float | None = None
-    revolve_y_deg: float | None = None
-    revolve_z_deg: float | None = None
-    revolve_center: Vec3 = Vec3.ZERO
-
-    def apply_to(self, m: bmesh.types.BMesh) -> None:
-        """Applies the mesh model properties to the mesh."""
-        if self.revolve_x_deg is not None:
-            mesh_revolve(m, self.revolve_center, Vec3.X, self.revolve_x_deg)
-        if self.revolve_y_deg is not None:
-            mesh_revolve(m, self.revolve_center, Vec3.Y, self.revolve_y_deg)
-        if self.revolve_z_deg is not None:
-            mesh_revolve(m, self.revolve_center, Vec3.Z, self.revolve_z_deg)

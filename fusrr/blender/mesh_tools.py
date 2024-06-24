@@ -46,7 +46,11 @@ def update_mesh_for(obj: bpy.types.Object):
 
 
 def mesh_add_edges_from_points(
-    m: bmesh.types.BMesh, points: Iterable[Vec3], *, close: bool = False
+    m: bmesh.types.BMesh,
+    points: Iterable[Vec3],
+    *,
+    close: bool = False,
+    to_face: bool = False,
 ):
     """Add edges to the mesh from the given points.
 
@@ -56,6 +60,7 @@ def mesh_add_edges_from_points(
         m: The bmesh mesh to add the edges to.
         points: An iterable of Vec3 points.
         close: Whether to connect the last point to the first point.
+        to_face: Whether to create a face from the points.
     """
     verts = [m.verts.new(p.tup) for p in points]
     m.verts.ensure_lookup_table()
@@ -65,6 +70,17 @@ def mesh_add_edges_from_points(
         m.edges.new((verts[i - 1], verts[i]))
     if close:
         m.edges.new((verts[-1], verts[0]))
+    if to_face:
+        m.faces.new(verts)
+
+
+def mesh_to_face(m: bmesh.types.BMesh):
+    """Create a face from the edges of the mesh.
+
+    Args:
+        m: The bmesh mesh to create the face from.
+    """
+    m.faces.new(m.verts)
 
 
 def mesh_revolve(

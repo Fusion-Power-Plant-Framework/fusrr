@@ -1,7 +1,11 @@
 from process.geometry.plasma_geometry import plasma_geometry
 
 from fusrr.base.models import Vec3
-from fusrr.blender.mesh_tools import mesh_add_edges_from_points
+from fusrr.blender.mesh_tools import (
+    mesh_add_edges_from_points,
+    mesh_revolve,
+    mesh_to_face,
+)
 from fusrr.materials.base import FusrrMaterial, PlasmaMaterial
 from fusrr.materials.models import MaterialColour
 from fusrr.reactor.process import ProcessParams
@@ -41,9 +45,7 @@ class ProcessPlasma(ProcessComponent):
         self.ib_pts = [Vec3(x, 0, z) for x, z in zip(rs_ib, zs_ib, strict=True)]
         self.ob_pts = [Vec3(x, 0, z) for x, z in zip(rs_ob, zs_ob, strict=True)]
 
-        # todo: temp
-        self._mesh_model_props.revolve_z_deg = 360
-
     def construct(self, _obj, m) -> None:
         mesh_add_edges_from_points(m, self.ib_pts)
         mesh_add_edges_from_points(m, self.ob_pts)
+        mesh_revolve(m, Vec3.ZERO, Vec3.Z, 360)

@@ -4,10 +4,7 @@ import abc
 from typing import TYPE_CHECKING, Generic
 
 from fusrr.base.entity.entity import FusrrWorldEntity
-from fusrr.base.entity.object_properties import (
-    CommonMeshModelProperties,
-    CommonObjTransformProperties,
-)
+from fusrr.base.entity.object_properties import ObjTransformProperties
 from fusrr.base.models import Vec3
 from fusrr.base.types import CFT
 from fusrr.blender.mesh_tools import (
@@ -35,16 +32,12 @@ class FusrrWorldObject(FusrrWorldEntity):
         self,
         name: str,
         material: FusrrMaterial | None = None,
-        transform_props: CommonObjTransformProperties | None = None,
-        mesh_mod_props: CommonMeshModelProperties | None = None,
+        transform_props: ObjTransformProperties | None = None,
     ):
         """Initializes a FusrrWorldObject."""
         super().__init__(name)
         self._material = material
-        self._transform_props = (
-            transform_props or CommonObjTransformProperties()
-        )
-        self._mesh_model_props = mesh_mod_props or CommonMeshModelProperties()
+        self._transform_props = transform_props or ObjTransformProperties()
 
     @property
     def material(self) -> FusrrMaterial | None:
@@ -52,14 +45,9 @@ class FusrrWorldObject(FusrrWorldEntity):
         return self._material
 
     @property
-    def transform_props(self) -> CommonObjTransformProperties:
+    def transform_props(self) -> ObjTransformProperties:
         """The transformation properties of this object."""
         return self._transform_props
-
-    @property
-    def mesh_model_props(self) -> CommonMeshModelProperties:
-        """The mesh model properties of this object."""
-        return self._mesh_model_props
 
     def prepare(self) -> None:
         """Prepares this object.
@@ -92,7 +80,6 @@ class FusrrWorldObject(FusrrWorldEntity):
             self.construct(obj, m)
 
             # apply properties
-            self._mesh_model_props.apply_to(m)
             self._transform_props.apply_to(obj)
 
         # apply material after constructing the object

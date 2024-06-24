@@ -5,7 +5,8 @@ from fusrr.blender.mesh_tools import (
     mesh_add_edges_from_points,
     mesh_revolve,
 )
-from fusrr.materials.base import FusrrMaterial, GlassMaterial
+from fusrr.materials.base import FusrrMaterial, GlassMaterial, MetallicMaterial
+from fusrr.materials.models import MaterialColour, MaterialValueZeroToOne
 from fusrr.reactor.process import ProcessParams
 from fusrr.reactor.process.process_component import (
     ProcessComponent,
@@ -25,7 +26,11 @@ class ProcessCryostat(ProcessComponent):
 
     @property
     def material(self) -> FusrrMaterial:
-        return GlassMaterial()
+        return MetallicMaterial(
+            base_colour=MaterialColour(0.8, 0.8, 0.8, 1),
+            metallicness=MaterialValueZeroToOne(0.1),
+            roughness=MaterialValueZeroToOne(0.6),
+        )
 
     def prepare(self) -> None:
         rdewex = self.params.rdewex

@@ -15,12 +15,16 @@ def process_rect_to_vec3_path_points(geom: RectangleGeometry):
     dx = geom.width / 2
     dz = geom.height / 2
 
-    tr = Vec3(x + dx, 0, z + dz)
-    br = Vec3(x + dx, 0, z - dz)
-    bl = Vec3(x - dx, 0, z - dz)
-    tl = Vec3(x - dx, 0, z + dz)
-
-    return [tr, br, bl, tl, tr]
+    return [
+        # tr
+        Vec3(x + dx, 0, z + dz),
+        # br
+        Vec3(x + dx, 0, z - dz),
+        # bl
+        Vec3(x - dx, 0, z - dz),
+        # tl
+        Vec3(x - dx, 0, z + dz),
+    ]
 
 
 def cumul_setup(params_dict):
