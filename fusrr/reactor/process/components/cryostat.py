@@ -5,7 +5,7 @@ from fusrr.blender.mesh_tools import (
     mesh_add_edges_from_points,
     mesh_revolve,
 )
-from fusrr.materials.base import FusrrMaterial, GlassMaterial, MetallicMaterial
+from fusrr.materials.base import FusrrMaterial, MetallicMaterial
 from fusrr.materials.models import MaterialColour, MaterialValueZeroToOne
 from fusrr.reactor.process import ProcessParams
 from fusrr.reactor.process.process_component import (

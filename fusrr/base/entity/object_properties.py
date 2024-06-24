@@ -4,11 +4,9 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Literal
 
 from fusrr.base.models import Vec3
-from fusrr.blender.mesh_tools import mesh_revolve
 
 if TYPE_CHECKING:
     import bpy
-    import bmesh
 
 
 @dataclass
@@ -28,7 +26,3 @@ class ObjTransformProperties:
             obj.rotation_euler = self.rotation.tup
         if self.scale != Vec3.ONE:
             obj.scale = self.scale.tup
-        # if self.center_point == "centroid":
-        #     bpy.ops.object.origin_set(type="ORIGIN_CENTER_OF_MASS", center="BOUNDS")
-        # else:
-        #     obj.location = self.center_point.tup

@@ -10,7 +10,7 @@ from fusrr.base.scene import FusrrScene
 from fusrr.base.utils import load_fusrr_config
 from fusrr.base.world_state import FusrrWorldState
 from fusrr.blender.file_tools import save_state_to_blend_file
-from fusrr.blender.scene_tools import clear_scene, deselect_all, switch_to_scene
+from fusrr.blender.scene_tools import clear_scene, deselect_all
 from fusrr.data_libs.materials import load_materials
 
 

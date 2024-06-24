@@ -85,7 +85,7 @@ def add_boolean_modifier(
 
     Args:
         obj: The object to add the modifier to.
-        target: The target object to use for the boolean operation.
+        modifier_object: The 'cutter' object to use for the boolean operation.
         operation: The boolean operation to perform.
         modifier_name: The name of the modifier.
     """

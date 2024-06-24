@@ -1,11 +1,7 @@
 from process.geometry.plasma_geometry import plasma_geometry
 
 from fusrr.base.models import Vec3
-from fusrr.blender.mesh_tools import (
-    mesh_add_edges_from_points,
-    mesh_revolve,
-    mesh_to_face,
-)
+from fusrr.blender.mesh_tools import mesh_add_edges_from_points, mesh_revolve
 from fusrr.materials.base import FusrrMaterial, PlasmaMaterial
 from fusrr.materials.models import MaterialColour
 from fusrr.reactor.process import ProcessParams

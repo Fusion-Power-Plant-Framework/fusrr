@@ -3,7 +3,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING
 
 import bmesh
 from kink import di
@@ -36,6 +36,7 @@ class FusrrSceneObjectConfig:
     slice_start: float | None = None
     slice_end: float | None = None
     slice_size: float | None = None
+    slice_inverse: bool | None = None
 
     visible: bool | None = None
 
@@ -128,6 +129,7 @@ class FusrrScene:
                             cut_angle_deg_start=oc.slice_start,
                             cut_angle_deg_end=oc.slice_end,
                             size=oc.slice_size,
+                            invert=oc.slice_inverse,
                         )
                     )
         if slice_tools:
@@ -166,6 +168,8 @@ class FusrrSceneObjectCutter(FusrrWorldObject):
         cut_angle_deg_start: float | None = None,
         cut_angle_deg_end: float | None = None,
         size: float | None = None,
+        *,
+        invert: bool | None = None,
     ):
         super().__init__(f"cutter.{target_obj.name}")
         self._target_obj = target_obj
@@ -174,6 +178,7 @@ class FusrrSceneObjectCutter(FusrrWorldObject):
         )
         self._end_deg = cut_angle_deg_end % 360 if cut_angle_deg_end else 360
         self._size = size if size is not None else 30
+        self._invert = invert if invert is not None else False
 
         if self._end_deg <= self._start_deg:
             raise ValueError(
@@ -234,11 +239,18 @@ class FusrrSceneObjectCutter(FusrrWorldObject):
         bmesh.ops.translate(
             m, vec=(Vec3.Z * self._size * 2).tup, verts=new_verts
         )
-
-        add_boolean_modifier(
-            self._target_obj,
-            modifier_object=obj,
-            modifier_name=self.name + "_mod",
-        )
+        if self._invert:
+            add_boolean_modifier(
+                self._target_obj,
+                modifier_object=obj,
+                modifier_name=self.name + "_mod",
+                operation="INTERSECT",
+            )
+        else:
+            add_boolean_modifier(
+                self._target_obj,
+                modifier_object=obj,
+                modifier_name=self.name + "_mod",
+            )
 
         set_object_visibility(obj, visibility=False)

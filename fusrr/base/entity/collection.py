@@ -11,7 +11,6 @@ from fusrr.blender.scene_tools import (
     get_objects,
     link_collections,
     link_objects_to_collection,
-    select_objects,
 )
 
 
