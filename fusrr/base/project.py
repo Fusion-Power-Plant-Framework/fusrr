@@ -51,9 +51,7 @@ class FusrrProject:
         self._project_directory = (
             Path(project_directory) if project_directory else Path.cwd()
         )
-        self._project_path = self._project_directory / (
-            self._project_name + ".blend"
-        )
+        self._project_path = self._project_directory / (self._project_name + ".blend")
 
         self._config_path = Path(config_path) if config_path else None
         self._config = (

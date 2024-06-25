@@ -173,9 +173,7 @@ class FusrrSceneObjectCutter(FusrrWorldObject):
     ):
         super().__init__(f"cutter.{target_obj.name}")
         self._target_obj = target_obj
-        self._start_deg = (
-            cut_angle_deg_start % 360 if cut_angle_deg_start else 0
-        )
+        self._start_deg = cut_angle_deg_start % 360 if cut_angle_deg_start else 0
         self._end_deg = cut_angle_deg_end % 360 if cut_angle_deg_end else 360
         self._size = size if size is not None else 30
         self._invert = invert if invert is not None else False
@@ -220,8 +218,7 @@ class FusrrSceneObjectCutter(FusrrWorldObject):
 
         # scale the points
         cut_plane_poly_points = [
-            p * self._size - Vec3(0, 0, self._size)
-            for p in cut_plane_poly_points
+            p * self._size - Vec3(0, 0, self._size) for p in cut_plane_poly_points
         ]
 
         self._cut_plane_poly_points = cut_plane_poly_points
@@ -233,12 +230,8 @@ class FusrrSceneObjectCutter(FusrrWorldObject):
 
         extruded = bmesh.ops.extrude_face_region(m, geom=m.faces)
         # Get the new faces from the extruded geometry
-        new_verts = [
-            f for f in extruded["geom"] if isinstance(f, bmesh.types.BMVert)
-        ]
-        bmesh.ops.translate(
-            m, vec=(Vec3.Z * self._size * 2).tup, verts=new_verts
-        )
+        new_verts = [f for f in extruded["geom"] if isinstance(f, bmesh.types.BMVert)]
+        bmesh.ops.translate(m, vec=(Vec3.Z * self._size * 2).tup, verts=new_verts)
         if self._invert:
             add_boolean_modifier(
                 self._target_obj,

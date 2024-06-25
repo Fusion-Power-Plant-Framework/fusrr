@@ -36,9 +36,7 @@ class ProcessCryostat(ProcessComponent):
         rdewex = self.params.rdewex
         ddwex = self.params.ddwex
         zdewex = self.params.zdewex
-        self.vars = CryostatGeometry(
-            width=rdewex, height=zdewex, thickness=ddwex
-        )
+        self.vars = CryostatGeometry(width=rdewex, height=zdewex, thickness=ddwex)
 
         rs = [
             0,

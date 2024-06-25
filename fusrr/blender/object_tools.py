@@ -65,7 +65,7 @@ def set_object_material(
         if slot >= len(obj_mats):
             raise ValueError(
                 f"Material slot {slot} not found on object {obj.name}.\n"
-                f"Max slot: {len(obj_mats) -1}"
+                f"Max slot: {len(obj_mats) - 1}"
             )
         obj_mats[slot] = mat
     else:

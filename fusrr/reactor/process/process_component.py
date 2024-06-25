@@ -24,8 +24,6 @@ class ProcessComponent(FusrrWorldObject):
 
 
 class ProcessComponentWithContext(FusrrWorldObjectWithContext[CFT]):
-    def __init__(
-        self, component_name: str, ctx: CFT, reactor_params: ProcessParams
-    ):
+    def __init__(self, component_name: str, ctx: CFT, reactor_params: ProcessParams):
         self.params = reactor_params
         super().__init__(component_name, ctx)

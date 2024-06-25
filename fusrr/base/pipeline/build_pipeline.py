@@ -20,9 +20,7 @@ class FusrrBuildPipeline(FusrrPipeline[FusrrWorldEntity]):
     @property
     def objects(self) -> list[FusrrWorldObject]:
         """Get the names of all entities in this pipeline."""
-        return [
-            ent for ent in self._pipeline if isinstance(ent, FusrrWorldObject)
-        ]
+        return [ent for ent in self._pipeline if isinstance(ent, FusrrWorldObject)]
 
     @property
     def collections(self) -> list[FusrrWorldCollection]:
@@ -30,11 +28,7 @@ class FusrrBuildPipeline(FusrrPipeline[FusrrWorldEntity]):
         # avoid circular imports
         from fusrr.base.entity.collection import FusrrWorldCollection
 
-        return [
-            ent
-            for ent in self._pipeline
-            if isinstance(ent, FusrrWorldCollection)
-        ]
+        return [ent for ent in self._pipeline if isinstance(ent, FusrrWorldCollection)]
 
     def entity_names(self) -> set[str]:
         """Get the names of all entities in this pipeline."""

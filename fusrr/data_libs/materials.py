@@ -28,6 +28,4 @@ def load_materials():
         If a material is not applied to any object, it will not be
         saved in the final .blend file.
     """
-    append_from_blend_file(
-        FUSRR_MATERIALS_LIB_PATH, BlenderFileDataTypes.MATERIAL
-    )
+    append_from_blend_file(FUSRR_MATERIALS_LIB_PATH, BlenderFileDataTypes.MATERIAL)

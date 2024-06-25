@@ -169,6 +169,4 @@ def cube(name: str, location: Vec3, scale: Vec3 = Vec3.ONE) -> FusrrWorldObject:
         location: Location of cube
         scale: Scale of cube. Defaults to Vec3.ONE.
     """
-    return FusrrWorldObjectFromFunction(
-        name, lambda: add_cube(name, location, scale)
-    )
+    return FusrrWorldObjectFromFunction(name, lambda: add_cube(name, location, scale))

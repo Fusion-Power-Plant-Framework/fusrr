@@ -34,9 +34,7 @@ class ProcessBlanket(ProcessComponent):
         c_shldith = cumulative_radial_build("shldith", self.params)
         c_blnkoth = cumulative_radial_build("blnkoth", self.params)
 
-        cumulative_upper, cumulative_lower, _, _ = cumul_setup(
-            params_dict=self.params
-        )
+        cumulative_upper, cumulative_lower, _, _ = cumul_setup(params_dict=self.params)
 
         if self.i_single_null == 1:
             # Upper blanket: outer surface
@@ -91,12 +89,8 @@ class ProcessBlanket(ProcessComponent):
             rs_ob, rs_ib = bg_double_null.rs
             zs_ob, zs_ib = bg_double_null.zs
 
-            self.ib_pts = [
-                Vec3(x, 0, z) for x, z in zip(rs_ib, zs_ib, strict=True)
-            ]
-            self.ob_pts = [
-                Vec3(x, 0, z) for x, z in zip(rs_ob, zs_ob, strict=True)
-            ]
+            self.ib_pts = [Vec3(x, 0, z) for x, z in zip(rs_ib, zs_ib, strict=True)]
+            self.ob_pts = [Vec3(x, 0, z) for x, z in zip(rs_ob, zs_ob, strict=True)]
 
     def construct(self, _obj, m) -> None:
         if self.i_single_null == 1:

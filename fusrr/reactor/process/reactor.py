@@ -29,8 +29,7 @@ class ProcessReactor(ProcessComponentCollection):
         fp = Path(mfile_filepath).resolve()
         if not fp.suffix == ".DAT":
             raise ValueError(
-                f"Invalid file type: {fp.suffix}, path: {fp}. "
-                "Is that a PROCESS file?"
+                f"Invalid file type: {fp.suffix}, path: {fp}. " "Is that a PROCESS file?"
             )
         return ProcessParams(MFile(filename=fp.as_posix()))
 

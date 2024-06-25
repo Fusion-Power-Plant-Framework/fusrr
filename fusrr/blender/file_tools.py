@@ -20,10 +20,7 @@ class BlenderFileDataTypes(Enum):
     def access_from_bpy_lib(self, bpy_lib):
         """Access the data type from the bpy library."""
         plural_suffix = "s"
-        if (
-            self is BlenderFileDataTypes.MESH
-            or self is BlenderFileDataTypes.BRUSH
-        ):
+        if self is BlenderFileDataTypes.MESH or self is BlenderFileDataTypes.BRUSH:
             plural_suffix = "es"
         return getattr(bpy_lib, self.value.lower() + plural_suffix)
 
@@ -49,8 +46,7 @@ def append_from_blend_file(
     files = []
     with bpy.data.libraries.load(path.as_posix()) as (data_from, _data_to):
         files = [
-            {"name": data_name}
-            for data_name in data_type.access_from_bpy_lib(data_from)
+            {"name": data_name} for data_name in data_type.access_from_bpy_lib(data_from)
         ]
     dt_dir = (path / data_type.value).as_posix()
     bpy.ops.wm.append(directory=dt_dir, files=files)

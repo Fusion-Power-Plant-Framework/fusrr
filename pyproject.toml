@@ -86,7 +86,7 @@ fmt   = "pre-commit run --all-files --hook-stage manual"
 
 # tool: ruff
 [tool.ruff]
-line-length = 80
+line-length = 89
 
 exclude = [
   ".git",

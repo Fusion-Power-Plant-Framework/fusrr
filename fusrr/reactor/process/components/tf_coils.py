@@ -45,8 +45,7 @@ class ProcessTFCoils(ProcessComponentCollection):
         y5 = self.params["yarc(5)"]
         if y3 != 0:
             print(
-                "TF coil geometry: The value of yarc(3) is not zero, "
-                "but should be."
+                "TF coil geometry: The value of yarc(3) is not zero, " "but should be."
             )
 
         # Check for TF coil shape
@@ -148,9 +147,7 @@ class ProcessTFCoilD(FusrrWorldObjectWithContext[ProcessTFCoilContext]):
         extruded = bmesh.ops.extrude_face_region(m, geom=m.faces)
 
         # Get the new faces from the extruded geometry
-        new_faces = [
-            f for f in extruded["geom"] if isinstance(f, bmesh.types.BMFace)
-        ]
+        new_faces = [f for f in extruded["geom"] if isinstance(f, bmesh.types.BMFace)]
 
         # Calculate the centroid of the faces
         center = Vector((0, 0, 0))
@@ -170,9 +167,7 @@ class ProcessTFCoilD(FusrrWorldObjectWithContext[ProcessTFCoilContext]):
         )
 
         rotation_X = Matrix.Rotation(radians(self.ctx.angle_deg), 4, "Z")
-        bmesh.ops.rotate(
-            m, cent=Vec3.ZERO.tup, matrix=rotation_X, verts=m.verts
-        )
+        bmesh.ops.rotate(m, cent=Vec3.ZERO.tup, matrix=rotation_X, verts=m.verts)
 
         # context_override = context.copy()
         # context_override["selected_objects"] = [obj]
