@@ -21,7 +21,7 @@ fusrr.add_entity(
         mfile_filepath=Path.cwd() / "EUDEMO_MFILE.DAT",
     )
 )
-base_angle = 180
+base_angle = 0
 fusrr.add_scene(
     FusrrScene(
         "expose_plasma",
@@ -34,8 +34,8 @@ fusrr.add_scene(
         objects=[
             FusrrSceneObjectConfig(
                 name="cryostat",
-                slice_start=base_angle - 80,
-                slice_end=base_angle + 80,
+                slice_start=base_angle - 70,
+                slice_end=base_angle + 70,
             ),
             FusrrSceneObjectConfig(
                 name="vacuum_vessel",
@@ -55,7 +55,7 @@ fusrr.add_scene(
             ),
             FusrrSceneObjectConfig(
                 name="tf_coils",
-                pattern="tf_coil_d_(8|9|10|11|12)$",
+                pattern="tf_coil_d_(1|2)$",
                 visible=False,
             ),
         ],

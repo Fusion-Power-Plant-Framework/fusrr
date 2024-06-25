@@ -33,8 +33,8 @@ class FusrrSceneObjectConfig:
     name: str
     pattern: str | None = None
 
-    slice_start: float | None = None
-    slice_end: float | None = None
+    slice_start: int | None = None
+    slice_end: int | None = None
     slice_size: float | None = None
     slice_inverse: bool | None = None
 
@@ -165,8 +165,8 @@ class FusrrSceneObjectCutter(FusrrWorldObject):
     def __init__(
         self,
         target_obj: bpy.types.Object,
-        cut_angle_deg_start: float | None = None,
-        cut_angle_deg_end: float | None = None,
+        cut_angle_deg_start: int | None = None,
+        cut_angle_deg_end: int | None = None,
         size: float | None = None,
         *,
         invert: bool | None = None,
@@ -181,44 +181,33 @@ class FusrrSceneObjectCutter(FusrrWorldObject):
         self._invert = invert if invert is not None else False
 
         if self._end_deg <= self._start_deg:
-            raise ValueError(
-                f"End angle must be greater than start - "
-                f"start: {self._start_deg}, "
-                f"end: {self._end_deg}."
-            )
+            self._start_deg -= 360
+
+    @staticmethod
+    def angle_to_point(angle: float) -> Vec3:
+        return Vec3(
+            math.cos(math.radians(angle)),
+            math.sin(math.radians(angle)),
+            0,
+        )
 
     def prepare(self) -> None:
         cut_plane_poly_points = []
 
+        # start at the origin
         cut_plane_poly_points.append(Vec3(0, 0, 0))
 
-        # the start point
-        cut_plane_poly_points.append(
-            Vec3(
-                math.cos(math.radians(self._start_deg)),
-                math.sin(math.radians(self._start_deg)),
-                0,
-            )
+        # add the start points and the polygon points
+        cut_plane_poly_points.extend(
+            [
+                self.angle_to_point(poly_angle)
+                for poly_angle in range(self._start_deg, self._end_deg, 90)
+            ]
         )
+        # add the end point
+        cut_plane_poly_points.append(self.angle_to_point(self._end_deg))
 
-        # this only works because we're forcing end > start,
-        if self._start_deg < 90 and self._end_deg > 90:  # noqa: PLR2004
-            cut_plane_poly_points.append(Vec3(0, 1, 0))
-        if self._start_deg < 180 and self._end_deg > 180:  # noqa: PLR2004
-            cut_plane_poly_points.append(Vec3(-1, 0, 0))
-        if self._start_deg < 270 and self._end_deg > 270:  # noqa: PLR2004
-            cut_plane_poly_points.append(Vec3(0, -1, 0))
-
-        # the end point
-        cut_plane_poly_points.append(
-            Vec3(
-                math.cos(math.radians(self._end_deg)),
-                math.sin(math.radians(self._end_deg)),
-                0,
-            )
-        )
-
-        # scale the points
+        # scale the points, shift down by same amount
         cut_plane_poly_points = [
             p * self._size - Vec3(0, 0, self._size)
             for p in cut_plane_poly_points
