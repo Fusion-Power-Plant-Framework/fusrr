@@ -52,11 +52,11 @@ def append_from_blend_file(
     bpy.ops.wm.append(directory=dt_dir, files=files)
 
 
-def import_gltf(filepath: str):
+def import_gltf(filepath: Path):
     """Import from gltf."""
-    bpy.ops.import_scene.gltf(filepath=filepath)
+    bpy.ops.import_scene.gltf(filepath=filepath.as_posix())
 
 
-def export_gltf(filepath: str):
+def export_gltf(filepath: Path):
     """Export to gltf."""
-    bpy.ops.export_scene.gltf(filepath)
+    bpy.ops.export_scene.gltf(filepath.as_posix())

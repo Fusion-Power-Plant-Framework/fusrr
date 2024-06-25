@@ -38,14 +38,16 @@ BLUEMIRA_COMP_NAMES = {
 }
 
 
-def create_component_collections(component_regex_dict):
+def create_component_collections(component_regex_dict: dict[str, str]):
+    """Create a set of collections containing bluemira components."""
     for k, v in component_regex_dict.items():
         col = create_collection(k)
         for comp in v:
             link_objects_to_collection(col, get_objects_by_pattern(comp))
 
 
-def get_scene(filepath):
+def get_scene(filepath: Path):
+    """Get scene from gltf file and save."""
     import_gltf(filepath)
     create_component_collections(BLUEMIRA_COMP_NAMES)
     save_state_to_blend_file(Path(f"{filepath}.blend"))
