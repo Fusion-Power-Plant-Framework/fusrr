@@ -183,7 +183,6 @@ def create_collection(name: str) -> bpy.types.Collection:
 
     Args:
         name: The name of the collection.
-        objects: The objects to add to the collection.
     """
     deselect_all()
 
