@@ -3,7 +3,7 @@ from process.geometry.plasma_geometry import plasma_geometry
 from fusrr.base.models import Vec3
 from fusrr.blender.mesh_tools import mesh_add_edges_from_points, mesh_revolve
 from fusrr.materials.base import FusrrMaterial, PlasmaMaterial
-from fusrr.materials.models import MaterialColour
+from fusrr.materials.models import MaterialColour, MaterialValueZeroToOne
 from fusrr.reactor.process import ProcessParams
 from fusrr.reactor.process.process_component import ProcessComponent
 
@@ -15,9 +15,16 @@ class ProcessPlasma(ProcessComponent):
     @property
     def material(self) -> FusrrMaterial:
         return PlasmaMaterial(
-            # testing the colour of the plasma
-            base_colour=MaterialColour(0.7, 0.01, 0.01, 1),
-            colour_ramp=MaterialColour(0.1, 0.1, 0.9, 1),
+            # edit these values below to change the colours of the reactor
+            y_colour_ramp=MaterialColour(0.1, 0.1, 0.9, 1),
+            z_colour_ramp=MaterialColour(0.9, 0.1, 0.1, 1),
+            core_colour=MaterialColour(0.7, 0.01, 0.01, 1),
+            core_fresnel=MaterialValueZeroToOne(1.10),
+            border_colour=MaterialColour(0.1, 0.9, 0.7, 1),
+            plasma_emission_colour=MaterialColour(0.1, 0.9, 0.7, 1),
+            plasma_emission=MaterialValueZeroToOne(88),
+            border_plasma_transparancy=MaterialColour(1,1,1,1),
+            border_fresnel=MaterialValueZeroToOne(1)
         )
 
     def prepare(self) -> None:

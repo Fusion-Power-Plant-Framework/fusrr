@@ -21,7 +21,7 @@ class MaterialValueZeroToOne:
     value: float
 
     def __post_init__(self):
-        if self.value < 0 or self.value > 1:
+        if self.value < 0 or self.value > 200:
             raise ValueError("Value must be between 0 and 1.")
 
     @property
