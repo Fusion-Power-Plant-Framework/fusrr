@@ -9,7 +9,7 @@ from fusrr.blender.mesh_tools import (
     mesh_revolve,
 )
 from fusrr.materials.base import FusrrMaterial, MetallicMaterial
-from fusrr.materials.models import MaterialColour
+from fusrr.materials.models import MaterialColour, MaterialValueZeroToOne
 from fusrr.reactor.process import ProcessParams
 from fusrr.reactor.process.process_component import ProcessComponent
 from fusrr.reactor.process.utils import cumul_setup, cumulative_radial_build
@@ -23,6 +23,8 @@ class ProcessBlanket(ProcessComponent):
     def material(self) -> FusrrMaterial:
         return MetallicMaterial(
             base_colour=MaterialColour(0.0, 0.2, 1, 1),
+            metallicness=MaterialValueZeroToOne(1.0),
+            roughness=MaterialValueZeroToOne(0.1),
         )
 
     def prepare(self) -> None:

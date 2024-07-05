@@ -22,6 +22,10 @@ fusrr.add_entity(
     )
 )
 base_angle = 0
+cryostat_cut = 120
+vv_cut = 60
+b_cut = vv_cut - 30
+pf_cut = vv_cut
 fusrr.add_scene(
     FusrrScene(
         "expose_plasma",
@@ -34,28 +38,29 @@ fusrr.add_scene(
         objects=[
             FusrrSceneObjectConfig(
                 name="cryostat",
-                slice_start=base_angle - 70,
-                slice_end=base_angle + 70,
+                slice_start=base_angle - cryostat_cut,
+                slice_end=base_angle + cryostat_cut,
+                visible=False,
             ),
             FusrrSceneObjectConfig(
                 name="vacuum_vessel",
-                slice_start=base_angle - 35,
-                slice_end=base_angle + 35,
+                slice_start=base_angle - vv_cut,
+                slice_end=base_angle + vv_cut,
             ),
             FusrrSceneObjectConfig(
                 name="blanket",
-                slice_start=base_angle - 20,
-                slice_end=base_angle + 20,
+                slice_start=base_angle - b_cut,
+                slice_end=base_angle + b_cut,
             ),
             FusrrSceneObjectConfig(
                 name="pf_coils",
                 pattern="(pf_*)|(cs_coil)$",
-                slice_start=base_angle - 35,
-                slice_end=base_angle + 35,
+                slice_start=base_angle - pf_cut,
+                slice_end=base_angle + pf_cut,
             ),
             FusrrSceneObjectConfig(
                 name="tf_coils",
-                pattern="tf_coil_d_(1|2)$",
+                pattern="tf_coil_d_(1|2|3|18|17|16)$",
                 visible=False,
             ),
         ],
