@@ -17,12 +17,22 @@ class MaterialColour:
 
 
 @dataclass
+class MaterialValue:
+    value: float
+
+    @property
+    def tup(self):
+        """Return the vector as a tuple."""
+        return self.value
+
+
+@dataclass
 class MaterialValueZeroToOne:
     value: float
 
     def __post_init__(self):
-        if self.value < 0 or self.value > 200:
-            raise ValueError("Value must be between 0 and 1.")
+        if self.value < 0 or self.value > 1:
+            raise ValueError("Value must be between [0, 1].")
 
     @property
     def tup(self):

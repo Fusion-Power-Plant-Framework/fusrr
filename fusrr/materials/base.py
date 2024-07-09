@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 
 from fusrr.blender.object_tools import set_object_material
 from fusrr.data_libs.materials import FusrrMaterialDataLabel
+from fusrr.materials.models import MaterialValue
 
 if TYPE_CHECKING:
     import bpy
@@ -60,10 +61,10 @@ class PlasmaMaterial(FusrrMaterial):
         core_colour: MaterialColour | None = None,
         y_colour_ramp: MaterialColour | None = None,
         z_colour_ramp: MaterialColour | None = None,
-        core_fresnel: MaterialValueZeroToOne | None = None,
+        core_fresnel: MaterialValue | None = None,
         border_colour: MaterialColour | None = None,
         plasma_emission_colour: MaterialColour | None = None,
-        plasma_emission: MaterialValueZeroToOne | None = None,
+        plasma_emission: MaterialValue | None = None,
         border_plasma_transparancy: MaterialColour | None = None,
         border_fresnel: MaterialValueZeroToOne | None = None,
     ):
@@ -105,7 +106,7 @@ class PlasmaMaterial(FusrrMaterial):
             plasma_brightness = mat.node_tree.nodes.get("plasma_fresnel")
             plasma_brightness.inputs[0].default_value = self.core_fresnel.tup
 
-        # change the border plasma colour 
+        # change the border plasma colour
         if self.border_colour:
             bsdf = mat.node_tree.nodes.get("border_plasma_colour")
             bsdf.inputs["Base Color"].default_value = self.border_colour.tup
@@ -113,17 +114,25 @@ class PlasmaMaterial(FusrrMaterial):
         # change the border plasma emission colour
         if self.plasma_emission_colour:
             emission_colour = mat.node_tree.nodes.get("border_plasma_emission")
-            emission_colour.inputs[0].default_value = self.plasma_emission_colour.tup
+            emission_colour.inputs[
+                0
+            ].default_value = self.plasma_emission_colour.tup
 
-        # change the border plasma emission strength 
+        # change the border plasma emission strength
         if self.plasma_emission:
-            emission_strength = mat.node_tree.nodes.get("border_plasma_emission")
+            emission_strength = mat.node_tree.nodes.get(
+                "border_plasma_emission"
+            )
             emission_strength.inputs[1].default_value = self.plasma_emission.tup
 
         # change the border plasma transparancy colour
         if self.border_plasma_transparancy:
-            transparancy = mat.node_tree.nodes.get("border_plasma_transparent_BSDF")
-            transparancy.inputs[0].default_value = self.border_plasma_transparancy.tup
+            transparancy = mat.node_tree.nodes.get(
+                "border_plasma_transparent_BSDF"
+            )
+            transparancy.inputs[
+                0
+            ].default_value = self.border_plasma_transparancy.tup
 
         # change the border brightness of plasma
         if self.border_fresnel:
