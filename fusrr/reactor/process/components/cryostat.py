@@ -29,7 +29,7 @@ class ProcessCryostat(ProcessComponent):
         return MetallicMaterial(
             base_colour=MaterialColour(0.8, 0.8, 0.8, 1),
             metallicness=MaterialValueZeroToOne(0.1),
-            roughness=MaterialValueZeroToOne(0.6),
+            roughness=MaterialValueZeroToOne(0.2),
         )
 
     def prepare(self) -> None:
