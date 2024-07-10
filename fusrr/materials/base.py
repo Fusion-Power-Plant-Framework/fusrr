@@ -5,12 +5,15 @@ from typing import TYPE_CHECKING
 
 from fusrr.blender.object_tools import set_object_material
 from fusrr.data_libs.materials import FusrrMaterialDataLabel
-from fusrr.materials.models import MaterialValue
 
 if TYPE_CHECKING:
     import bpy
 
-    from fusrr.materials.models import MaterialColour, MaterialValueZeroToOne
+    from fusrr.materials.models import (
+        MaterialColour,
+        MaterialValue,
+        MaterialValueZeroToOne,
+    )
 
 
 class FusrrMaterial(abc.ABC):
