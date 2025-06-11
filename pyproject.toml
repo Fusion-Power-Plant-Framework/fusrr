@@ -104,6 +104,8 @@ ignore = [
   "INP001", # Ignore requiring __init__.py files
   "D105",   # Don't require docstrings for magic methods
   "N802",   # Upper case function names are allowed
+  "ANN002",
+  "ANN003",
   "ERA001",
   "I001",
   "D100",
