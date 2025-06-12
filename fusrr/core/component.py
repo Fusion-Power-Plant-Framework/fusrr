@@ -5,14 +5,14 @@ from abc import ABC, abstractmethod
 from functools import wraps
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
-from fusrr.new_base.project import ProjectContext
+from fusrr.core.project import ProjectContext
 
 if TYPE_CHECKING:
     from collections.abc import Callable
     from contextvars import Context
 
-    from fusrr.new_base.project import ProjectContext
-    from fusrr.new_base.scene import SceneState
+    from fusrr.core.project import ProjectContext
+    from fusrr.core.scene import SceneState
 
 
 class Comp:

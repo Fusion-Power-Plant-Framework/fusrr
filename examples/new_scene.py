@@ -1,7 +1,7 @@
 from fusrr import Comp, ProjectContext, SceneState, component
-from fusrr.new_base.component import co_component
-from fusrr.new_base.hooks.base import Designer
-from fusrr.new_base.hooks.hooks import (
+from fusrr.core.component import co_component
+from fusrr.core.hooks.base import Designer
+from fusrr.core.hooks.hooks import (
     provider,
     useDesigner,
     useProvider,

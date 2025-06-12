@@ -3,8 +3,8 @@ from __future__ import annotations
 import contextlib
 from typing import TYPE_CHECKING, Any
 
-from fusrr.new_base.hooks._hook_state import HOOK_STATE
-from fusrr.new_base.hooks.base import D, Provided
+from fusrr.core.hooks._hook_state import HOOK_STATE
+from fusrr.core.hooks.base import D, Provided
 
 if TYPE_CHECKING:
     from collections.abc import Sequence

@@ -3,8 +3,8 @@ from __future__ import annotations
 from collections import deque
 from typing import TYPE_CHECKING
 
-from fusrr.new_base.hooks._hook_state import HOOK_STATE
-from fusrr.new_base.scene import SceneState
+from fusrr.core.hooks._hook_state import HOOK_STATE
+from fusrr.core.scene import SceneState
 
 if TYPE_CHECKING:
     from contextvars import Context

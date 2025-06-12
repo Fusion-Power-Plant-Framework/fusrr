@@ -1,3 +1,3 @@
-from fusrr.new_base.component import Comp, component
-from fusrr.new_base.project import ProjectContext
-from fusrr.new_base.scene import SceneState
+from fusrr.core.component import Comp, co_component, component
+from fusrr.core.project import ProjectContext
+from fusrr.core.scene import SceneState

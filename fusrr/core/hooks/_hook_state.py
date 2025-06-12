@@ -3,7 +3,7 @@ from __future__ import annotations
 from contextvars import Context, ContextVar, copy_context
 from typing import TYPE_CHECKING, Any, ClassVar, Generic
 
-from fusrr.new_base.hooks.base import Provided, R, Runnable
+from fusrr.core.hooks.base import Provided, R, Runnable
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
