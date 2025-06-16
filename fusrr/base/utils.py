@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from os import PathLike
 from typing import TYPE_CHECKING, Any, TypeVar
 
 if TYPE_CHECKING:
@@ -9,14 +10,10 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 
-def load_fusrr_config(
-    config_path: Path,
-) -> dict[str, Any]:
+def load_json(config_path: PathLike) -> dict[str, Any]:
     """Load a Fusrr configuration file."""
-    with config_path.open() as f:
-        j = json.load(f)
-    # may add more functionality here
-    return j  # noqa: RET504
+    with Path(config_path).open() as f:
+        return json.load(f)
 
 
 T = TypeVar("T")

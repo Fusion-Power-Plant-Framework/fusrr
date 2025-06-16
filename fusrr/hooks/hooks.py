@@ -3,11 +3,11 @@ from __future__ import annotations
 import contextlib
 from typing import TYPE_CHECKING, Any
 
-from fusrr.core.hooks._hook_state import HOOK_STATE
-from fusrr.core.hooks.base import D, Provided
+from fusrr.hooks._hook_state import HOOK_STATE
+from fusrr.hooks.base import D, P, Provided, T
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from collections.abc import Callable, Sequence
 
 
 def _are_equal(x: Any, y: Any) -> bool:  # noqa: ANN401
@@ -46,19 +46,26 @@ def useDesigner(designer: D, deps: Sequence[Any] | None = ()) -> D:
     return entry.inst
 
 
-def provider(typ: type[D]) -> Provided[D]:
-    return Provided[typ]()
+def provider(prov: Callable[P, T]) -> Provided[P, T]:
+    return Provided(prov)
 
 
-def useSetProvider(provider: Provided[D], inst: D):
-    HOOK_STATE.set_persistent_entry(provider, inst)
+def useSetCallProvider(
+    provider: Provided[P, T], *args: P.args, **kwargs: P.kwargs
+):
+    """Set a provider instance by calling it with the given arguments."""
+    entry = HOOK_STATE.persistent_entry_for(provider)
+    if entry is None:
+        inst = provider(*args, **kwargs)
+        HOOK_STATE.set_persistent_entry(provider, inst)
 
 
-def useProvider(provider: Provided[D]) -> D:
+def useProvider(provider: Provided[P, T]) -> T:
     """Use a provided instance."""
     entry = HOOK_STATE.persistent_entry_for(provider)
     if entry is None:
         raise RuntimeError(
-            "This provider has not been set yet. Use useSetProvider first."
+            "This provider has not been set yet. "
+            "`useSetProvider` must be called on it first."
         )
     return entry.inst

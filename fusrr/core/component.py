@@ -16,8 +16,20 @@ if TYPE_CHECKING:
 
 
 class Comp:
-    def __init__(self, builder: Callable[[], None] | None = None):
+    def __init__(self, *, builder: Callable[[], None] | None = None):
         self._builder = builder
+        self._name = None
+
+    @property
+    def name(self) -> str:
+        """Returns the name of the component."""
+        if self._name is None:
+            raise ValueError("Component name not set.")
+        return self._name
+
+    def set_name(self, name: str) -> None:
+        """Sets the name of the component."""
+        self._name = name
 
     def build(self) -> None:
         if self._builder is not None:
@@ -115,13 +127,13 @@ class _Component(ABC, Generic[_CT]):
     def __init__(self, constructor: _ComponentConstructor[_CT]):
         self._constructor = constructor
 
-    def run(self, project: ProjectContext) -> None:
+    def run(self, proj_ctx: ProjectContext) -> None:
         """Run the component in the project context, for the current scene."""
         cstr = self._constructor
-        ctx = project.push_key_for_context(cstr.stable_key)
-        scene = project.current_scene_for(cstr.component_name)
-        self._render_with_project(project, cstr(ctx=ctx, scene=scene))
-        project.pop_key()
+        ctx = proj_ctx.push_key_for_context(cstr.stable_key)
+        scene = proj_ctx.current_scene_for(cstr.component_name)
+        self._render_with_project(proj_ctx, cstr(ctx=ctx, scene=scene))
+        proj_ctx.pop_key()
 
     def run_scene(self, scene: SceneState) -> None:
         """Run the component in the scene, context free."""
@@ -145,32 +157,37 @@ class _Component(ABC, Generic[_CT]):
 
 
 class FusrrComponent(_Component[Comp]):
-    def _inject_iter_id(self, iter_id: int):
+    def _inject_iter_id(self, iter_id: int) -> None:
+        """Injects the iteration ID into the component constructor.
+
+        Note:
+            Internal use only.
+        """
         self._constructor.set_ad_id(iter_id)
 
     def _render_with_project(
         self, _p: ProjectContext, constructed: Comp
     ) -> None:
+        constructed.set_name(self._constructor.component_name)
         constructed.build()
 
     def _render_with_scene(self, _s: SceneState, constructed: Comp) -> None:
+        constructed.set_name(self._constructor.component_name)
         constructed.build()
 
 
 class FusrrCompoundComponent(_Component[list[FusrrComponent]]):
     def _render_with_project(
-        self, p: ProjectContext, constructed: list[FusrrComponent]
+        self, p_ctx: ProjectContext, constructed: list[FusrrComponent]
     ) -> None:
-        iter_id = 0
-        for fc in constructed:
+        for iter_id, fc in enumerate(constructed):
             fc._inject_iter_id(iter_id)  # noqa: SLF001
-            fc.run(p)
+            fc.run(p_ctx)
 
     def _render_with_scene(
         self, s: SceneState, constructed: list[FusrrComponent]
     ) -> None:
-        iter_id = 0
-        for fc in constructed:
+        for iter_id, fc in enumerate(constructed):
             fc._inject_iter_id(iter_id)  # noqa: SLF001
             fc.run_scene(s)
 

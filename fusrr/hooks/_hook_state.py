@@ -3,14 +3,14 @@ from __future__ import annotations
 from contextvars import Context, ContextVar, copy_context
 from typing import TYPE_CHECKING, Any, ClassVar, Generic
 
-from fusrr.core.hooks.base import Provided, R, Runnable
+from fusrr.hooks.base import P, Provided, Runnable, T
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
 
-class CacheEntry(Generic[R]):
-    def __init__(self, inst: R, deps: Sequence[Any]):
+class CacheEntry(Generic[T]):
+    def __init__(self, inst: T, deps: Sequence[Any]):
         self.inst = inst
         self.deps = deps
 
@@ -38,7 +38,7 @@ class _HookState:
                 "No hook state is set. Use `new_hook_ctx` to create one."
             ) from e
 
-    def frame_entry_for(self, inst: R) -> CacheEntry[R] | None:
+    def frame_entry_for(self, inst: Runnable) -> CacheEntry[T] | None:
         """Return the cached instance."""
         return self._frame_get().get(self._i_key(inst))
 
@@ -50,11 +50,13 @@ class _HookState:
             inst, deps or ()
         )
 
-    def persistent_entry_for(self, prov: Provided[R]) -> CacheEntry[R] | None:
+    def persistent_entry_for(
+        self, prov: Provided[P, T]
+    ) -> CacheEntry[T] | None:
         """Return the cached instance from persistent state."""
         return self._persistent_state.get(self._p_key(prov))
 
-    def set_persistent_entry(self, prov: Provided[R], inst: R) -> None:
+    def set_persistent_entry(self, prov: Provided[P, T], inst: T) -> None:
         """Set the cached instance in the persistent state."""
         self._persistent_state[self._p_key(prov)] = CacheEntry(inst, ())
 

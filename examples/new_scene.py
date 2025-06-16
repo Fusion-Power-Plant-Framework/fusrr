@@ -1,11 +1,16 @@
-from fusrr import Comp, ProjectContext, SceneState, component
-from fusrr.core.component import co_component
-from fusrr.core.hooks.base import Designer
-from fusrr.core.hooks.hooks import (
+from fusrr import (
+    Comp,
+    Designer,
+    ProjectContext,
+    SceneState,
+    co_component,
+    component,
+)
+from fusrr.hooks import (
     provider,
     useDesigner,
     useProvider,
-    useSetProvider,
+    useSetCallProvider,
 )
 
 
@@ -17,7 +22,12 @@ class TestClassToBeProvided(Designer):
         print(f"Running TestClassToBeProvided with value: {self.some_value}")
 
 
-a = provider(TestClassToBeProvided)
+a = provider(lambda n: TestClassToBeProvided(n))
+
+
+class ExampleInnerCompDesigner(Designer):
+    def run(self) -> None:
+        print(f"$$$ Running ExampleInnerCompDesigner")
 
 
 class InnerCompBuilder(Comp):
@@ -33,9 +43,10 @@ class InnerCompBuilder(Comp):
 def InnerComp(some_prop, *, scene: SceneState):
     print("Running InnerComp... in scene:", scene.name)
 
-    d = useProvider(a)
+    p = useProvider(a)
+    d = useDesigner(ExampleInnerCompDesigner())
 
-    return InnerCompBuilder(some_prop, d.some_value)
+    return InnerCompBuilder(some_prop, p.some_value)
 
 
 class ExampleCompDesigner(Designer):
@@ -51,7 +62,7 @@ class ExampleCompDesigner(Designer):
 def ExampleCoComp():
     print("Running ExampleCoComp...")
 
-    useSetProvider(a, TestClassToBeProvided(42))
+    useSetCallProvider(a, 42)
 
     des = useDesigner(ExampleCompDesigner(bval=10))
 

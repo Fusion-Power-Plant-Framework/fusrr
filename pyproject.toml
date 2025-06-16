@@ -30,7 +30,7 @@ classifiers = [
   "Operating System :: OS Independent",
 ]
 
-dependencies = ["bpy", "numpy", "matplotlib", "kink>=0.8.0"]
+dependencies = ["bpy", "numpy=1.26.4", "kink>=0.8.0"]
 
 [project.optional-dependencies]
 dev = ["pre-commit", "jupyterlab"]
@@ -160,7 +160,7 @@ unfixable = [
 
 [tool.ruff.lint.isort]
 known-first-party = ["fusrr"]
-force-to-top      = ["numpy", "matplotlib", "bpy"]
+force-to-top      = ["numpy", "bpy"]
 
 [tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = "all"
@@ -189,7 +189,3 @@ tests = ["tests", "*/fusrr/tests"]
 [tool.coverage.report]
 exclude_lines = ["no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:"]
 "omit"        = ["fusrr/_version.py"]
-
-# [tool.pytest.ini_options]
-# addopts = "--html=report.html --self-contained-html --strict-markers -r fEX"
-# filterwarnings = ['ignore:Matplotlib is currently using agg:UserWarning']

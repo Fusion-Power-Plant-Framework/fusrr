@@ -7,7 +7,7 @@ from fusrr.base.entity.entity import FusrrWorldEntity
 from fusrr.base.errors import SceneStopError
 from fusrr.base.pipeline import FusrrBuildPipeline, FusrrViewPipeline
 from fusrr.base.scene import FusrrScene
-from fusrr.base.utils import load_fusrr_config
+from fusrr.base.utils import load_json
 from fusrr.base.world_state import FusrrWorldState
 from fusrr.blender.file_tools import save_state_to_blend_file
 from fusrr.blender.scene_tools import clear_scene, deselect_all
@@ -57,7 +57,7 @@ class FusrrProject:
 
         self._config_path = Path(config_path) if config_path else None
         self._config = (
-            load_fusrr_config(self._config_path) if self._config_path else None
+            load_json(self._config_path) if self._config_path else None
         )
 
         self._overwrite = overwrite
