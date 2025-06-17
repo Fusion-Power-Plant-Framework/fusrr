@@ -1,13 +1,15 @@
-from collections.abc import Callable
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Literal
 
 import bpy
 import bmesh
 
-from fusrr.base.entity.object_properties import ObjTransformProperties
-from fusrr.blender.mesh_tools import (
+from fusrr.blender.tools.mesh_tools import (
     new_mesh_for,
 )
-from fusrr.blender.scene_tools import (
+from fusrr.blender.tools.scene_tools import (
     check_collection_in_scene,
     check_object_in_scene,
     create_collection,
@@ -18,7 +20,31 @@ from fusrr.blender.scene_tools import (
     link_objects_to_collection,
 )
 from fusrr.core.component import Comp, Compound
-from fusrr.materials.base import FusrrMaterial
+from fusrr.core.vectors import Vec3
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from fusrr.materials.base import FusrrMaterial
+
+
+@dataclass
+class BlenderTransformProperties:
+    """Common properties for object transforms."""
+
+    center_point: Vec3 | Literal["centroid"] = Vec3.ZERO
+    position: Vec3 | None = None
+    rotation: Vec3 | None = None
+    scale: Vec3 = Vec3.ONE
+
+    def apply_to(self, obj: bpy.types.Object) -> None:
+        """Applies the transform properties to the object."""
+        if self.position is not None:
+            obj.location = self.position.tup
+        if self.rotation is not None:
+            obj.rotation_euler = self.rotation.tup
+        if self.scale != Vec3.ONE:
+            obj.scale = self.scale.tup
 
 
 class BlenderComp(Comp):
@@ -26,14 +52,15 @@ class BlenderComp(Comp):
 
     def __init__(
         self,
+        *,
         builder: Callable[[bpy.types.Object, bmesh.types.BMesh], None],
         material: FusrrMaterial | None = None,
-        transform_props: ObjTransformProperties | None = None,
+        transform_props: BlenderTransformProperties | None = None,
     ):
         """Initialize the Blender component with a name."""
         self._build_with_mesh = builder
         self.material = material
-        self.transform_props = transform_props or ObjTransformProperties()
+        self.transform_props = transform_props or BlenderTransformProperties()
 
     def build_obj_w_mesh(
         self,

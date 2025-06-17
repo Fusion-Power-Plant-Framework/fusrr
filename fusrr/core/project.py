@@ -5,12 +5,12 @@ from os import PathLike
 from pathlib import Path
 from typing import TYPE_CHECKING, Generic
 
-from fusrr.base.utils import load_json
 from fusrr.core.config_model import ProjectConfig, S, SceneConfig
+from fusrr.core.errors import SceneStopError
+from fusrr.core.utils import load_json
 from fusrr.hooks._hook_state import HOOK_STATE
 
 if TYPE_CHECKING:
-    from collections.abc import Generator
     from contextvars import Context
 
     from fusrr.core.component import FusrrComponent
@@ -103,11 +103,20 @@ class FusrrProject(Generic[S]):
 
 
 def run_project(project: FusrrProject):
+    completed_successfully = False
     project.on_start()
     root_comps = project.root_components
     p_ctxs = [ProjectContext() for _ in root_comps]
-    for scene in project.config.scenes:
-        for root_comp, p_ctx in zip(root_comps, p_ctxs, strict=True):
-            p_ctx.set_current_scene_config(scene)
-            root_comp.run(p_ctx)
-    project.on_finish()
+    try:
+        for scene in project.config.scenes:
+            for root_comp, p_ctx in zip(root_comps, p_ctxs, strict=True):
+                p_ctx.set_current_scene_config(scene)
+                root_comp.run(p_ctx)
+    except SceneStopError as e:
+        print(f"Stopping project on: {e}")
+    else:
+        completed_successfully = True
+    finally:
+        if not completed_successfully:
+            print("Errors occurred during the run.")
+        project.on_finish()

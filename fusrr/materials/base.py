@@ -3,7 +3,7 @@ from __future__ import annotations
 import abc
 from typing import TYPE_CHECKING
 
-from fusrr.blender.object_tools import set_object_material
+from fusrr.blender.tools.object_tools import set_object_material
 from fusrr.data_libs.materials import FusrrMaterialDataLabel
 
 if TYPE_CHECKING:

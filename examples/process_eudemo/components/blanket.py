@@ -6,12 +6,12 @@ from process.geometry.blanket_geometry import (
 from examples.process_eudemo.providers import process_params_provider
 from examples.process_eudemo.scene import EUDEMOScene
 from fusrr import component
-from fusrr.base.models import Vec3
 from fusrr.blender import BlenderComp
-from fusrr.blender.mesh_tools import (
+from fusrr.blender.tools.mesh_tools import (
     mesh_add_edges_from_points,
     mesh_revolve,
 )
+from fusrr.core.vectors import Vec3
 from fusrr.hooks import Designer, useDesigner, useProvider
 from fusrr.materials.base import MetallicMaterial
 from fusrr.materials.models import MaterialColour, MaterialValueZeroToOne

@@ -5,7 +5,7 @@ import bpy
 import numpy as np
 import bmesh
 
-from fusrr.base.models import Vec3
+from fusrr.core.vectors import Vec3
 
 
 @contextmanager

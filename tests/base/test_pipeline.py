@@ -1,7 +1,7 @@
 from fusrr.base.entity.object import cube
-from fusrr.base.models import Vec3
 from fusrr.base.pipeline import FusrrBuildPipeline
 from fusrr.base.world_state import FusrrWorldState
+from fusrr.core.vectors import Vec3
 
 
 def test_pipeline():

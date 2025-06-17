@@ -1,6 +1,6 @@
 from enum import Enum
 
-from fusrr.blender.file_tools import (
+from fusrr.blender.tools.file_tools import (
     BlenderFileDataTypes,
     append_from_blend_file,
 )

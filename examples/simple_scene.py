@@ -1,6 +1,6 @@
 from fusrr.base.entity.object import cube
-from fusrr.base.models import Vec3
 from fusrr.base.project import FusrrProject
+from fusrr.core.vectors import Vec3
 
 scene = FusrrProject("simple_scene", overwrite=True)
 

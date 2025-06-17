@@ -1,6 +1,6 @@
 from process.geometry.geometry_parameterisations import RectangleGeometry
 
-from fusrr.base.models import Vec3
+from fusrr.core.vectors import Vec3
 from fusrr.reactor.process.process_mappings import (
     RADIAL_BUILD,
     vertical_lower,

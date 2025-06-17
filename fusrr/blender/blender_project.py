@@ -2,8 +2,8 @@ import time
 from os import PathLike
 from pathlib import Path
 
-from fusrr.blender.file_tools import save_state_to_blend_file
-from fusrr.blender.scene_tools import clear_scene, deselect_all
+from fusrr.blender.tools.file_tools import save_state_to_blend_file
+from fusrr.blender.tools.scene_tools import clear_scene, deselect_all
 from fusrr.core.component import FusrrComponent
 from fusrr.core.config_model import S, SceneConfig
 from fusrr.core.project import FusrrProject
