@@ -5,12 +5,12 @@ from pathlib import Path
 from fusrr.blender.file_tools import save_state_to_blend_file
 from fusrr.blender.scene_tools import clear_scene, deselect_all
 from fusrr.core.component import FusrrComponent
+from fusrr.core.config_model import S, SceneConfig
 from fusrr.core.project import FusrrProject
-from fusrr.core.scene import SceneState
 from fusrr.data_libs.materials import load_materials
 
 
-class BlenderProject(FusrrProject):
+class BlenderProject(FusrrProject[S]):
     """A BlenderProject represents the state of a Blender .blend file.
 
     It holds the names of all objects added to the file, as well as
@@ -25,7 +25,7 @@ class BlenderProject(FusrrProject):
         project_config: dict | PathLike | None = None,
         output_directory: PathLike | None = None,
         overwrite: bool = False,
-        default_scene: SceneState | None = None,
+        default_scene: SceneConfig[S] | None = None,
     ):
         """Create a BlenderProject with a name.
 
@@ -51,10 +51,10 @@ class BlenderProject(FusrrProject):
             project_config=project_config,
             output_directory=output_directory,
             overwrite=overwrite,
-            default_scene=default_scene,
+            default_scene_config=default_scene,
         )
-        self._project_file = self._project_directory / (
-            self._project_name + ".blend"
+        self._project_file = self.project_directory / (
+            self.project_name + ".blend"
         )
 
     def _rename_project_file_if_exists(self) -> None:
@@ -74,7 +74,7 @@ class BlenderProject(FusrrProject):
 
     def on_finish(self) -> None:
         deselect_all()
-        if self._overwrite:
+        if self.overwrite:
             self._delete_project_file_if_exists()
         else:
             self._rename_project_file_if_exists()

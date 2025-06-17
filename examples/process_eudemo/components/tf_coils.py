@@ -10,16 +10,16 @@ from process.geometry.tfcoil_geometry import (
     tfcoil_geometry_d_shape,
     tfcoil_geometry_rectangular_shape,
 )
-from process_eudemo.providers import process_params_provider
 
+from examples.process_eudemo.providers import process_params_provider
+from examples.process_eudemo.scene import EUDEMOScene
+from fusrr import component
 from fusrr.base.models import Vec3
 from fusrr.blender.blender_component import BlenderComp, BlenderCompound
 from fusrr.blender.mesh_tools import (
     mesh_add_edges_from_points,
 )
-from fusrr.core import component
-from fusrr.hooks.base import Designer
-from fusrr.hooks.hooks import useDesigner, useProvider
+from fusrr.hooks import Designer, useDesigner, useProvider
 from fusrr.materials.base import MetallicMaterial
 from fusrr.materials.models import MaterialColour, MaterialValueZeroToOne
 from fusrr.reactor.process.process_adaptor import ProcessParams
@@ -34,8 +34,12 @@ class TFCoilDShape:
 
 
 class TFCoilsDesigner(Designer):
-    def __init__(self, params: ProcessParams):
+    def __init__(
+        self, params: ProcessParams, start_angle: float, end_angle: float
+    ):
         self.params = params
+        self.start_angle = start_angle
+        self.end_angle = end_angle
 
     def run(self) -> None:
         tf_ib_tk = self.params.tfc_inleg
@@ -107,14 +111,20 @@ class TFCoilsDesigner(Designer):
                     ob_leg_arch_pts=path_pts,
                 )
                 for n in range(int(self.params["n_tf"]))
+                if self.start_angle < n * angle_per_coil < self.end_angle
             ]
 
 
 @component
-def TFCoils():
+def TFCoils(*, scene: EUDEMOScene):
     """Component to design the TF coils of a PROCESS reactor."""
     params = useProvider(process_params_provider)
-    d = useDesigner(TFCoilsDesigner(params))
+    # designer depends on the end angle of the scene
+    # add it to the useDesigner parameters
+    d = useDesigner(
+        TFCoilsDesigner(params, scene.start_angle, scene.end_angle),
+        [scene.start_angle, scene.end_angle],
+    )
 
     return BlenderCompound(
         [

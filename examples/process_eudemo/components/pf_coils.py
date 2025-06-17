@@ -1,15 +1,15 @@
 from process.geometry.geometry_parameterisations import RectangleGeometry
-from process_eudemo.providers import process_params_provider
 
+from examples.process_eudemo.providers import process_params_provider
+from examples.process_eudemo.scene import EUDEMOScene
+from fusrr import component
 from fusrr.base.models import Vec3
 from fusrr.blender.blender_component import BlenderComp, BlenderCompound
 from fusrr.blender.mesh_tools import (
     mesh_add_edges_from_points,
     mesh_revolve,
 )
-from fusrr.core import component
-from fusrr.hooks.base import Designer
-from fusrr.hooks.hooks import useDesigner, useProvider
+from fusrr.hooks import Designer, useDesigner, useProvider
 from fusrr.materials.base import MetallicMaterial
 from fusrr.materials.models import MaterialColour, MaterialValueZeroToOne
 from fusrr.reactor.process.process_adaptor import ProcessParams
@@ -81,9 +81,9 @@ def _coil_builder(geom: RectangleGeometry, angle: float):
 
 
 @component
-def PFCoil(geom: RectangleGeometry):
+def PFCoil(geom: RectangleGeometry, *, scene: EUDEMOScene):
     return BlenderComp(
-        builder=_coil_builder(geom, 180),
+        builder=_coil_builder(geom, scene.end_angle),
         material=MetallicMaterial(
             base_colour=MaterialColour(1.0, 0.2, 0.2, 1),
             metallicness=MaterialValueZeroToOne(1.0),
@@ -93,9 +93,9 @@ def PFCoil(geom: RectangleGeometry):
 
 
 @component
-def CSCoil(geom: RectangleGeometry):
+def CSCoil(geom: RectangleGeometry, *, scene: EUDEMOScene):
     return BlenderComp(
-        builder=_coil_builder(geom, 180),
+        builder=_coil_builder(geom, scene.end_angle),
         material=MetallicMaterial(
             base_colour=MaterialColour(0.9, 0.2, 1, 1),
             metallicness=MaterialValueZeroToOne(1.0),

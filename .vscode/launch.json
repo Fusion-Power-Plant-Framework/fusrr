@@ -18,12 +18,12 @@
       "cwd": "${workspaceFolder}/examples/eudemo",
       "console": "integratedTerminal",
       "justMyCode": false
-    },    {
+    },
+    {
       "name": "process-eudemo",
       "type": "debugpy",
       "request": "launch",
-      "program": "process_eudemo/run_project.py",
-      "cwd": "${workspaceFolder}/examples",
+      "program": "examples/process_eudemo/run_project.py",
       "console": "integratedTerminal",
       "justMyCode": false
     }

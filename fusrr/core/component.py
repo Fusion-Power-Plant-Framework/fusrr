@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import inspect
 from functools import wraps
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Generic
 
+from fusrr.core.config_model import S
 from fusrr.core.project import ProjectContext
 
 if TYPE_CHECKING:
@@ -11,7 +12,6 @@ if TYPE_CHECKING:
     from contextvars import Context
 
     from fusrr.core.project import ProjectContext
-    from fusrr.core.scene import SceneState
 
 
 class Comp:
@@ -53,7 +53,7 @@ class Compound:
 COMPONENT_RETURN = Comp | Compound
 
 
-class FusrrComponent:
+class FusrrComponent(Generic[S]):
     def __init__(
         self,
         function: Callable[..., COMPONENT_RETURN],
@@ -62,27 +62,27 @@ class FusrrComponent:
         kwargs: dict[str, Any] | None = None,
     ):
         self._constructor = function
-        self.file = inspect.getfile(self._constructor)
-        self.sig = inspect.signature(self._constructor)
-        self.scene_in_params = "scene" in self.sig.parameters
+        self._file = inspect.getfile(self._constructor)
+        self._sig = inspect.signature(self._constructor)
+        self._scene_in_params = "scene" in self._sig.parameters
         self._constructor_name = self._constructor.__name__
         self._set_name = name
         self._args = args or ()
         self._kwargs = kwargs or {}
 
-        self.is_compound = None
+        self._is_compound = None
 
         if (
-            self.scene_in_params
-            and self.sig.parameters["scene"].kind
+            self._scene_in_params
+            and self._sig.parameters["scene"].kind
             is not inspect.Parameter.KEYWORD_ONLY
         ):
             raise TypeError(
                 f"`{self}` must use reserved parameter 'scene' "
                 "as a keyword-only argument, i.e.:\n"
-                f"`def {self}(..., *, scene: SceneState): ...`."
+                f"`def {self}(..., *, scene: YourSceneClass): ...`."
             )
-        if "name" in self.sig.parameters and self.sig.parameters[
+        if "name" in self._sig.parameters and self._sig.parameters[
             "name"
         ].kind in (
             inspect.Parameter.KEYWORD_ONLY,
@@ -106,7 +106,7 @@ class FusrrComponent:
     @property
     def key_basis(self) -> tuple:
         """Returns the information that builds the component's key."""
-        return (self.file, self.sig, self._constructor_name, self._set_name)
+        return (self._file, self._sig, self._constructor_name, self._set_name)
 
     @property
     def stable_key(self) -> int:
@@ -115,28 +115,38 @@ class FusrrComponent:
         """
         return hash(self.key_basis)
 
+    @property
+    def is_compound(self) -> bool:
+        """Returns whether this component is a compound or not."""
+        if self._is_compound is None:
+            raise RuntimeError(
+                "The component type is not set yet and can only be "
+                "determined after it has been run."
+            )
+        return self._is_compound
+
     def _set_type(self, constructed: COMPONENT_RETURN) -> None:
         """Sets the type of the component based on the constructed object."""
         if isinstance(constructed, Comp):
-            self.is_compound = False
+            self._is_compound = False
         elif isinstance(constructed, Compound):
-            self.is_compound = True
+            self._is_compound = True
         else:
             raise TypeError(
                 f"Expected Comp or Compound, got {type(constructed)}."
             )
 
     def _run_constructor(
-        self, *, ctx: Context | None = None, scene: SceneState | None = None
+        self, *, ctx: Context | None = None, scene: S | None = None
     ) -> COMPONENT_RETURN:
         """Calls the component function with the provided context and scene."""
-        if scene is None and self.scene_in_params:
+        if scene is None and self._scene_in_params:
             raise ValueError(
                 "Scene must be provided to the component constructor, "
                 "scene is required by the component."
             )
         fn, args, kwargs = self._constructor, self._args, self._kwargs.copy()
-        if self.scene_in_params:
+        if self._scene_in_params:
             kwargs["scene"] = scene
         if ctx:
             constructed = ctx.run(fn, *args, **kwargs)
@@ -145,54 +155,30 @@ class FusrrComponent:
         self._set_type(constructed)
         return constructed
 
-    def run(self, proj_ctx: ProjectContext) -> None:
+    def run(self, proj_ctx: ProjectContext[S]) -> None:
         """Run the component in the project context, for the current scene."""
         ctx = proj_ctx.push_key_for_context(self.stable_key)
         scene = proj_ctx.current_scene_for(self.name)
-        self._build_in_project(
-            proj_ctx, self._run_constructor(ctx=ctx, scene=scene)
-        )
+        constructed = self._run_constructor(ctx=ctx, scene=scene)
+        # is_compound is set in _run_constructor
+        if self.is_compound:
+            self._build_compound(proj_ctx, constructed)  # type: ignore[call-arg]
+        else:
+            self._build_component(constructed)  # type: ignore[call-arg]
         proj_ctx.pop_key()
 
-    def run_scene(self, scene: SceneState) -> None:
-        """Run the component in the scene, context free."""
-        self._build_in_scene(scene, self._run_constructor(scene=scene))
+    def _build_component(self, constructed: Comp) -> None:
+        constructed.build(self.name)
 
-    def _build_in_project(
-        self, p: ProjectContext, constructed: COMPONENT_RETURN
-    ) -> None:
-        """Renders the constructed component."""
-        if isinstance(constructed, Comp):
-            constructed.build(self.name)
-        elif isinstance(constructed, Compound):
-            constructed.pre_build(self.name)
-            for comp in constructed.components:
-                comp.run(p)
-            constructed.post_build(self.name)
-        else:
-            raise TypeError(
-                f"Expected Comp or Compound, got {type(constructed)}."
-            )
-
-    def _build_in_scene(
-        self, s: SceneState, constructed: COMPONENT_RETURN
-    ) -> None:
-        """Renders the constructed component."""
-        if isinstance(constructed, Comp):
-            constructed.build(self.name)
-        elif isinstance(constructed, Compound):
-            constructed.pre_build(self.name)
-            for comp in constructed.components:
-                comp.run_scene(s)
-            constructed.post_build(self.name)
-        else:
-            raise TypeError(
-                f"Expected Comp or Compound, got {type(constructed)}."
-            )
+    def _build_compound(self, p: ProjectContext, constructed: Compound) -> None:
+        constructed.pre_build(self.name)
+        for comp in constructed.components:
+            comp.run(p)
+        constructed.post_build(self.name)
 
     def __repr__(self) -> str:
         return (
-            f"{self.__str__()} ({self.file})\n"
+            f"{self.__str__()} ({self._file})\n"
             f"  Args: {self._args}\n"
             f"  Kwargs: {self._kwargs}\n"
         )

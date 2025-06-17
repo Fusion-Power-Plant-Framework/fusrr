@@ -1,12 +1,9 @@
-import sys
 from pathlib import Path
 
-from fusrr import SceneState, run_project
+from examples.process_eudemo.components.reactor_eudemo import EUDEMO_Reactor
+from examples.process_eudemo.scene import EUDEMOScene
+from fusrr import SceneConfig, run_project
 from fusrr.blender import BlenderProject
-
-sys.path.append(Path(__file__).resolve().parent.parent.as_posix())
-
-from process_eudemo.components.reactor_eudemo import EUDEMO_Reactor
 
 project_dir = Path(__file__).resolve().parent
 config_dir = project_dir / "config"
@@ -22,6 +19,8 @@ run_project(
         # project_config=project_config,
         output_directory=output_dir,
         overwrite=True,
-        default_scene=SceneState(""),
+        default_scene=SceneConfig(
+            name="scene 1", state=EUDEMOScene(start_angle=0.0, end_angle=180.0)
+        ),
     ),
 )

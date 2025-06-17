@@ -1,16 +1,15 @@
 from fusrr import (
     Comp,
     Compound,
-    Designer,
     ProjectContext,
-    SceneState,
     component,
 )
 from fusrr.hooks import (
+    Designer,
     provider,
     useDesigner,
-    useLatchProvider,
     useProvider,
+    useSetProvider,
 )
 
 
@@ -31,9 +30,7 @@ class ExampleInnerCompDesigner(Designer):
 
 
 @component
-def InnerComp(some_prop, *, scene: SceneState):
-    print("Running InnerComp... in scene:", scene.name)
-
+def InnerComp(some_prop):
     p = useProvider(a)
     d = useDesigner(ExampleInnerCompDesigner())
 
@@ -58,7 +55,7 @@ class ExampleCompDesigner(Designer):
 def ExampleCoComp():
     print("Running ExampleCoComp...")
 
-    useLatchProvider(a, 42)
+    useSetProvider(a, 42)
 
     des = useDesigner(ExampleCompDesigner(bval=10))
 

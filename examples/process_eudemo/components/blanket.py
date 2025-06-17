@@ -2,16 +2,17 @@ from process.geometry.blanket_geometry import (
     blanket_geometry_double_null,
     blanket_geometry_single_null,
 )
-from process_eudemo.providers import process_params_provider
 
-from fusrr import Designer, component
+from examples.process_eudemo.providers import process_params_provider
+from examples.process_eudemo.scene import EUDEMOScene
+from fusrr import component
 from fusrr.base.models import Vec3
 from fusrr.blender import BlenderComp
 from fusrr.blender.mesh_tools import (
     mesh_add_edges_from_points,
     mesh_revolve,
 )
-from fusrr.hooks import useDesigner, useProvider
+from fusrr.hooks import Designer, useDesigner, useProvider
 from fusrr.materials.base import MetallicMaterial
 from fusrr.materials.models import MaterialColour, MaterialValueZeroToOne
 from fusrr.reactor.process import ProcessParams
@@ -97,7 +98,7 @@ class BlanketDesigner(Designer):
 
 
 @component
-def Blanket():
+def Blanket(*, scene: EUDEMOScene):
     """Component to design the blanket of a PROCESS reactor."""
     params = useProvider(process_params_provider)
     d = useDesigner(BlanketDesigner(params))
@@ -108,7 +109,7 @@ def Blanket():
         if d.i_single_null == 0:
             mesh_add_edges_from_points(m, d.ib_pts)
             mesh_add_edges_from_points(m, d.ob_pts)
-        mesh_revolve(m, Vec3.ZERO, Vec3.Z, 360)
+        mesh_revolve(m, Vec3.ZERO, Vec3.Z, scene.end_angle)
 
     return BlenderComp(
         builder=builder,

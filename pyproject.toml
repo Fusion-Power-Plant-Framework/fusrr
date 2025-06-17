@@ -30,7 +30,7 @@ classifiers = [
   "Operating System :: OS Independent",
 ]
 
-dependencies = ["bpy", "numpy=1.26.4", "kink>=0.8.0"]
+dependencies = ["bpy", "numpy=1.26.4", "kink>=0.8.0", "pydantic>=2.11.0"]
 
 [project.optional-dependencies]
 dev = ["pre-commit", "jupyterlab"]

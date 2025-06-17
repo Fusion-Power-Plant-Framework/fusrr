@@ -50,9 +50,7 @@ def provider(prov: Callable[P, T]) -> Provided[P, T]:
     return Provided(prov)
 
 
-def useLatchProvider(
-    provider: Provided[P, T], *args: P.args, **kwargs: P.kwargs
-):
+def useSetProvider(provider: Provided[P, T], *args: P.args, **kwargs: P.kwargs):
     """Set a provider instance by calling it with the given arguments."""
     entry = HOOK_STATE.persistent_entry_for(provider)
     if entry is None:

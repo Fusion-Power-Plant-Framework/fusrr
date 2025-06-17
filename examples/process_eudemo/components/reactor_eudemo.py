@@ -1,21 +1,20 @@
 from os import PathLike
 
-from process_eudemo.components.blanket import Blanket
-from process_eudemo.components.cryostat import Cryostat
-from process_eudemo.components.pf_coils import PFCoils
-from process_eudemo.components.plasma import Plasma
-from process_eudemo.components.tf_coils import TFCoils
-from process_eudemo.components.vacuum_vessel import VacuumVessel
-from process_eudemo.providers import process_params_provider
-
+from examples.process_eudemo.components.blanket import Blanket
+from examples.process_eudemo.components.cryostat import Cryostat
+from examples.process_eudemo.components.pf_coils import PFCoils
+from examples.process_eudemo.components.plasma import Plasma
+from examples.process_eudemo.components.tf_coils import TFCoils
+from examples.process_eudemo.components.vacuum_vessel import VacuumVessel
+from examples.process_eudemo.providers import process_params_provider
 from fusrr import component
 from fusrr.blender import BlenderCompound
-from fusrr.hooks import useLatchProvider
+from fusrr.hooks import useSetProvider
 
 
 @component
 def EUDEMO_Reactor(mfile_filepath: PathLike):
-    useLatchProvider(process_params_provider, mfile_filepath)
+    useSetProvider(process_params_provider, mfile_filepath)
 
     return BlenderCompound(
         [
