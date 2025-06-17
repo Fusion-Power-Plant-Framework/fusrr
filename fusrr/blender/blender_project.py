@@ -4,7 +4,7 @@ from pathlib import Path
 
 from fusrr.blender.file_tools import save_state_to_blend_file
 from fusrr.blender.scene_tools import clear_scene, deselect_all
-from fusrr.core.component import _Component
+from fusrr.core.component import FusrrComponent
 from fusrr.core.project import FusrrProject
 from fusrr.core.scene import SceneState
 from fusrr.data_libs.materials import load_materials
@@ -21,7 +21,7 @@ class BlenderProject(FusrrProject):
         self,
         project_name: str,
         *,
-        root_components: list[_Component],
+        root_components: list[FusrrComponent],
         project_config: dict | PathLike | None = None,
         output_directory: PathLike | None = None,
         overwrite: bool = False,

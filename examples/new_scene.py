@@ -1,16 +1,16 @@
 from fusrr import (
     Comp,
+    Compound,
     Designer,
     ProjectContext,
     SceneState,
-    co_component,
     component,
 )
 from fusrr.hooks import (
     provider,
     useDesigner,
+    useLatchProvider,
     useProvider,
-    useSetCallProvider,
 )
 
 
@@ -30,15 +30,6 @@ class ExampleInnerCompDesigner(Designer):
         print(f"$$$ Running ExampleInnerCompDesigner")
 
 
-class InnerCompBuilder(Comp):
-    def __init__(self, some_prop: int, another_prop: int):
-        self.some_prop = some_prop
-        self.another_prop = another_prop
-
-    def build(self) -> None:
-        print(f"Building InnerComp... {self.some_prop=}, {self.another_prop=}")
-
-
 @component
 def InnerComp(some_prop, *, scene: SceneState):
     print("Running InnerComp... in scene:", scene.name)
@@ -46,7 +37,12 @@ def InnerComp(some_prop, *, scene: SceneState):
     p = useProvider(a)
     d = useDesigner(ExampleInnerCompDesigner())
 
-    return InnerCompBuilder(some_prop, p.some_value)
+    def builder():
+        print(
+            f"InnerComp: some_prop={some_prop}, provided_value={p.some_value}"
+        )
+
+    return Comp(builder=builder)
 
 
 class ExampleCompDesigner(Designer):
@@ -58,15 +54,15 @@ class ExampleCompDesigner(Designer):
         self.val = 5
 
 
-@co_component
+@component
 def ExampleCoComp():
     print("Running ExampleCoComp...")
 
-    useSetCallProvider(a, 42)
+    useLatchProvider(a, 42)
 
     des = useDesigner(ExampleCompDesigner(bval=10))
 
-    return [InnerComp(some_prop=i) for i in range(des.val)]
+    return Compound([InnerComp(some_prop=i) for i in range(des.val)])
 
 
 # Example usage

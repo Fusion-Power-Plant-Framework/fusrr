@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import json
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from os import PathLike
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, TypeVar
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable
-    from pathlib import Path
+    from os import PathLike
 
 
 def load_json(config_path: PathLike) -> dict[str, Any]:

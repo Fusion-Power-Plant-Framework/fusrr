@@ -4,18 +4,17 @@ from process.geometry.blanket_geometry import (
 )
 from process_eudemo.providers import process_params_provider
 
-from fusrr import Comp, Designer, component
+from fusrr import Designer, component
 from fusrr.base.models import Vec3
-from fusrr.blender.blender_component import BlenderComp
+from fusrr.blender import BlenderComp
 from fusrr.blender.mesh_tools import (
     mesh_add_edges_from_points,
     mesh_revolve,
 )
-from fusrr.hooks.hooks import useDesigner, useProvider
-from fusrr.materials.base import FusrrMaterial, MetallicMaterial
+from fusrr.hooks import useDesigner, useProvider
+from fusrr.materials.base import MetallicMaterial
 from fusrr.materials.models import MaterialColour, MaterialValueZeroToOne
 from fusrr.reactor.process import ProcessParams
-from fusrr.reactor.process.process_component import ProcessComponent
 from fusrr.reactor.process.utils import cumul_setup, cumulative_radial_build
 
 

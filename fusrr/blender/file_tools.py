@@ -42,15 +42,18 @@ def save_state_to_blend_file(path: Path) -> None:
 
 
 def append_from_blend_file(
-    path: Path,
+    blend_path: Path,
     data_type: BlenderFileDataTypes,
 ):
-    """Load materials from the materials library."""
+    """Append data from <blend_path> .blend file into the current file."""
     files = []
-    with bpy.data.libraries.load(path.as_posix()) as (data_from, _data_to):
+    with bpy.data.libraries.load(blend_path.as_posix()) as (
+        data_from,
+        _data_to,
+    ):
         files = [
             {"name": data_name}
             for data_name in data_type.access_from_bpy_lib(data_from)
         ]
-    dt_dir = (path / data_type.value).as_posix()
-    bpy.ops.wm.append(directory=dt_dir, files=files)
+    data_dir = (blend_path / data_type.value).as_posix()
+    bpy.ops.wm.append(directory=data_dir, files=files)

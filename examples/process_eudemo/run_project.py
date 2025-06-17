@@ -1,26 +1,26 @@
 import sys
 from pathlib import Path
 
-sys.path.append(Path(__file__).parent.parent.as_posix())
+from fusrr import SceneState, run_project
+from fusrr.blender import BlenderProject
 
+sys.path.append(Path(__file__).resolve().parent.parent.as_posix())
 
-from process_eudemo.components.reactor_eudemo import EUDEMOReactor
+from process_eudemo.components.reactor_eudemo import EUDEMO_Reactor
 
-from fusrr.blender.blender_project import BlenderProject
-from fusrr.core.project import ProjectContext, run_project
-from fusrr.core.scene import SceneState
+project_dir = Path(__file__).resolve().parent
+config_dir = project_dir / "config"
+output_dir = project_dir / "output"
 
-config_dir = Path(__file__).parent / "config"
-
-p = ProjectContext()
+project_config = config_dir / "Process_EUDEMO.json"
+process_mfile_path = config_dir / "EUDEMO_MFILE.DAT"
 
 run_project(
     BlenderProject(
-        "EUDEMO",
-        root_components=[
-            EUDEMOReactor(mfile_filepath=config_dir / "EUDEMO_MFILE.DAT")
-        ],
-        # project_config=config_dir / "process_eudemo.json",
+        "Process_EUDEMO",
+        root_components=[EUDEMO_Reactor(process_mfile_path)],
+        # project_config=project_config,
+        output_directory=output_dir,
         overwrite=True,
         default_scene=SceneState(""),
     ),

@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 import inspect
-from abc import ABC, abstractmethod
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Generic, TypeVar
+from typing import TYPE_CHECKING, Any
 
 from fusrr.core.project import ProjectContext
 
@@ -18,44 +17,60 @@ if TYPE_CHECKING:
 class Comp:
     def __init__(self, *, builder: Callable[[], None] | None = None):
         self._builder = builder
-        self._name = None
 
-    @property
-    def name(self) -> str:
-        """Returns the name of the component."""
-        if self._name is None:
-            raise ValueError("Component name not set.")
-        return self._name
-
-    def set_name(self, name: str) -> None:
-        """Sets the name of the component."""
-        self._name = name
-
-    def build(self) -> None:
+    def build(self, name: str) -> None:  # noqa: ARG002
         if self._builder is not None:
             self._builder()
         else:
             raise NotImplementedError("Builder function is not defined.")
 
 
-_CT = TypeVar("_CT", bound=Comp | list["FusrrComponent"])
+class Compound:
+    def __init__(self, components: list[FusrrComponent]):
+        self.components = components
+
+    def component_names(self, *, include_compounds=True) -> list[str]:
+        """Returns the names of all components in the compound."""
+        return [
+            comp.name
+            for comp in self.components
+            if include_compounds or comp.is_compound is False
+        ]
+
+    def sub_compound_names(self) -> list[str]:
+        """Returns the names of all sub-compounds in the compound."""
+        return [
+            comp.name for comp in self.components if comp.is_compound is True
+        ]
+
+    def pre_build(self, name: str) -> None:
+        """Builds all components in the compound."""
+
+    def post_build(self, name: str) -> None:
+        """Finalizes the compound after all components are built."""
 
 
-class _ComponentConstructor(Generic[_CT]):
+COMPONENT_RETURN = Comp | Compound
+
+
+class FusrrComponent:
     def __init__(
         self,
-        function: Callable[..., _CT],
+        function: Callable[..., COMPONENT_RETURN],
+        name: str | None = None,
         args: tuple[Any, ...] | None = None,
         kwargs: dict[str, Any] | None = None,
     ):
-        self.fn = function
-        self.file = inspect.getfile(self.fn)
-        self.sig = inspect.signature(self.fn)
+        self._constructor = function
+        self.file = inspect.getfile(self._constructor)
+        self.sig = inspect.signature(self._constructor)
         self.scene_in_params = "scene" in self.sig.parameters
-        self.args = args or ()
-        self.kwargs = kwargs or {}
+        self._constructor_name = self._constructor.__name__
+        self._set_name = name
+        self._args = args or ()
+        self._kwargs = kwargs or {}
 
-        self._ad_id: int | None = None
+        self.is_compound = None
 
         if (
             self.scene_in_params
@@ -67,152 +82,136 @@ class _ComponentConstructor(Generic[_CT]):
                 "as a keyword-only argument, i.e.:\n"
                 f"`def {self}(..., *, scene: SceneState): ...`."
             )
-        if "scene" in self.kwargs:
+        if "name" in self.sig.parameters and self.sig.parameters[
+            "name"
+        ].kind in (
+            inspect.Parameter.KEYWORD_ONLY,
+            inspect.Parameter.POSITIONAL_OR_KEYWORD,
+        ):
+            raise TypeError(
+                f"`{self}` uses reserved parameter 'name' "
+                "as an argument. A component `name` can be passed "
+                "to the component as a kwarg only."
+            )
+
+        if "scene" in self._kwargs:
             raise TypeError(
                 f"`{self}` was passed reserved parameter 'scene' in its kwargs."
             )
 
-    def __call__(
+    @property
+    def name(self) -> str:
+        return self._set_name or self._constructor_name
+
+    @property
+    def key_basis(self) -> tuple:
+        """Returns the information that builds the component's key."""
+        return (self.file, self.sig, self._constructor_name, self._set_name)
+
+    @property
+    def stable_key(self) -> int:
+        """Returns a hash that uniquely identifies this component
+        across renders (deterministically).
+        """
+        return hash(self.key_basis)
+
+    def _set_type(self, constructed: COMPONENT_RETURN) -> None:
+        """Sets the type of the component based on the constructed object."""
+        if isinstance(constructed, Comp):
+            self.is_compound = False
+        elif isinstance(constructed, Compound):
+            self.is_compound = True
+        else:
+            raise TypeError(
+                f"Expected Comp or Compound, got {type(constructed)}."
+            )
+
+    def _run_constructor(
         self, *, ctx: Context | None = None, scene: SceneState | None = None
-    ) -> _CT:
+    ) -> COMPONENT_RETURN:
         """Calls the component function with the provided context and scene."""
         if scene is None and self.scene_in_params:
             raise ValueError(
                 "Scene must be provided to the component constructor, "
                 "scene is required by the component."
             )
-        fn, args, kwargs = self.fn, self.args, self.kwargs.copy()
+        fn, args, kwargs = self._constructor, self._args, self._kwargs.copy()
         if self.scene_in_params:
             kwargs["scene"] = scene
         if ctx:
-            return ctx.run(fn, *args, **kwargs)
-        return fn(*args, **kwargs)
-
-    def set_ad_id(self, ad_id: int) -> None:
-        """Sets the ad_id, used when the component is part of a list."""
-        if self._ad_id:
-            raise RuntimeError("Cannot set ad_id more than once")
-        self._ad_id = ad_id
-
-    @property
-    def component_name(self) -> str:
-        return self.fn.__name__
-
-    @property
-    def key_basis(self) -> tuple:
-        """Returns the information that builds the component's key."""
-        return (self.file, self.sig, self.component_name, self._ad_id)
-
-    @property
-    def stable_key(self) -> int:
-        """Returns a hash that uniquely identifies this constructor
-        across renders (deterministically).
-
-        It's derived from the function file path, signature and name.
-        """
-        return hash(self.key_basis)
-
-    def __repr__(self) -> str:
-        return (
-            f"{self.component_name} <{self.file}>\n"
-            f"  Args: {self.args}\n"
-            f"  Kwargs: {self.kwargs}\n"
-        )
-
-    def __str__(self) -> str:
-        return self.component_name
-
-
-class _Component(ABC, Generic[_CT]):
-    def __init__(self, constructor: _ComponentConstructor[_CT]):
-        self._constructor = constructor
+            constructed = ctx.run(fn, *args, **kwargs)
+        else:
+            constructed = fn(*args, **kwargs)
+        self._set_type(constructed)
+        return constructed
 
     def run(self, proj_ctx: ProjectContext) -> None:
         """Run the component in the project context, for the current scene."""
-        cstr = self._constructor
-        ctx = proj_ctx.push_key_for_context(cstr.stable_key)
-        scene = proj_ctx.current_scene_for(cstr.component_name)
-        self._render_with_project(proj_ctx, cstr(ctx=ctx, scene=scene))
+        ctx = proj_ctx.push_key_for_context(self.stable_key)
+        scene = proj_ctx.current_scene_for(self.name)
+        self._build_in_project(
+            proj_ctx, self._run_constructor(ctx=ctx, scene=scene)
+        )
         proj_ctx.pop_key()
 
     def run_scene(self, scene: SceneState) -> None:
         """Run the component in the scene, context free."""
-        self._render_with_scene(scene, self._constructor(scene=scene))
+        self._build_in_scene(scene, self._run_constructor(scene=scene))
 
-    @abstractmethod
-    def _render_with_project(self, p: ProjectContext, constructed: _CT) -> None:
+    def _build_in_project(
+        self, p: ProjectContext, constructed: COMPONENT_RETURN
+    ) -> None:
         """Renders the constructed component."""
-        raise NotImplementedError("Subclasses must implement _render method.")
+        if isinstance(constructed, Comp):
+            constructed.build(self.name)
+        elif isinstance(constructed, Compound):
+            constructed.pre_build(self.name)
+            for comp in constructed.components:
+                comp.run(p)
+            constructed.post_build(self.name)
+        else:
+            raise TypeError(
+                f"Expected Comp or Compound, got {type(constructed)}."
+            )
 
-    @abstractmethod
-    def _render_with_scene(self, s: SceneState, constructed: _CT) -> None:
+    def _build_in_scene(
+        self, s: SceneState, constructed: COMPONENT_RETURN
+    ) -> None:
         """Renders the constructed component."""
-        raise NotImplementedError("Subclasses must implement _render method.")
+        if isinstance(constructed, Comp):
+            constructed.build(self.name)
+        elif isinstance(constructed, Compound):
+            constructed.pre_build(self.name)
+            for comp in constructed.components:
+                comp.run_scene(s)
+            constructed.post_build(self.name)
+        else:
+            raise TypeError(
+                f"Expected Comp or Compound, got {type(constructed)}."
+            )
 
     def __repr__(self) -> str:
-        return self._constructor.__repr__()
+        return (
+            f"{self.__str__()} ({self.file})\n"
+            f"  Args: {self._args}\n"
+            f"  Kwargs: {self._kwargs}\n"
+        )
 
     def __str__(self) -> str:
-        return self._constructor.__str__()
-
-
-class FusrrComponent(_Component[Comp]):
-    def _inject_iter_id(self, iter_id: int) -> None:
-        """Injects the iteration ID into the component constructor.
-
-        Note:
-            Internal use only.
-        """
-        self._constructor.set_ad_id(iter_id)
-
-    def _render_with_project(
-        self, _p: ProjectContext, constructed: Comp
-    ) -> None:
-        constructed.set_name(self._constructor.component_name)
-        constructed.build()
-
-    def _render_with_scene(self, _s: SceneState, constructed: Comp) -> None:
-        constructed.set_name(self._constructor.component_name)
-        constructed.build()
-
-
-class FusrrCompoundComponent(_Component[list[FusrrComponent]]):
-    def _render_with_project(
-        self, p_ctx: ProjectContext, constructed: list[FusrrComponent]
-    ) -> None:
-        for iter_id, fc in enumerate(constructed):
-            fc._inject_iter_id(iter_id)  # noqa: SLF001
-            fc.run(p_ctx)
-
-    def _render_with_scene(
-        self, s: SceneState, constructed: list[FusrrComponent]
-    ) -> None:
-        for iter_id, fc in enumerate(constructed):
-            fc._inject_iter_id(iter_id)  # noqa: SLF001
-            fc.run_scene(s)
+        return (
+            f"{self.name} <{self._constructor_name}>"
+            if self._set_name
+            else self.name
+        )
 
 
 def component(
-    function: Callable[..., Comp],
+    function: Callable[..., COMPONENT_RETURN],
 ) -> Callable[..., FusrrComponent]:
     """Construct a component."""
 
     @wraps(function)
-    def wrapper(*args, **kwargs) -> FusrrComponent:
-        return FusrrComponent(_ComponentConstructor(function, args, kwargs))
-
-    return wrapper
-
-
-def co_component(
-    function: Callable[..., list[FusrrComponent]],
-) -> Callable[..., FusrrCompoundComponent]:
-    """Construct a component that returns others a list of components."""
-
-    @wraps(function)
-    def wrapper(*args, **kwargs) -> FusrrCompoundComponent:
-        return FusrrCompoundComponent(
-            _ComponentConstructor(function, args, kwargs)
-        )
+    def wrapper(*args, name: str | None = None, **kwargs) -> FusrrComponent:
+        return FusrrComponent(function, name, args, kwargs)
 
     return wrapper
