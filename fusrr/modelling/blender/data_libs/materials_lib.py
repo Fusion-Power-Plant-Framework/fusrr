@@ -1,16 +1,16 @@
 from enum import Enum
 
-from fusrr.blender.tools.file_tools import (
+from fusrr.modelling.blender.data_libs import BLENDER_DATA_LIBS_PATH
+from fusrr.modelling.blender.tools.file_tools import (
     BlenderFileDataTypes,
     append_from_blend_file,
 )
-from fusrr.data_libs import FUSRR_DATA_LIB_PATH
 
-FUSRR_MATERIALS_LIB_PATH = FUSRR_DATA_LIB_PATH / "materials_lib.blend"
+MATERIALS_LIB_PATH = BLENDER_DATA_LIBS_PATH / "materials_lib.blend"
 
 
-class FusrrMaterialDataLabel(Enum):
-    """Enum class for materials in the materials library."""
+class BlenderMaterialDataLabel(Enum):
+    """Enum class for materials in the materials_lib.blend library."""
 
     PLASMA = "plasma"
     METALLIC = "metallic"
@@ -28,6 +28,4 @@ def load_materials():
         If a material is not applied to any object, it will not be
         saved in the final .blend file.
     """
-    append_from_blend_file(
-        FUSRR_MATERIALS_LIB_PATH, BlenderFileDataTypes.MATERIAL
-    )
+    append_from_blend_file(MATERIALS_LIB_PATH, BlenderFileDataTypes.MATERIAL)

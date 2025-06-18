@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, Generic
 
 from fusrr.core.config_model import S
 from fusrr.core.project import ProjectContext
+from fusrr.core.utils import run_list_async_concurrently
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -50,18 +51,18 @@ class Compound:
         """Finalizes the compound after all components are built."""
 
 
-COMPONENT_RETURN = Comp | Compound
+CONSTRUCTOR_RETURN = Comp | Compound
 
 
 class FusrrComponent(Generic[S]):
     def __init__(
         self,
-        function: Callable[..., COMPONENT_RETURN],
+        constructor: Callable[..., CONSTRUCTOR_RETURN],
         name: str | None = None,
         args: tuple[Any, ...] | None = None,
         kwargs: dict[str, Any] | None = None,
     ):
-        self._constructor = function
+        self._constructor = constructor
         self._file = inspect.getfile(self._constructor)
         self._sig = inspect.signature(self._constructor)
         self._scene_in_params = "scene" in self._sig.parameters
@@ -125,7 +126,7 @@ class FusrrComponent(Generic[S]):
             )
         return self._is_compound
 
-    def _set_type(self, constructed: COMPONENT_RETURN) -> None:
+    def _set_type(self, constructed: CONSTRUCTOR_RETURN) -> None:
         """Sets the type of the component based on the constructed object."""
         if isinstance(constructed, Comp):
             self._is_compound = False
@@ -138,7 +139,7 @@ class FusrrComponent(Generic[S]):
 
     def _run_constructor(
         self, *, ctx: Context | None = None, scene: S | None = None
-    ) -> COMPONENT_RETURN:
+    ) -> CONSTRUCTOR_RETURN:
         """Calls the component function with the provided context and scene."""
         if scene is None and self._scene_in_params:
             raise ValueError(
@@ -160,7 +161,7 @@ class FusrrComponent(Generic[S]):
         ctx = proj_ctx.push_key_for_context(self.stable_key)
         scene = proj_ctx.current_scene_for(self.name)
         constructed = self._run_constructor(ctx=ctx, scene=scene)
-        # is_compound is set in _run_constructor
+        # self.is_compound is set in _run_constructor
         if self.is_compound:
             self._build_compound(proj_ctx, constructed)  # type: ignore[call-arg]
         else:
@@ -192,7 +193,7 @@ class FusrrComponent(Generic[S]):
 
 
 def component(
-    function: Callable[..., COMPONENT_RETURN],
+    function: Callable[..., CONSTRUCTOR_RETURN],
 ) -> Callable[..., FusrrComponent]:
     """Construct a component."""
 

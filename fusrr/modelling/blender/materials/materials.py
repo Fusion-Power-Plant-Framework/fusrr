@@ -1,63 +1,28 @@
 from __future__ import annotations
 
-import abc
 from typing import TYPE_CHECKING
 
-from fusrr.blender.tools.object_tools import set_object_material
-from fusrr.data_libs.materials import FusrrMaterialDataLabel
+from fusrr.modelling.blender.data_libs.materials_lib import (
+    BlenderMaterialDataLabel,
+)
+from fusrr.modelling.blender.materials.base import BlenderMaterial
 
 if TYPE_CHECKING:
-    import bpy
-
-    from fusrr.materials.models import (
+    from fusrr.modelling.blender.materials.value_models import (
         MaterialColour,
         MaterialValue,
         MaterialValueZeroToOne,
     )
 
-
-class FusrrMaterial(abc.ABC):
-    """Base class for materials used in Fusrr.
-
-    This class should be subclassed to create new materials.
-    """
-
-    def __init__(self, object_name_override: str | None = None):
-        """Initializes the material with the given data label.
-
-        Args:
-            object_name_override:
-                Overrides the object name when applying the material, allowing
-                the same material to be applied to multiple objects.
-
-                Defaults to None
-                (each material applied will be new and unique to the object).
-        """
-        self._object_name_override = object_name_override
-
-    @property
-    @abc.abstractmethod
-    def material_label(self) -> FusrrMaterialDataLabel:
-        """The material label for this material."""
-
-    def _configure(self, mat: bpy.types.Material) -> None:
-        """Applies the material configuration to the given material."""
-
-    def apply_to(self, obj: bpy.types.Object):
-        """Applies the material to the object.
-
-        Args:
-            obj: The object to apply the material to.
-        """
-        mat = set_object_material(
-            obj,
-            self.material_label.value,
-            object_name_override=self._object_name_override,
-        )
-        self._configure(mat)
+# add all new materials to this list
+__all__ = [
+    "GlassMaterial",
+    "MetallicMaterial",
+    "PlasmaMaterial",
+]
 
 
-class PlasmaMaterial(FusrrMaterial):
+class PlasmaMaterial(BlenderMaterial):
     def __init__(
         self,
         object_name_override: str | None = None,
@@ -83,8 +48,8 @@ class PlasmaMaterial(FusrrMaterial):
         super().__init__(object_name_override)
 
     @property
-    def material_label(self) -> FusrrMaterialDataLabel:
-        return FusrrMaterialDataLabel.PLASMA
+    def material_label(self) -> BlenderMaterialDataLabel:
+        return BlenderMaterialDataLabel.PLASMA
 
     def _configure(self, mat: bpy.types.Material) -> None:
         mat.use_nodes = True
@@ -143,7 +108,7 @@ class PlasmaMaterial(FusrrMaterial):
             plasma_brightness.inputs[0].default_value = self.border_fresnel.tup
 
 
-class MetallicMaterial(FusrrMaterial):
+class MetallicMaterial(BlenderMaterial):
     def __init__(
         self,
         object_name_override: str | None = None,
@@ -157,8 +122,8 @@ class MetallicMaterial(FusrrMaterial):
         super().__init__(object_name_override)
 
     @property
-    def material_label(self) -> FusrrMaterialDataLabel:
-        return FusrrMaterialDataLabel.METALLIC
+    def material_label(self) -> BlenderMaterialDataLabel:
+        return BlenderMaterialDataLabel.METALLIC
 
     def _configure(self, mat: bpy.types.Material) -> None:
         mat.use_nodes = True
@@ -178,10 +143,10 @@ class MetallicMaterial(FusrrMaterial):
             bsdf.inputs["Roughness"].default_value = self.roughness.tup
 
 
-class GlassMaterial(FusrrMaterial):
+class GlassMaterial(BlenderMaterial):
     def __init__(self, object_name_override: str | None = None):
         super().__init__(object_name_override)
 
     @property
-    def material_label(self) -> FusrrMaterialDataLabel:
-        return FusrrMaterialDataLabel.GLASS
+    def material_label(self) -> BlenderMaterialDataLabel:
+        return BlenderMaterialDataLabel.GLASS

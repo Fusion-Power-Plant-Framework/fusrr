@@ -3,7 +3,7 @@ from pathlib import Path
 from examples.process_eudemo.components.reactor_eudemo import EUDEMO_Reactor
 from examples.process_eudemo.scene import EUDEMOScene
 from fusrr import SceneConfig, run_project
-from fusrr.blender import BlenderProject
+from fusrr.modelling.blender import BlenderProject
 
 project_dir = Path(__file__).resolve().parent
 config_dir = project_dir / "config"

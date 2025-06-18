@@ -1,5 +1,12 @@
 from dataclasses import dataclass
 
+# add any new material value models to this list
+__all__ = [
+    "MaterialColour",
+    "MaterialValue",
+    "MaterialValueZeroToOne",
+]
+
 
 @dataclass
 class MaterialColour:

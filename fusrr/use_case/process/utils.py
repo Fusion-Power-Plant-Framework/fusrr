@@ -1,7 +1,7 @@
 from process.geometry.geometry_parameterisations import RectangleGeometry
 
 from fusrr.core.vectors import Vec3
-from fusrr.reactor.process.process_mappings import (
+from fusrr.use_case.process.mappings import (
     RADIAL_BUILD,
     vertical_lower,
     vertical_upper,
@@ -40,8 +40,6 @@ def cumul_setup(params_dict):
     Two dictionaries
         Upper and lower builds of blanket
     """
-    # TODO: improve
-
     upper = {}
     cumulative_upper = {}
     subtotal = 0

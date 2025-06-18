@@ -8,8 +8,8 @@ from examples.process_eudemo.components.tf_coils import TFCoils
 from examples.process_eudemo.components.vacuum_vessel import VacuumVessel
 from examples.process_eudemo.providers import process_params_provider
 from fusrr import component
-from fusrr.blender import BlenderCompound
 from fusrr.hooks import useSetProvider
+from fusrr.modelling.blender import BlenderCompound
 
 
 @component

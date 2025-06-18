@@ -6,10 +6,12 @@ from typing import TYPE_CHECKING, Literal
 import bpy
 import bmesh
 
-from fusrr.blender.tools.mesh_tools import (
+from fusrr.core.component import Comp, Compound
+from fusrr.core.vectors import Vec3
+from fusrr.modelling.blender.tools.mesh_tools import (
     new_mesh_for,
 )
-from fusrr.blender.tools.scene_tools import (
+from fusrr.modelling.blender.tools.scene_tools import (
     check_collection_in_scene,
     check_object_in_scene,
     create_collection,
@@ -19,8 +21,6 @@ from fusrr.blender.tools.scene_tools import (
     link_collections,
     link_objects_to_collection,
 )
-from fusrr.core.component import Comp, Compound
-from fusrr.core.vectors import Vec3
 
 if TYPE_CHECKING:
     from collections.abc import Callable

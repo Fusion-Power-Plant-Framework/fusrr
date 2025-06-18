@@ -1,4 +1,4 @@
-FROM linuxserver/blender:4.1.1
+FROM linuxserver/blender:latest
 
 # Create the /tmp/.X11-unix directory with the appropriate permissions
 RUN mkdir /tmp/.X11-unix && \

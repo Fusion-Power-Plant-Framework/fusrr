@@ -13,16 +13,18 @@ from process.geometry.tfcoil_geometry import (
 
 from examples.process_eudemo.providers import process_params_provider
 from examples.process_eudemo.scene import EUDEMOScene
-from fusrr import component
-from fusrr.blender.blender_component import BlenderComp, BlenderCompound
-from fusrr.blender.tools.mesh_tools import (
+from fusrr import Vec3, component
+from fusrr.hooks import Designer, useDesigner, useProvider
+from fusrr.modelling.blender import BlenderComp, BlenderCompound
+from fusrr.modelling.blender.materials import (
+    MaterialColour,
+    MaterialValueZeroToOne,
+    MetallicMaterial,
+)
+from fusrr.modelling.blender.tools.mesh_tools import (
     mesh_add_edges_from_points,
 )
-from fusrr.core.vectors import Vec3
-from fusrr.hooks import Designer, useDesigner, useProvider
-from fusrr.materials.base import MetallicMaterial
-from fusrr.materials.models import MaterialColour, MaterialValueZeroToOne
-from fusrr.reactor.process.process_adaptor import ProcessParams
+from fusrr.use_case.process import ProcessParams
 
 
 @dataclass

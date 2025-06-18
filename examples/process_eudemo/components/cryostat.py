@@ -3,16 +3,19 @@ from dataclasses import dataclass
 from examples.process_eudemo.providers import process_params_provider
 from examples.process_eudemo.scene import EUDEMOScene
 from fusrr import component
-from fusrr.blender.blender_component import BlenderComp
-from fusrr.blender.tools.mesh_tools import (
+from fusrr.core.vectors import Vec3
+from fusrr.hooks import Designer, useDesigner, useProvider
+from fusrr.modelling.blender.component import BlenderComp
+from fusrr.modelling.blender.materials import (
+    MaterialColour,
+    MaterialValueZeroToOne,
+    MetallicMaterial,
+)
+from fusrr.modelling.blender.tools.mesh_tools import (
     mesh_add_edges_from_points,
     mesh_revolve,
 )
-from fusrr.core.vectors import Vec3
-from fusrr.hooks import Designer, useDesigner, useProvider
-from fusrr.materials.base import MetallicMaterial
-from fusrr.materials.models import MaterialColour, MaterialValueZeroToOne
-from fusrr.reactor.process import ProcessParams
+from fusrr.use_case.process import ProcessParams
 
 
 @dataclass
