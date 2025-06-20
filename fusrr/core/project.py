@@ -5,7 +5,9 @@ from os import PathLike
 from pathlib import Path
 from typing import TYPE_CHECKING, Generic
 
-from fusrr.core.config_model import ProjectConfig, S, SceneConfig
+from pydantic import BaseModel
+
+from fusrr.core.config_model import ProjectConfig, S, SceneConfig, SceneState
 from fusrr.core.errors import SceneStopError
 from fusrr.core.utils import load_json
 from fusrr.hooks._hook_state import HOOK_STATE
@@ -20,11 +22,11 @@ class ProjectContext(Generic[S]):
     def __init__(self):
         self._stk = deque()
         self._ctx_reg: dict[tuple[int, ...], Context] = {}
-        self._current_sc: SceneConfig[S] | None = None
+        self._cur_scene_config: SceneConfig[S] | None = None
 
-    def set_current_scene_config(self, scene: SceneConfig[S]) -> None:
+    def set_scene_config(self, scene: SceneConfig[S]) -> None:
         """Sets the current scene state for the project context."""
-        self._current_sc = scene
+        self._cur_scene_config = scene
 
     def push_key_for_context(self, key: int) -> Context:
         """Pushes the current context for a specific component ID."""
@@ -43,11 +45,11 @@ class ProjectContext(Generic[S]):
         else:
             raise IndexError("No component ID to pop from the stack.")
 
-    def current_scene_for(self, name: str) -> S:
+    def scene_state_for(self, name: str) -> SceneState[S] | None:
         """Returns the current scene state for a given matching name."""
-        if self._current_sc is None:
-            raise RuntimeError("No current scene configuration set. ")
-        return self._current_sc.get_applicable_state(name)
+        if self._cur_scene_config is None:
+            return None
+        return self._cur_scene_config.get_applicable_state(name)
 
 
 class FusrrProject(Generic[S]):
@@ -56,10 +58,9 @@ class FusrrProject(Generic[S]):
         project_name: str,
         *,
         root_components: list[FusrrComponent],
-        project_config: dict | PathLike | ProjectConfig[S] | None = None,
+        project_config: dict | PathLike | ProjectConfig[S] | SceneConfig[S] | S,
         output_directory: PathLike | None = None,
         overwrite: bool = False,
-        default_scene_config: SceneConfig[S] | None = None,
     ):
         self.project_name = project_name
         self.root_components = root_components
@@ -75,30 +76,38 @@ class FusrrProject(Generic[S]):
             if isinstance(project_config, dict)
             else None
         )
-        if config_dict is None and default_scene_config is None:
-            raise ValueError("A default scene or config must be provided.")
-
-        self.config = (
-            ProjectConfig.model_validate(config_dict)
-            if config_dict
-            else ProjectConfig(
-                scenes=[default_scene_config] if default_scene_config else []
+        if config_dict:
+            self.config = ProjectConfig.model_validate(config_dict)
+        elif isinstance(project_config, ProjectConfig):
+            self.config = project_config
+        elif isinstance(project_config, SceneConfig):
+            self.config = ProjectConfig(
+                scenes=[project_config],
             )
-        )
+        elif isinstance(project_config, BaseModel):
+            self.config = ProjectConfig(
+                scenes=[SceneConfig[S](name=project_name, state=project_config)]
+            )
+        else:
+            raise ValueError(
+                "project_config must be a dictionary, PathLike, "
+                "ProjectConfig, SceneConfig, or a Pydantic model instance."
+            )
 
     def on_start(self) -> None:
         """Initializes the project context and prepares the project."""
         pass
 
-    def on_save_scene(self, scene: S) -> None:
+    def on_scene_start(self, scene_config: SceneConfig[S]) -> None:
         """Saves the current scene state."""
-        # Here you would implement the logic to save the scene state
-        # to a file or database, depending on your project requirements.
+        pass
+
+    def on_scene_end(self, scene_config: SceneConfig[S]) -> None:
+        """Saves the current scene state."""
         pass
 
     def on_finish(self) -> None:
         """Finalizes the project, cleaning up resources."""
-        # Here you would implement any cleanup logic needed for the project.
         pass
 
 
@@ -108,10 +117,12 @@ def run_project(project: FusrrProject):
     root_comps = project.root_components
     p_ctxs = [ProjectContext() for _ in root_comps]
     try:
-        for scene in project.config.scenes:
+        for scene_cfg in project.config.scenes:
+            project.on_scene_start(scene_cfg)
             for root_comp, p_ctx in zip(root_comps, p_ctxs, strict=True):
-                p_ctx.set_current_scene_config(scene)
+                p_ctx.set_scene_config(scene_cfg)
                 root_comp.run(p_ctx)
+            project.on_scene_end(scene_cfg)
     except SceneStopError as e:
         print(f"Stopping project on: {e}")
     else:

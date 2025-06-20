@@ -2,7 +2,8 @@ from pathlib import Path
 
 from examples.process_eudemo.components.reactor_eudemo import EUDEMO_Reactor
 from examples.process_eudemo.scene import EUDEMOScene
-from fusrr import SceneConfig, run_project
+from fusrr import ProjectConfig, SceneConfig, run_project
+from fusrr.core.config_model import SceneStateSelect
 from fusrr.modelling.blender import BlenderProject
 
 project_dir = Path(__file__).resolve().parent
@@ -16,11 +17,25 @@ run_project(
     BlenderProject(
         "Process_EUDEMO",
         root_components=[EUDEMO_Reactor(process_mfile_path)],
-        # project_config=project_config,
-        output_directory=output_dir,
         overwrite=True,
-        default_scene=SceneConfig(
-            name="scene 1", state=EUDEMOScene(start_angle=0.0, end_angle=180.0)
+        output_directory=output_dir,
+        project_config=ProjectConfig(
+            scenes=[
+                SceneConfig(
+                    name="scene 1",
+                    state=EUDEMOScene(start_angle=0.0, end_angle=180.0),
+                ),
+                SceneConfig(
+                    name="scene 2",
+                    state=EUDEMOScene(start_angle=0.0, end_angle=90.0),
+                    select=[
+                        SceneStateSelect(
+                            component="Plasma",
+                            state=EUDEMOScene(start_angle=0.0, end_angle=360.0),
+                        )
+                    ],
+                ),
+            ],
         ),
     ),
 )

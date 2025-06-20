@@ -3,13 +3,17 @@ from os import PathLike
 from pathlib import Path
 
 from fusrr.core.component import FusrrComponent
-from fusrr.core.config_model import S, SceneConfig
+from fusrr.core.config_model import ProjectConfig, S, SceneConfig
 from fusrr.core.project import FusrrProject
 from fusrr.modelling.blender.data_libs.materials_lib import (
     load_materials,
 )
 from fusrr.modelling.blender.tools.file_tools import save_state_to_blend_file
-from fusrr.modelling.blender.tools.scene_tools import clear_scene, deselect_all
+from fusrr.modelling.blender.tools.scene_tools import (
+    add_scene,
+    clear_scene,
+    deselect_all,
+)
 
 
 class BlenderProject(FusrrProject[S]):
@@ -24,10 +28,9 @@ class BlenderProject(FusrrProject[S]):
         project_name: str,
         *,
         root_components: list[FusrrComponent],
-        project_config: dict | PathLike | None = None,
+        project_config: dict | PathLike | ProjectConfig[S],
         output_directory: PathLike | None = None,
         overwrite: bool = False,
-        default_scene: SceneConfig[S] | None = None,
     ):
         """Create a BlenderProject with a name.
 
@@ -53,22 +56,21 @@ class BlenderProject(FusrrProject[S]):
             project_config=project_config,
             output_directory=output_directory,
             overwrite=overwrite,
-            default_scene_config=default_scene,
         )
-        self._project_file = self.project_directory / (
+        self._project_blend_file = self.project_directory / (
             self.project_name + ".blend"
         )
 
     def _rename_project_file_if_exists(self) -> None:
-        if self._project_file.is_file():
-            new_path = self._project_file.with_stem(
-                self._project_file.stem + "_" + str(int(time.time()))
+        if self._project_blend_file.is_file():
+            new_path = self._project_blend_file.with_stem(
+                self._project_blend_file.stem + "_" + str(int(time.time()))
             )
-            Path.rename(self._project_file, new_path)
+            Path.rename(self._project_blend_file, new_path)
 
     def _delete_project_file_if_exists(self) -> None:
-        if self._project_file.is_file():
-            self._project_file.unlink()
+        if self._project_blend_file.is_file():
+            self._project_blend_file.unlink()
 
     def on_start(self) -> None:
         clear_scene()
@@ -80,4 +82,11 @@ class BlenderProject(FusrrProject[S]):
             self._delete_project_file_if_exists()
         else:
             self._rename_project_file_if_exists()
-        save_state_to_blend_file(self._project_file)
+        save_state_to_blend_file(self._project_blend_file)
+
+    def on_scene_start(self, scene_config: SceneConfig[S]) -> None:
+        add_scene(scene_config.name, empty=True)
+
+    def on_scene_end(self, scene_config: SceneConfig[S]) -> None:
+        # render the image of the scene
+        pass

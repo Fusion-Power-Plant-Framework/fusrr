@@ -1,12 +1,19 @@
 import re
-from typing import Generic, Optional, TypeVar
+from dataclasses import dataclass
+from typing import Generic, Optional, Self, TypeVar
 
 from pydantic import BaseModel
 
 S = TypeVar("S", bound=BaseModel)
 
 
-class SceneSelectState(BaseModel, Generic[S]):
+@dataclass(frozen=True)
+class SceneState(Generic[S]):
+    scene_name: str
+    state: S
+
+
+class SceneStateSelect(BaseModel, Generic[S]):
     component: str
     state: S
 
@@ -14,14 +21,14 @@ class SceneSelectState(BaseModel, Generic[S]):
 class SceneConfig(BaseModel, Generic[S]):
     name: str
     state: S
-    select: list[SceneSelectState[S]] | None = None
+    select: list[SceneStateSelect[S]] | None = None
 
-    def get_applicable_state(self, component_name: str) -> S:
+    def get_applicable_state(self, component_name: str) -> SceneState[S]:
         """Returns the state for a given component name if it exists."""
         for select in self.select or []:
             if re.fullmatch(select.component, component_name):
-                return select.state
-        return self.state
+                return SceneState(scene_name=self.name, state=select.state)
+        return SceneState(scene_name=self.name, state=self.state)
 
 
 class ProjectConfig(BaseModel, Generic[S]):

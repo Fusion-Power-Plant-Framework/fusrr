@@ -22,6 +22,18 @@ This project uses [Hatch](https://hatch.pypa.io/latest/).
 
 Although any Python environment manager can be used, we recommend using the default environment setup by Hatch.
 
+To get bpy module types, install the following dependencies:
+
+```bash
+pip install fake-bpy-module-4.3
+```
+
+For the latest version of `bpy` you can use:
+
+```bash
+pip install fake-bpy-module-latest
+```
+
 ### Without Hatch
 
 1

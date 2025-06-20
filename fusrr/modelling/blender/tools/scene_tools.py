@@ -12,7 +12,7 @@ def check_object_in_scene(name: str) -> bool:
     """
     return (
         bpy.data.objects.get(name) is not None
-        and bpy.data.collections.get(name) is not None
+        or bpy.data.collections.get(name) is not None
     )
 
 
@@ -73,6 +73,8 @@ def name_selected_object(name: str) -> None:
     Args:
         name: The name to give the object.
     """
+    if bpy.context.object is None or bpy.context.object.data is None:
+        raise ValueError("No object is selected.")
     bpy.context.object.name = name
     bpy.context.object.data.name = name
 
