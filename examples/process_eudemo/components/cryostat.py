@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 
 from examples.process_eudemo.providers import process_params_provider
-from examples.process_eudemo.scene import EUDEMOScene
+from examples.process_eudemo.scene_state import ProcessEUDEMOSceneState
 from fusrr import component
+from fusrr.core.config_model import Scene
 from fusrr.core.vectors import Vec3
 from fusrr.hooks import Designer, useDesigner, useProvider
 from fusrr.modelling.blender.component import BlenderComp
@@ -61,13 +62,13 @@ class CryostatDesigner(Designer):
 
 
 @component
-def Cryostat(*, scene: EUDEMOScene):
+def Cryostat(*, scene: Scene[ProcessEUDEMOSceneState]):
     params = useProvider(process_params_provider)
     d = useDesigner(CryostatDesigner(params))
 
     def builder(_obj, m):
         mesh_add_edges_from_points(m, d.pts)
-        mesh_revolve(m, Vec3.ZERO, Vec3.Z, scene.end_angle)
+        mesh_revolve(m, Vec3.ZERO, Vec3.Z, scene.state.end_angle)
 
     return BlenderComp(
         builder=builder,

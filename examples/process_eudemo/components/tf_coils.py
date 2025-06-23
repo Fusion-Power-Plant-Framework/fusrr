@@ -12,8 +12,9 @@ from process.geometry.tfcoil_geometry import (
 )
 
 from examples.process_eudemo.providers import process_params_provider
-from examples.process_eudemo.scene import EUDEMOScene
+from examples.process_eudemo.scene_state import ProcessEUDEMOSceneState
 from fusrr import Vec3, component
+from fusrr.core.config_model import Scene
 from fusrr.hooks import Designer, useDesigner, useProvider
 from fusrr.modelling.blender import BlenderComp, BlenderCompound
 from fusrr.modelling.blender.materials import (
@@ -118,14 +119,14 @@ class TFCoilsDesigner(Designer):
 
 
 @component
-def TFCoils(*, scene: EUDEMOScene):
+def TFCoils(*, scene: Scene[ProcessEUDEMOSceneState]):
     """Component to design the TF coils of a PROCESS reactor."""
     params = useProvider(process_params_provider)
     # designer depends on the end angle of the scene
     # add it to the useDesigner parameters
     d = useDesigner(
-        TFCoilsDesigner(params, scene.start_angle, scene.end_angle),
-        [scene.start_angle, scene.end_angle],
+        TFCoilsDesigner(params, scene.state.start_angle, scene.state.end_angle),
+        [scene.state.start_angle, scene.state.end_angle],
     )
 
     return BlenderCompound(
@@ -138,7 +139,7 @@ def TFCoils(*, scene: EUDEMOScene):
 
 @component
 def TFCoil(cl: TFCoilDShape):
-    def builder(_obj, m: bmesh.types.BMesh) -> None:
+    def builder(_obj, m) -> None:
         # Inner (straight) leg
         mesh_add_edges_from_points(m, [cl.ib_leg_start, cl.ib_leg_end])
         # Outer (arch) leg

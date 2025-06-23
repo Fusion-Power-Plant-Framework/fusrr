@@ -1,7 +1,11 @@
 import re
 from collections.abc import Iterable
+from os import PathLike
+from pathlib import Path
 
 import bpy
+
+from fusrr.core.vectors import Vec3
 
 
 def check_object_in_scene(name: str) -> bool:
@@ -10,10 +14,7 @@ def check_object_in_scene(name: str) -> bool:
     Args:
         name: The name of the object to check for.
     """
-    return (
-        bpy.data.objects.get(name) is not None
-        or bpy.data.collections.get(name) is not None
-    )
+    return bpy.data.objects.get(name) is not None
 
 
 def check_collection_in_scene(name: str) -> bool:
@@ -22,10 +23,7 @@ def check_collection_in_scene(name: str) -> bool:
     Args:
         name: The name of the collection to check for.
     """
-    return (
-        bpy.data.objects.get(name) is not None
-        and bpy.data.collections.get(name) is not None
-    )
+    return bpy.data.collections.get(name) is not None
 
 
 def select_objects(names: set[str]) -> tuple[bpy.types.Object, ...]:
@@ -62,9 +60,14 @@ def select_and_activate_object(name: str) -> bpy.types.Object:
     return obj
 
 
-def deselect_all() -> None:
+def select_all():
+    """Select all objects in the scene."""
+    return bpy.ops.object.select_all(action="SELECT")
+
+
+def deselect_all():
     """Deselect all objects in the scene."""
-    bpy.ops.object.select_all(action="DESELECT")
+    return bpy.ops.object.select_all(action="DESELECT")
 
 
 def name_selected_object(name: str) -> None:
@@ -79,15 +82,19 @@ def name_selected_object(name: str) -> None:
     bpy.context.object.data.name = name
 
 
-def create_object(name: str):
+def create_object(
+    name: str, *, mesh: bpy.types.Mesh | None = None
+) -> bpy.types.Object:
     """Create a new object in the scene.
 
     Args:
         name: The name of the object to create.
+        mesh: The mesh to use for the object. If None, a new mesh will be created.
     """
     deselect_all()
 
-    mesh = bpy.data.meshes.new(name)
+    if mesh is None:
+        mesh = bpy.data.meshes.new(name)
     obj = bpy.data.objects.new(name, mesh)
     bpy.context.collection.objects.link(obj)
     return obj
@@ -141,6 +148,38 @@ def get_objects_by_pattern(pattern: str) -> list[bpy.types.Object]:
         A list of matching objects.
     """
     return [obj for obj in bpy.data.objects if re.match(pattern, obj.name)]
+
+
+def get_object_by_pattern(pattern: str) -> bpy.types.Object | None:
+    """Get a single object whose name matches the given pattern.
+
+    Args:
+        pattern: The regular expression pattern to match.
+
+    Returns:
+        The first matching object, or None if no match is found.
+    """
+    matches = get_objects_by_pattern(pattern)
+    if not matches:
+        return None
+    if len(matches) > 1:
+        raise ValueError(f"Multiple objects match the pattern: {pattern}")
+    return matches[0]
+
+
+def get_object_by_pattern_f(pattern: str) -> bpy.types.Object:
+    """Get a single object whose name matches the given pattern.
+
+    Raises:
+        ValueError: If no object is found or if multiple objects match the pattern.
+
+    Args:
+        pattern: The regular expression pattern to match.
+    """
+    obj = get_object_by_pattern(pattern)
+    if obj is None:
+        raise ValueError(f"No object matches the pattern: {pattern}")
+    return obj
 
 
 def get_collection(name: str) -> bpy.types.Collection | None:
@@ -249,7 +288,16 @@ def remove_collection_if_exists(name: str):
     """
     col = get_collection(name)
     if col is not None:
-        bpy.data.collections.remove(col)
+        remove_collection(col)
+
+
+def remove_collection(col: bpy.types.Collection):
+    """Remove a collection from the scene.
+
+    Args:
+        col: The collection to remove.
+    """
+    bpy.data.collections.remove(col)
 
 
 def remove_object_if_exists(name: str):
@@ -260,7 +308,16 @@ def remove_object_if_exists(name: str):
     """
     obj = get_object(name)
     if obj is not None:
-        bpy.data.objects.remove(obj)
+        remove_object(obj)
+
+
+def remove_object(obj: bpy.types.Object):
+    """Remove an object from the scene.
+
+    Args:
+        obj: The object to remove.
+    """
+    bpy.data.objects.remove(obj)
 
 
 def clear_scene():
@@ -308,3 +365,25 @@ def switch_to_scene(name: str):
         name: The name of the scene to switch to.
     """
     bpy.context.window.scene = bpy.data.scenes[name]
+
+
+def import_gltf(
+    gltf_path: Path | str,
+    *,
+    objs_name_prefix: str | None = None,
+    scale: Vec3 | None = None,
+) -> None:
+    """Imports gltf file"""
+    deselect_all()
+    bpy.ops.import_scene.gltf(filepath=Path(gltf_path).resolve().as_posix())
+    if scale is not None:
+        bpy.ops.transform.resize(
+            value=scale.tup,
+            orient_type="GLOBAL",
+            orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)),
+            orient_matrix_type="GLOBAL",
+        )
+    if objs_name_prefix is not None:
+        for obj in bpy.context.selected_objects:
+            obj.name = f"{objs_name_prefix}.{obj.name}"
+    deselect_all()

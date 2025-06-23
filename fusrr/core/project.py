@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Generic
 
 from pydantic import BaseModel
 
-from fusrr.core.config_model import ProjectConfig, S, SceneConfig, SceneState
+from fusrr.core.config_model import ProjectConfig, S, Scene, SceneConfig
 from fusrr.core.errors import SceneStopError
 from fusrr.core.utils import load_json
 from fusrr.hooks._hook_state import HOOK_STATE
@@ -45,11 +45,11 @@ class ProjectContext(Generic[S]):
         else:
             raise IndexError("No component ID to pop from the stack.")
 
-    def scene_state_for(self, name: str) -> SceneState[S] | None:
-        """Returns the current scene state for a given matching name."""
+    def scene_for(self, name: str) -> Scene[S] | None:
+        """Returns the current scene data for a given matching name."""
         if self._cur_scene_config is None:
             return None
-        return self._cur_scene_config.get_applicable_state(name)
+        return self._cur_scene_config.get_applicable_scene(name)
 
 
 class FusrrProject(Generic[S]):
@@ -124,7 +124,7 @@ def run_project(project: FusrrProject):
                 root_comp.run(p_ctx)
             project.on_scene_end(scene_cfg)
     except SceneStopError as e:
-        print(f"Stopping project on: {e}")
+        print(f"SceneStopError raised: {e}")
     else:
         completed_successfully = True
     finally:

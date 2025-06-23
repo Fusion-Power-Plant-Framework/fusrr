@@ -1,8 +1,9 @@
 from process.geometry.geometry_parameterisations import RectangleGeometry
 
 from examples.process_eudemo.providers import process_params_provider
-from examples.process_eudemo.scene import EUDEMOScene
+from examples.process_eudemo.scene_state import ProcessEUDEMOSceneState
 from fusrr import Vec3, component
+from fusrr.core.config_model import Scene
 from fusrr.hooks import Designer, useDesigner, useProvider
 from fusrr.modelling.blender import BlenderComp, BlenderCompound
 from fusrr.modelling.blender.materials import (
@@ -85,9 +86,9 @@ def _coil_builder(geom: RectangleGeometry, angle: float):
 
 
 @component
-def PFCoil(geom: RectangleGeometry, *, scene: EUDEMOScene):
+def PFCoil(geom: RectangleGeometry, *, scene: Scene[ProcessEUDEMOSceneState]):
     return BlenderComp(
-        builder=_coil_builder(geom, scene.end_angle),
+        builder=_coil_builder(geom, scene.state.end_angle),
         material=MetallicMaterial(
             base_colour=MaterialColour(1.0, 0.2, 0.2, 1),
             metallicness=MaterialValueZeroToOne(1.0),
@@ -97,9 +98,9 @@ def PFCoil(geom: RectangleGeometry, *, scene: EUDEMOScene):
 
 
 @component
-def CSCoil(geom: RectangleGeometry, *, scene: EUDEMOScene):
+def CSCoil(geom: RectangleGeometry, *, scene: Scene[ProcessEUDEMOSceneState]):
     return BlenderComp(
-        builder=_coil_builder(geom, scene.end_angle),
+        builder=_coil_builder(geom, scene.state.end_angle),
         material=MetallicMaterial(
             base_colour=MaterialColour(0.9, 0.2, 1, 1),
             metallicness=MaterialValueZeroToOne(1.0),

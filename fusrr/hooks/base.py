@@ -16,6 +16,7 @@ class Runnable(ABC):
         raise NotImplementedError("Subclasses must implement this method.")
 
 
+R = TypeVar("R", bound=Runnable)
 P = ParamSpec("P")
 T = TypeVar("T")
 
@@ -37,7 +38,14 @@ class Provided(Generic[P, T]):
         return self._callback(*args, **kwargs)
 
 
-class Designer(Runnable): ...
+class Designer(Runnable):
+    """Base class for designers."""
+
+    # supports cleanup
+
+    def cleanup(self):
+        """Cleanup resources after running the designer."""
+        raise NotImplementedError("Subclasses must implement this method.")
 
 
 D = TypeVar("D", bound=Designer)

@@ -8,8 +8,8 @@ S = TypeVar("S", bound=BaseModel)
 
 
 @dataclass(frozen=True)
-class SceneState(Generic[S]):
-    scene_name: str
+class Scene(Generic[S]):
+    name: str
     state: S
 
 
@@ -23,12 +23,12 @@ class SceneConfig(BaseModel, Generic[S]):
     state: S
     select: list[SceneStateSelect[S]] | None = None
 
-    def get_applicable_state(self, component_name: str) -> SceneState[S]:
+    def get_applicable_scene(self, component_name: str) -> Scene[S]:
         """Returns the state for a given component name if it exists."""
         for select in self.select or []:
             if re.fullmatch(select.component, component_name):
-                return SceneState(scene_name=self.name, state=select.state)
-        return SceneState(scene_name=self.name, state=self.state)
+                return Scene(name=self.name, state=select.state)
+        return Scene(name=self.name, state=self.state)
 
 
 class ProjectConfig(BaseModel, Generic[S]):

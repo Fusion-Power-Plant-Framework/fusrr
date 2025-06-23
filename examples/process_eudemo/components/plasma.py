@@ -1,8 +1,9 @@
 from process.geometry.plasma_geometry import plasma_geometry
 
 from examples.process_eudemo.providers import process_params_provider
-from examples.process_eudemo.scene import EUDEMOScene
+from examples.process_eudemo.scene_state import ProcessEUDEMOSceneState
 from fusrr import Vec3, component
+from fusrr.core.config_model import Scene
 from fusrr.hooks import Designer, useDesigner, useProvider
 from fusrr.modelling.blender import BlenderComp
 from fusrr.modelling.blender.materials import (
@@ -43,7 +44,7 @@ class PlasmaDesigner(Designer):
 
 
 @component
-def Plasma(*, scene: EUDEMOScene):
+def Plasma(*, scene: Scene[ProcessEUDEMOSceneState]):
     """Component to design the plasma of a PROCESS reactor."""
     params = useProvider(process_params_provider)
     d = useDesigner(PlasmaDesigner(params))
@@ -51,7 +52,7 @@ def Plasma(*, scene: EUDEMOScene):
     def builder(_obj, m):
         mesh_add_edges_from_points(m, d.ib_pts)
         mesh_add_edges_from_points(m, d.ob_pts)
-        mesh_revolve(m, Vec3.ZERO, Vec3.Z, scene.end_angle)
+        mesh_revolve(m, Vec3.ZERO, Vec3.Z, scene.state.end_angle)
 
     return BlenderComp(
         builder=builder,

@@ -4,8 +4,9 @@ from process.geometry.vacuum_vessel_geometry import (
 )
 
 from examples.process_eudemo.providers import process_params_provider
-from examples.process_eudemo.scene import EUDEMOScene
+from examples.process_eudemo.scene_state import ProcessEUDEMOSceneState
 from fusrr import Vec3, component
+from fusrr.core.config_model import Scene
 from fusrr.hooks import Designer, useDesigner, useProvider
 from fusrr.modelling.blender import BlenderComp, BlenderCompound
 from fusrr.modelling.blender.materials import MaterialColour, MetallicMaterial
@@ -83,14 +84,14 @@ class VacuumVesselDesigner(Designer):
 
 
 @component
-def VacuumVessel(*, scene: EUDEMOScene):
+def VacuumVessel(*, scene: Scene[ProcessEUDEMOSceneState]):
     """Component to design the vacuum vessel of a PROCESS reactor."""
     params = useProvider(process_params_provider)
     d = useDesigner(VacuumVesselDesigner(params))
 
     def builder(_obj, m) -> None:
         mesh_add_edges_from_points(m, d.pts)
-        mesh_revolve(m, Vec3.ZERO, Vec3.Z, scene.end_angle)
+        mesh_revolve(m, Vec3.ZERO, Vec3.Z, scene.state.end_angle)
 
     return BlenderComp(
         builder=builder,

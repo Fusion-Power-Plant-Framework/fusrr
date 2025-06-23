@@ -3,6 +3,8 @@ from __future__ import annotations
 import contextlib
 from typing import TYPE_CHECKING, Any
 
+from cvxpy import entr
+
 from fusrr.hooks._hook_state import HOOK_STATE
 from fusrr.hooks.base import D, P, Provided, T
 
@@ -43,6 +45,7 @@ def useDesigner(designer: D, deps: Sequence[Any] | None = ()) -> D:
         designer.run()
         HOOK_STATE.set_frame_entry(designer, deps)
         return designer
+    entry.mark_used = False
     return entry.inst
 
 

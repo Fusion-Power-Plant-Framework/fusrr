@@ -60,6 +60,7 @@ class BlenderProject(FusrrProject[S]):
         self._project_blend_file = self.project_directory / (
             self.project_name + ".blend"
         )
+        self.project_directory.mkdir(exist_ok=True)
 
     def _rename_project_file_if_exists(self) -> None:
         if self._project_blend_file.is_file():

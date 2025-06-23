@@ -4,8 +4,9 @@ from process.geometry.blanket_geometry import (
 )
 
 from examples.process_eudemo.providers import process_params_provider
-from examples.process_eudemo.scene import EUDEMOScene
+from examples.process_eudemo.scene_state import ProcessEUDEMOSceneState
 from fusrr import Vec3, component
+from fusrr.core.config_model import Scene
 from fusrr.hooks import Designer, useDesigner, useProvider
 from fusrr.modelling.blender import BlenderComp
 from fusrr.modelling.blender.materials import (
@@ -103,7 +104,7 @@ class BlanketDesigner(Designer):
 
 
 @component
-def Blanket(*, scene: EUDEMOScene):
+def Blanket(*, scene: Scene[ProcessEUDEMOSceneState]):
     """Component to design the blanket of a PROCESS reactor."""
     params = useProvider(process_params_provider)
     d = useDesigner(BlanketDesigner(params))
@@ -114,7 +115,7 @@ def Blanket(*, scene: EUDEMOScene):
         if d.i_single_null == 0:
             mesh_add_edges_from_points(m, d.ib_pts)
             mesh_add_edges_from_points(m, d.ob_pts)
-        mesh_revolve(m, Vec3.ZERO, Vec3.Z, scene.end_angle)
+        mesh_revolve(m, Vec3.ZERO, Vec3.Z, scene.state.end_angle)
 
     return BlenderComp(
         builder=builder,

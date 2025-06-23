@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import contextlib
 import inspect
 from functools import wraps
 from typing import TYPE_CHECKING, Any, Generic
 
-from fusrr.core.config_model import S, SceneState
+from fusrr.core.config_model import S, Scene
 from fusrr.core.project import ProjectContext
+from fusrr.hooks._hook_state import HOOK_STATE
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -18,7 +20,7 @@ class Comp(Generic[S]):
     def __init__(self, *, builder: Callable[[], None] | None = None):
         self._builder = builder
 
-    def build(self, name: str, scene_state: SceneState[S]) -> None:  # noqa: ARG002
+    def build(self, name: str, scene: Scene[S]) -> None:  # noqa: ARG002
         if self._builder is not None:
             self._builder()
         else:
@@ -29,10 +31,10 @@ class Compound(Generic[S]):
     def __init__(self, components: list[FusrrComponent]):
         self.components = components
 
-    def pre_build(self, name: str, scene_state: SceneState[S]) -> None:
+    def pre_build(self, name: str, scene: Scene[S]) -> None:
         """Builds all components in the compound."""
 
-    def post_build(self, name: str, scene_state: SceneState[S]) -> None:
+    def post_build(self, name: str, scene: Scene[S]) -> None:
         """Finalizes the compound after all components are built."""
 
 
@@ -134,17 +136,17 @@ class FusrrComponent(Generic[S]):
         self,
         *,
         ctx: Context | None = None,
-        scene_state: SceneState[S] | None = None,
+        scene: Scene[S] | None = None,
     ) -> CONSTRUCTOR_RETURN:
         """Calls the component function with the provided context and scene."""
-        if self._scene_in_params and scene_state is None:
+        if self._scene_in_params and scene is None:
             raise ValueError(
                 "Scene must be provided to the component constructor, "
                 "scene is required by the component."
             )
         fn, args, kwargs = self._constructor, self._args, self._kwargs.copy()
-        if self._scene_in_params and scene_state:
-            kwargs["scene"] = scene_state.state
+        if self._scene_in_params and scene:
+            kwargs["scene"] = scene
         if ctx:
             constructed = ctx.run(fn, *args, **kwargs)
         else:
@@ -152,33 +154,41 @@ class FusrrComponent(Generic[S]):
         self._set_constructed(constructed)
         return constructed
 
+    @staticmethod
+    def _run_ctx_cleanup() -> None:
+        """Cleans up the context after running the component."""
+        for i in HOOK_STATE.frame_used_instances():
+            if hasattr(i, "cleanup"):
+                with contextlib.suppress(NotImplementedError):
+                    # If the instance has a cleanup method, call it
+                    i.cleanup()
+
     def run(self, proj_ctx: ProjectContext[S]) -> None:
         """Run the component in the project context, for the current scene."""
         ctx = proj_ctx.push_key_for_context(self.stable_key)
-        scene_state = proj_ctx.scene_state_for(self.name)
-        constructed = self._run_constructor(ctx=ctx, scene_state=scene_state)
+        scene = proj_ctx.scene_for(self.name)
+        constructed = self._run_constructor(ctx=ctx, scene=scene)
         # self.is_compound is set by _set_constructed in _run_constructor
         if self.is_compound:
-            self._build_compound(constructed, scene_state, proj_ctx)  # type: ignore[call-arg]
+            self._build_compound(constructed, scene, proj_ctx)  # type: ignore[call-arg]
         else:
-            self._build_component(constructed, scene_state)  # type: ignore[call-arg]
+            self._build_component(constructed, scene)  # type: ignore[call-arg]
+        ctx.run(self._run_ctx_cleanup)
         proj_ctx.pop_key()
 
-    def _build_component(
-        self, constructed: Comp, scene_state: SceneState[S]
-    ) -> None:
-        constructed.build(self.name, scene_state)
+    def _build_component(self, constructed: Comp, scene: Scene[S]) -> None:
+        constructed.build(self.name, scene)
 
     def _build_compound(
         self,
         constructed: Compound,
-        scene_state: SceneState[S],
+        scene: Scene[S],
         proj_ctx: ProjectContext[S],
     ) -> None:
-        constructed.pre_build(self.name, scene_state)
+        constructed.pre_build(self.name, scene)
         for comp in constructed.components:
             comp.run(proj_ctx)
-        constructed.post_build(self.name, scene_state)
+        constructed.post_build(self.name, scene)
 
     def __repr__(self) -> str:
         return (

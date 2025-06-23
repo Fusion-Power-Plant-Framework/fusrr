@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import contextlib
+from calendar import c
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Literal
 
@@ -7,7 +9,7 @@ import bpy
 import bmesh
 
 from fusrr.core.component import Comp, Compound
-from fusrr.core.config_model import S, SceneState
+from fusrr.core.config_model import S, Scene
 from fusrr.core.vectors import Vec3
 from fusrr.modelling.blender.tools.mesh_tools import (
     new_mesh_for,
@@ -48,9 +50,9 @@ class BlenderTransformProperties:
             obj.scale = self.scale.tup
 
 
-def _blender_component_name(name: str, scene_state: SceneState[S]) -> str:
+def _blender_component_name(name: str, scene: Scene[S]) -> str:
     """Generates a unique name for a Blender component based on the scene state."""
-    return f"{scene_state.scene_name}.{name}"
+    return f"{scene.name}.{name}"
 
 
 class BlenderComp(Comp[S]):
@@ -59,12 +61,15 @@ class BlenderComp(Comp[S]):
     def __init__(
         self,
         *,
-        builder: Callable[[bpy.types.Object, bmesh.types.BMesh], None],
+        builder: Callable[[bpy.types.Object, bmesh.types.BMesh], None]
+        | None = None,
+        obj_builder: Callable[[str], bpy.types.Object] | None = None,
         material: BlenderMaterial | None = None,
         transform_props: BlenderTransformProperties | None = None,
     ):
         """Initialize the Blender component with a name."""
         self._build_with_mesh = builder
+        self._obj_builder = obj_builder
         self.material = material
         self.transform_props = transform_props or BlenderTransformProperties()
 
@@ -82,20 +87,43 @@ class BlenderComp(Comp[S]):
         else:
             raise NotImplementedError
 
-    def build(self, name: str, scene_state: SceneState[S]) -> None:
-        self.b_component_name = _blender_component_name(name, scene_state)
-        if check_object_in_scene(self.b_component_name):
+    def build_obj(self, comp_name: str) -> bpy.types.Object:
+        """Builds the object without a mesh.
+
+        This is used when the object is created without a mesh,
+        for example, when using an external model.
+        """
+        if self._obj_builder:
+            return self._obj_builder(comp_name)
+        raise NotImplementedError(
+            "No object builder provided, cannot build object without mesh."
+        )
+
+    def build(self, name: str, scene: Scene[S]) -> None:
+        b_component_name = _blender_component_name(name, scene)
+        if check_object_in_scene(b_component_name):
             raise ValueError(
-                f"Object with name {self.b_component_name} already exists in the scene."
+                f"Object with name {b_component_name} already exists in the scene."
             )
-        obj = create_object(self.b_component_name)
-        with new_mesh_for(obj) as m:
-            self.build_obj_w_mesh(obj, m)
+        obj = None
+        with contextlib.suppress(NotImplementedError):
+            obj = self.build_obj(b_component_name)
+        if obj is None:
+            with contextlib.suppress(NotImplementedError):
+                obj_instance = create_object(b_component_name)
+                with new_mesh_for(obj_instance) as m:
+                    self.build_obj_w_mesh(obj_instance, m)
+                obj = obj_instance
+        if obj is None:
+            raise ValueError(
+                f"No builder provided for {name}, could not be built."
+            )
         # apply properties
         self.transform_props.apply_to(obj)
         # apply material after constructing the object
         if self.material:
             self.material.apply_to(obj)
+        self.b_component_name = b_component_name
 
 
 class BlenderCompound(Compound[S]):
@@ -117,15 +145,17 @@ class BlenderCompound(Compound[S]):
             if isinstance(c.constructed, BlenderCompound)
         ]
 
-    def pre_build(self, name: str, scene_state: SceneState[S]) -> None:
-        self.b_collection_name = _blender_component_name(name, scene_state)
-        if check_collection_in_scene(self.b_collection_name):
+    def pre_build(self, name: str, scene: Scene[S]) -> None:
+        b_collection_name = _blender_component_name(name, scene)
+        if check_collection_in_scene(b_collection_name):
             raise ValueError(
-                f"Compound with name {self.b_collection_name} already exists in the scene."
+                f"Compound with name {b_collection_name} "
+                "already exists in the scene."
             )
-        self._this_c = create_collection(self.b_collection_name)
+        self._this_c = create_collection(b_collection_name)
+        self.b_collection_name = b_collection_name
 
-    def post_build(self, _name: str, _scene_state: SceneState[S]) -> None:
+    def post_build(self, _name: str, _scene: Scene[S]) -> None:
         # select all created objects, create a collection and add them to it
         created_objs = get_objects(set(self._get_sub_component_names()))
         link_objects_to_collection(self._this_c, created_objs)

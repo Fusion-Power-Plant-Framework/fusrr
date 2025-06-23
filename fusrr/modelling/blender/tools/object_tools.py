@@ -3,6 +3,10 @@
 from typing import Literal
 
 import bpy
+from numpy import isin
+
+from fusrr.core.vectors import Vec3
+from fusrr.modelling.blender.tools.scene_tools import create_object
 
 
 def set_object_material(
@@ -65,7 +69,7 @@ def set_object_material(
         if slot >= len(obj_mats):
             raise ValueError(
                 f"Material slot {slot} not found on object {obj.name}.\n"
-                f"Max slot: {len(obj_mats) -1}"
+                f"Max slot: {len(obj_mats) - 1}"
             )
         obj_mats[slot] = mat
     else:
@@ -119,3 +123,34 @@ def add_camera(name: str) -> bpy.types.Object:
     cam = bpy.data.objects.new(name, cam_data)
     bpy.context.scene.collection.objects.link(cam)
     return cam
+
+
+def move_camera(vec: Vec3) -> None:
+    """Selects and moves the scene camera"""
+    camera = bpy.data.objects["Camera"]
+    camera.location = vec.tup
+
+
+def copy_object_w_mesh(
+    obj: bpy.types.Object,
+    new_name: str | None = None,
+) -> bpy.types.Object:
+    """Returns a copy of an object and its mesh with a new name.
+
+    Args:
+        obj: The object to copy.
+        new_name: The name of the new object. If None, the name will be
+            the same as the original object with ".copy" appended.
+    """
+    if new_name is None:
+        new_name = f"{obj.name}.copy"
+    if not isinstance(obj.data, bpy.types.Mesh):
+        raise TypeError(
+            f"Object {obj.name} is not a mesh object. "
+            "Cannot copy object with mesh."
+        )
+    new_mesh = obj.data.copy()
+    new_mesh.name = new_name
+    new_obj = create_object(new_name, mesh=new_mesh)
+    new_obj.matrix_world = obj.matrix_world.copy()
+    return new_obj
