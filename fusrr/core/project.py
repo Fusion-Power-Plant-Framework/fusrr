@@ -19,7 +19,9 @@ if TYPE_CHECKING:
 
 
 class ProjectContext(Generic[S]):
-    def __init__(self):
+    def __init__(self, ptx_id: int | None = None):
+        """Initializes the project context with an empty stack and context registry."""
+        self.ptx_id = ptx_id
         self._stk = deque()
         self._ctx_reg: dict[tuple[int, ...], Context] = {}
         self._cur_scene_config: SceneConfig[S] | None = None
@@ -49,7 +51,7 @@ class ProjectContext(Generic[S]):
         """Returns the current scene data for a given matching name."""
         if self._cur_scene_config is None:
             return None
-        return self._cur_scene_config.get_applicable_scene(name)
+        return self._cur_scene_config.get_applicable_scene(name, self.ptx_id)
 
 
 class FusrrProject(Generic[S]):
@@ -115,7 +117,7 @@ def run_project(project: FusrrProject):
     completed_successfully = False
     project.on_start()
     root_comps = project.root_components
-    p_ctxs = [ProjectContext() for _ in root_comps]
+    p_ctxs = [ProjectContext(i) for i, _ in enumerate(root_comps)]
     try:
         for scene_cfg in project.config.scenes:
             project.on_scene_start(scene_cfg)

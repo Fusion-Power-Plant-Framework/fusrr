@@ -4,9 +4,10 @@ from examples.bluemira_eudemo.components.reactor import (
     Bluemira_PowerPlant_EUDEMO,
 )
 from examples.bluemira_eudemo.run_project import data_dir as bm_data_dir
-from examples.combined_eudemo.scene_state import CombinedEUDEMOSceneState
+from examples.bluemira_eudemo.scene_state import BmEUDEMOSceneState
 from examples.process_eudemo.components.reactor_eudemo import EUDEMO_Reactor
 from examples.process_eudemo.run_project import process_mfile_path
+from examples.process_eudemo.scene_state import ProcessEUDEMOSceneState
 from fusrr import ProjectConfig, SceneConfig, run_project
 from fusrr.core.config_model import SceneStateSelect
 from fusrr.modelling.blender import BlenderProject
@@ -29,28 +30,37 @@ if __name__ == "__main__":
                 scenes=[
                     SceneConfig(
                         name="scene 1",
-                        state=CombinedEUDEMOSceneState(
-                            gltf_filepath=bm_data_dir / "eudemo.gltf",
-                            start_angle=0,
-                            end_angle=360,
-                        ),
+                        state=[
+                            BmEUDEMOSceneState(
+                                gltf_filepath=bm_data_dir / "eudemo.gltf"
+                            ),
+                            ProcessEUDEMOSceneState(
+                                start_angle=0,
+                                end_angle=360,
+                            ),
+                        ],
                     ),
                     SceneConfig(
                         name="scene 2",
-                        state=CombinedEUDEMOSceneState(
-                            gltf_filepath=bm_data_dir / "eudemo_half.gltf",
-                            start_angle=0,
-                            end_angle=180,
-                        ),
+                        state=[
+                            BmEUDEMOSceneState(
+                                gltf_filepath=bm_data_dir / "eudemo_half.gltf"
+                            ),
+                            ProcessEUDEMOSceneState(
+                                start_angle=0,
+                                end_angle=180,
+                            ),
+                        ],
                         select=[
                             SceneStateSelect(
                                 component="Plasma",
-                                state=CombinedEUDEMOSceneState(
-                                    gltf_filepath=bm_data_dir
-                                    / "eudemo_half.gltf",
-                                    start_angle=0,
-                                    end_angle=360,
-                                ),
+                                state=[
+                                    None,
+                                    ProcessEUDEMOSceneState(
+                                        start_angle=0,
+                                        end_angle=360,
+                                    ),
+                                ],
                             )
                         ],
                     ),

@@ -21,7 +21,7 @@
       "name": "combined-eudemo",
       "type": "debugpy",
       "request": "launch",
-      "program": "examples/bluemira_eudemo/run_project.py",
+      "program": "examples/combined_eudemo/run_project.py",
       "console": "integratedTerminal",
       "justMyCode": false
     }

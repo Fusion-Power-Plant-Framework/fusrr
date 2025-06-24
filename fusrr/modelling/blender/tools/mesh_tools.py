@@ -115,15 +115,17 @@ def mesh_revolve(
     )
 
 
-def add_empty(name: str, location: Vec3):
+def add_empty(name: str, location: Vec3) -> bpy.types.Object:
     """Adds an empty object to the scene."""
     bpy.ops.object.empty_add(location=location.tup)
     obj = bpy.context.object
     obj.name = name
+    return obj
 
 
-def add_cube(name: str, location: Vec3, scale: Vec3):
+def add_cube(name: str, location: Vec3, scale: Vec3) -> bpy.types.Object:
     """Adds a cube to the scene."""
     bpy.ops.mesh.primitive_cube_add(location=location.tup, scale=scale.tup)
     obj = bpy.context.object
     obj.name = name
+    return obj
