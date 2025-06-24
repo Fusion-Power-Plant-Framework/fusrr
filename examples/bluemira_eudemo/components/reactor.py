@@ -8,17 +8,20 @@ from fusrr.hooks import Designer, useDesigner
 from fusrr.modelling.blender.component import BlenderComp, BlenderCompound
 from fusrr.modelling.blender.materials.base import BlenderMaterial
 from fusrr.modelling.blender.materials.materials import (
+    GlassMaterial,
     MetallicMaterial,
     PlasmaMaterial,
 )
-from fusrr.modelling.blender.materials.value_models import MaterialColour
+from fusrr.modelling.blender.materials.value_models import (
+    MaterialColour,
+    MaterialValueZeroToOne,
+)
 from fusrr.modelling.blender.tools.object_tools import copy_object_w_mesh
 from fusrr.modelling.blender.tools.scene_tools import (
     get_object_by_pattern_f,
     get_objects_by_pattern,
     import_gltf,
     remove_object,
-    remove_object_if_exists,
 )
 
 
@@ -89,6 +92,7 @@ def Bluemira_PowerPlant_EUDEMO(*, scene: Scene[BmEUDEMOSceneState]):
                 comp_pattern="Blanket.*IB",
                 comp_mat=MetallicMaterial(
                     base_colour=MaterialColour(0.8, 0.6, 0.2, 1),
+                    roughness=MaterialValueZeroToOne(1),
                 ),
             ),
             GLTFComp(
@@ -103,13 +107,17 @@ def Bluemira_PowerPlant_EUDEMO(*, scene: Scene[BmEUDEMOSceneState]):
                 comp_pattern="TFCoil_mat_Toroidal_Field_Coil_2015",
                 comp_mat=MetallicMaterial(
                     base_colour=MaterialColour(0.1, 0.1, 0.5, 1),
+                    roughness=MaterialValueZeroToOne(0.1),
+                    metallicness=MaterialValueZeroToOne(1.0),
                 ),
             ),
             GLTFComp(
                 name="bm_poloidal_coils",
                 comp_pattern="Poloidal_Coils_mat_Poloidal_Field_Coil",
                 comp_mat=MetallicMaterial(
-                    base_colour=MaterialColour(0.2, 0.5, 0.2, 1),
+                    base_colour=MaterialColour(1.0, 0.2, 0.2, 1),
+                    metallicness=MaterialValueZeroToOne(1.0),
+                    roughness=MaterialValueZeroToOne(0.2),
                 ),
             ),
             GLTFComp(

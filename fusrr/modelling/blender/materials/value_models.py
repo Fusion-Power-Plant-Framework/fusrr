@@ -11,7 +11,7 @@ __all__ = [
 @dataclass
 class MaterialColour:
     # entering the RGB value for colours
-    # each value is between 0-1, which is scalled down from the normal 0-255
+    # each value is between 0-1, which is scaled down from the normal 0-255
     r: float
     g: float
     b: float
