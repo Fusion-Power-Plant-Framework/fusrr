@@ -115,7 +115,7 @@ class FusrrComponent(Generic[S]):
         return isinstance(self._constructed, Compound)
 
     @property
-    def constructed(self) -> CONSTRUCTOR_RETURN:
+    def built(self) -> CONSTRUCTOR_RETURN:
         """Returns the constructed component or compound."""
         if self._constructed is None:
             raise RuntimeError(
@@ -163,8 +163,15 @@ class FusrrComponent(Generic[S]):
                     # If the instance has a cleanup method, call it
                     i.cleanup()
 
-    def run(self, proj_ctx: ProjectContext[S]) -> None:
-        """Run the component in the project context, for the current scene."""
+    def run(self, proj_ctx: ProjectContext[S] | None) -> None:
+        """Run the component in the project context.
+
+        Note:
+            This is mainly for internal use, as it is called by the
+            FusrrProject to run the component in the context of the project.
+        """
+        if proj_ctx is None:
+            proj_ctx = ProjectContext[S]()
         ctx = proj_ctx.push_key_for_context(self.stable_key)
         scene = proj_ctx.scene_for(self.name)
         constructed = self._run_constructor(ctx=ctx, scene=scene)

@@ -13,6 +13,7 @@ from fusrr.modelling.blender.tools.scene_tools import (
     add_scene,
     clear_scene,
     deselect_all,
+    render_scene,
 )
 
 
@@ -90,4 +91,6 @@ class BlenderProject(FusrrProject[S]):
 
     def on_scene_end(self, scene_config: SceneConfig[S]) -> None:
         # render the image of the scene
-        pass
+        render_scene(
+            scene_config.name, self.project_directory, res=(1920, 1920)
+        )

@@ -73,6 +73,37 @@ class Vec3:
     y: float
     z: float
 
+    @classmethod
+    def random(cls, range_start: float = 0.0, range_end: float = 1.0) -> Vec3:
+        """Return a random vector with coordinates in the range [-scale, scale]."""
+        from random import uniform
+
+        return Vec3(
+            uniform(a=range_start, b=range_end),  # noqa: S311
+            uniform(a=range_start, b=range_end),  # noqa: S311
+            uniform(a=range_start, b=range_end),  # noqa: S311
+        )
+
+    @classmethod
+    def random_per_axis(
+        cls,
+        *,
+        x: tuple[float, float] | float = 0,
+        y: tuple[float, float] | float = 0,
+        z: tuple[float, float] | float = 0,
+    ):
+        """Return a random vector with coordinates in the range [-scale, scale] per axis."""
+        from random import uniform
+
+        if isinstance(x, tuple):
+            x = uniform(a=x[0], b=x[1])
+        if isinstance(y, tuple):
+            y = uniform(a=y[0], b=y[1])
+        if isinstance(z, tuple):
+            z = uniform(a=z[0], b=z[1])
+
+        return Vec3(x, y, z)
+
     @staticproperty
     def ONE() -> Vec3:
         """Return the one vector."""

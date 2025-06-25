@@ -3,7 +3,6 @@
 from typing import Literal
 
 import bpy
-from numpy import isin
 
 from fusrr.core.vectors import Vec3
 from fusrr.modelling.blender.tools.scene_tools import create_object
@@ -113,7 +112,36 @@ def set_object_visibility(obj: bpy.types.Object, *, visibility: bool) -> None:
     obj.hide_set(not visibility)
 
 
-def add_camera(name: str) -> bpy.types.Object:
+def add_light(
+    name: str,
+    *,
+    energy: int = 100,
+    color: Vec3 = Vec3.ONE,
+    type: Literal[
+        "POINT",  # Point.Omnidirectional point light source.
+        "SUN",  # Sun.Constant direction parallel ray light source.
+        "SPOT",  # Spot.Directional cone light source.
+        "AREA",  # Area.Directional area light source.
+    ] = "POINT",
+    spot_angle_rad: float = 0.0,
+) -> bpy.types.Object:
+    """Add a light to the scene.
+    Args:
+        name: The name of the light to add.
+    """
+    light_data = bpy.data.lights.new(name, type=type)
+    light = bpy.data.objects.new(name, light_data)
+    bpy.context.scene.collection.objects.link(light)
+    light.location = (0, 0, 0)
+    light_data.energy = energy
+    light_data.color = color.tup
+    light_data.spot_size = spot_angle_rad
+    return light
+
+
+def add_camera(
+    name: str, *, activate_for_scene: bool = True
+) -> bpy.types.Object:
     """Add a camera to the scene.
 
     Args:
@@ -122,13 +150,9 @@ def add_camera(name: str) -> bpy.types.Object:
     cam_data = bpy.data.cameras.new(name)
     cam = bpy.data.objects.new(name, cam_data)
     bpy.context.scene.collection.objects.link(cam)
+    if activate_for_scene:
+        bpy.context.scene.camera = cam
     return cam
-
-
-def move_camera(vec: Vec3) -> None:
-    """Selects and moves the scene camera"""
-    camera = bpy.data.objects["Camera"]
-    camera.location = vec.tup
 
 
 def copy_object_w_mesh(

@@ -2,6 +2,7 @@ import re
 from collections.abc import Iterable
 from os import PathLike
 from pathlib import Path
+from typing import Literal
 
 import bpy
 
@@ -387,3 +388,56 @@ def import_gltf(
         for obj in bpy.context.selected_objects:
             obj.name = f"{objs_name_prefix}.{obj.name}"
     deselect_all()
+
+
+def render_scene(
+    scene_name: str,
+    output_path: PathLike | str,
+    *,
+    res: tuple[int, int] = (1920, 1080),
+    file_format: Literal[
+        "BMP",  # BMP.Output image in bitmap format.
+        "IRIS",  # Iris.Output image in SGI IRIS format.
+        "PNG",  # PNG.Output image in PNG format.
+        "JPEG",  # JPEG.Output image in JPEG format.
+        "JPEG2000",  # JPEG 2000.Output image in JPEG 2000 format.
+        "TARGA",  # Targa.Output image in Targa format.
+        "TARGA_RAW",  # Targa Raw.Output image in uncompressed Targa format.
+        "CINEON",  # Cineon.Output image in Cineon format.
+        "DPX",  # DPX.Output image in DPX format.
+        "OPEN_EXR_MULTILAYER",  # OpenEXR MultiLayer.Output image in multilayer OpenEXR format.
+        "OPEN_EXR",  # OpenEXR.Output image in OpenEXR format.
+        "HDR",  # Radiance HDR.Output image in Radiance HDR format.
+        "TIFF",  # TIFF.Output image in TIFF format.
+        "WEBP",  # WebP.Output image in WebP format.
+        "FFMPEG",  # FFmpeg Video.
+    ] = "JPEG",
+    engine: Literal[
+        "BLENDER_EEVEE_NEXT", "BLENDER_WORKBENCH", "CYCLES"
+    ] = "BLENDER_EEVEE_NEXT",
+    samples: int = 10,
+):
+    """Render the current scene to an image file.
+
+    Args:
+        output_path: The path to save the rendered image.
+        scene_name: The name of the scene to render. Defaults to "RenderScene".
+    """
+    if not bpy.context.scene.camera:
+        print("Attempting to render with no camera set in the scene.")
+        return
+
+    bpy.context.scene.render.filepath = (
+        Path(output_path / Path(scene_name)).resolve().as_posix()
+    )
+    bpy.context.scene.render.resolution_x = res[0]
+    bpy.context.scene.render.resolution_y = res[1]
+    bpy.context.scene.render.image_settings.file_format = file_format
+
+    bpy.context.scene.render.engine = engine  # type: ignore
+    bpy.context.scene.cycles.samples = samples
+    bpy.context.scene.cycles.preview_samples = samples
+    bpy.context.scene.eevee.taa_samples = samples
+    bpy.context.scene.eevee.taa_render_samples = samples
+
+    bpy.ops.render.render("INVOKE_DEFAULT", write_still=True)

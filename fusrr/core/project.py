@@ -19,12 +19,17 @@ if TYPE_CHECKING:
 
 
 class ProjectContext(Generic[S]):
-    def __init__(self, ptx_id: int | None = None):
+    def __init__(
+        self,
+        *,
+        ptx_id: int | None = None,
+        initial_scene_config: SceneConfig[S] | None = None,
+    ):
         """Initializes the project context with an empty stack and context registry."""
         self.ptx_id = ptx_id
         self._stk = deque()
         self._ctx_reg: dict[tuple[int, ...], Context] = {}
-        self._cur_scene_config: SceneConfig[S] | None = None
+        self._cur_scene_config = initial_scene_config
 
     def set_scene_config(self, scene: SceneConfig[S]) -> None:
         """Sets the current scene state for the project context."""
@@ -114,12 +119,19 @@ class FusrrProject(Generic[S]):
 
 
 def run_project(project: FusrrProject):
+    """Runs a FusrrProject, executing all root components in the defined scenes.
+
+    Each root component is given an independent ProjectContext,
+    meaning all hooks used by sub-components are isolated to
+    contexts of the root components.
+    """
     completed_successfully = False
     project.on_start()
     root_comps = project.root_components
-    p_ctxs = [ProjectContext(i) for i, _ in enumerate(root_comps)]
+    p_ctxs = [ProjectContext(ptx_id=i) for i, _ in enumerate(root_comps)]
     try:
         for scene_cfg in project.config.scenes:
+            print(f"Running scene: {scene_cfg.name}")
             project.on_scene_start(scene_cfg)
             for root_comp, p_ctx in zip(root_comps, p_ctxs, strict=True):
                 p_ctx.set_scene_config(scene_cfg)

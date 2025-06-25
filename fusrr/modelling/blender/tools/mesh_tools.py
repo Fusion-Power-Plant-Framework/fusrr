@@ -129,3 +129,21 @@ def add_cube(name: str, location: Vec3, scale: Vec3) -> bpy.types.Object:
     obj = bpy.context.object
     obj.name = name
     return obj
+
+
+def add_plane(
+    name: str,
+    *,
+    location: Vec3 = Vec3.ZERO,
+    scale: Vec3 = Vec3.ONE,
+    rotation: Vec3 = Vec3.ZERO,
+) -> bpy.types.Object:
+    """Adds a plane to the scene."""
+    bpy.ops.mesh.primitive_plane_add(
+        location=location.tup,
+        scale=scale.tup,
+        rotation=rotation.tup,
+    )
+    obj = bpy.context.object
+    obj.name = name
+    return obj

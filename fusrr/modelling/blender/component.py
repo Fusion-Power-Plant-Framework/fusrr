@@ -1,16 +1,13 @@
 from __future__ import annotations
 
 import contextlib
-from calendar import c
-from dataclasses import dataclass
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
 import bpy
 import bmesh
 
 from fusrr.core.component import Comp, Compound
 from fusrr.core.config_model import S, Scene
-from fusrr.core.vectors import Vec3
 from fusrr.modelling.blender.tools.mesh_tools import (
     new_mesh_for,
 )
@@ -24,30 +21,12 @@ from fusrr.modelling.blender.tools.scene_tools import (
     link_collections,
     link_objects_to_collection,
 )
+from fusrr.modelling.blender.transform import BlenderTransform
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
     from fusrr.modelling.blender.materials.base import BlenderMaterial
-
-
-@dataclass
-class BlenderTransformProperties:
-    """Common properties for object transforms."""
-
-    center_point: Vec3 | Literal["centroid"] = Vec3.ZERO
-    position: Vec3 | None = None
-    rotation: Vec3 | None = None
-    scale: Vec3 = Vec3.ONE
-
-    def apply_to(self, obj: bpy.types.Object) -> None:
-        """Applies the transform properties to the object."""
-        if self.position is not None:
-            obj.location = self.position.tup
-        if self.rotation is not None:
-            obj.rotation_euler = self.rotation.tup
-        if self.scale != Vec3.ONE:
-            obj.scale = self.scale.tup
 
 
 def _blender_component_name(name: str, scene: Scene[S]) -> str:
@@ -65,13 +44,13 @@ class BlenderComp(Comp[S]):
         | None = None,
         obj_builder: Callable[[str], bpy.types.Object] | None = None,
         material: BlenderMaterial | None = None,
-        transform_props: BlenderTransformProperties | None = None,
+        transform: BlenderTransform | None = None,
     ):
         """Initialize the Blender component with a name."""
         self._build_with_mesh = builder
         self._obj_builder = obj_builder
         self.material = material
-        self.transform_props = transform_props or BlenderTransformProperties()
+        self.transform = transform or BlenderTransform()
 
     def build_obj_w_mesh(
         self,
@@ -119,7 +98,7 @@ class BlenderComp(Comp[S]):
                 f"No builder provided for {name}, could not be built."
             )
         # apply properties
-        self.transform_props.apply_to(obj)
+        self.transform.apply_to(obj)
         # apply material after constructing the object
         if self.material:
             self.material.apply_to(obj)
@@ -132,17 +111,17 @@ class BlenderCompound(Compound[S]):
     def _get_sub_component_names(self) -> list[str]:
         """Returns the names of sub-components, must be run in post_build only."""
         return [
-            c.constructed.b_component_name
+            c.built.b_component_name
             for c in self.components
-            if isinstance(c.constructed, BlenderComp)
+            if isinstance(c.built, BlenderComp)
         ]
 
     def _get_sub_collection_names(self) -> list[str]:
         """Returns the names of sub-compounds, must be run in post_build only."""
         return [
-            c.constructed.b_collection_name
+            c.built.b_collection_name
             for c in self.components
-            if isinstance(c.constructed, BlenderCompound)
+            if isinstance(c.built, BlenderCompound)
         ]
 
     def pre_build(self, name: str, scene: Scene[S]) -> None:
