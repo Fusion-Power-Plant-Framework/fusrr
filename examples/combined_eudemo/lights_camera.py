@@ -1,6 +1,6 @@
 import math
 
-from examples.combined_eudemo.scene_state import CombinedLCSState
+from examples.combined_eudemo.scene_state import LightsCameraSceneState
 from fusrr import Scene, component
 from fusrr.core.vectors import Vec3
 from fusrr.modelling.blender import BlenderComp, BlenderTransform
@@ -23,7 +23,7 @@ def Light(transform: BlenderTransform):
 
 
 @component
-def Lights(*, scene: Scene[CombinedLCSState]):
+def Lights(*, scene: Scene[LightsCameraSceneState]):
     lights = [
         Light(trans, name=f"light_{i}")
         for i, trans in enumerate(scene.state.lights)
@@ -32,7 +32,7 @@ def Lights(*, scene: Scene[CombinedLCSState]):
 
 
 @component
-def Camera(*, scene: Scene[CombinedLCSState]):
+def Camera(*, scene: Scene[LightsCameraSceneState]):
     def builder(name: str):
         return add_camera(name, activate_for_scene=True)
 

@@ -6,8 +6,8 @@ from examples.bluemira_eudemo.components.reactor import (
 )
 from examples.bluemira_eudemo.run_project import data_dir as bm_data_dir
 from examples.bluemira_eudemo.scene_state import BmEUDEMOSceneState
-from examples.combined_eudemo.light_camera import LightsCamera
-from examples.combined_eudemo.scene_state import CombinedLCSState
+from examples.combined_eudemo.lights_camera import LightsCamera
+from examples.combined_eudemo.scene_state import LightsCameraSceneState
 from examples.process_eudemo.components.reactor_eudemo import EUDEMO_Reactor
 from examples.process_eudemo.run_project import process_mfile_path
 from examples.process_eudemo.scene_state import ProcessEUDEMOSceneState
@@ -27,7 +27,7 @@ if __name__ == "__main__":
             "Combined_EUDEMO",
             root_components=[
                 Bluemira_PowerPlant_EUDEMO(),
-                # EUDEMO_Reactor(process_mfile_path),
+                EUDEMO_Reactor(process_mfile_path),
                 LightsCamera(),
             ],
             overwrite=True,
@@ -40,11 +40,11 @@ if __name__ == "__main__":
                             BmEUDEMOSceneState(
                                 gltf_filepath=bm_data_dir / "eudemo_half.gltf"
                             ),
-                            # ProcessEUDEMOSceneState(
-                            #     start_angle=0,
-                            #     end_angle=180,
-                            # ),
-                            CombinedLCSState(
+                            ProcessEUDEMOSceneState(
+                                start_angle=0,
+                                end_angle=180,
+                            ),
+                            LightsCameraSceneState(
                                 lights=[
                                     BlenderTransform(
                                         position=Vec3(0, -50, 20)

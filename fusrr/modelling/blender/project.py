@@ -1,6 +1,7 @@
 import time
 from os import PathLike
 from pathlib import Path
+from typing import Literal
 
 from fusrr.core.component import FusrrComponent
 from fusrr.core.config_model import ProjectConfig, S, SceneConfig
@@ -32,6 +33,12 @@ class BlenderProject(FusrrProject[S]):
         project_config: dict | PathLike | ProjectConfig[S],
         output_directory: PathLike | None = None,
         overwrite: bool = False,
+        render_engine: Literal[
+            "BLENDER_EEVEE_NEXT", "BLENDER_WORKBENCH", "CYCLES"
+        ] = "BLENDER_EEVEE_NEXT",
+        render_res: tuple[int, int] = (1920, 1920),
+        render_samples: int = 10,
+        render_file_format: Literal["PNG", "JPEG"] = "PNG",
     ):
         """Create a BlenderProject with a name.
 
@@ -62,6 +69,10 @@ class BlenderProject(FusrrProject[S]):
             self.project_name + ".blend"
         )
         self.project_directory.mkdir(exist_ok=True)
+        self.render_engine = render_engine
+        self.render_res = render_res
+        self.render_samples = render_samples
+        self.render_file_format = render_file_format
 
     def _rename_project_file_if_exists(self) -> None:
         if self._project_blend_file.is_file():
@@ -92,5 +103,10 @@ class BlenderProject(FusrrProject[S]):
     def on_scene_end(self, scene_config: SceneConfig[S]) -> None:
         # render the image of the scene
         render_scene(
-            scene_config.name, self.project_directory, res=(1920, 1920)
+            scene_config.name,
+            self.project_directory,
+            file_format=self.render_file_format,
+            res=self.render_res,
+            engine=self.render_engine,
+            samples=self.render_samples,
         )
