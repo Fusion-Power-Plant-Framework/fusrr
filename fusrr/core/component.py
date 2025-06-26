@@ -28,14 +28,26 @@ class Comp(Generic[S]):
 
 
 class Compound(Generic[S]):
-    def __init__(self, components: list[FusrrComponent]):
+    def __init__(
+        self,
+        components: list[FusrrComponent],
+        *,
+        pre_build: Callable[[str, Scene[S]], None] | None = None,
+        post_build: Callable[[str, Scene[S]], None] | None = None,
+    ):
         self.components = components
+        self._pre_build = pre_build
+        self._post_build = post_build
 
     def pre_build(self, name: str, scene: Scene[S]) -> None:
         """Builds all components in the compound."""
+        if self._pre_build:
+            self._pre_build(name, scene)
 
     def post_build(self, name: str, scene: Scene[S]) -> None:
         """Finalizes the compound after all components are built."""
+        if self._post_build:
+            self._post_build(name, scene)
 
 
 CONSTRUCTOR_RETURN = Comp | Compound

@@ -20,6 +20,9 @@ from fusrr.modelling.blender.transform import BlenderTransform
 project_dir = Path(__file__).resolve().parent
 output_dir = project_dir / "output"
 
+# an idea for the future: create multiple cameras in the LightsCamera component,
+# subclass BlenderProject and write a new on_scene_finish hook to render each
+# camera in the scene
 
 if __name__ == "__main__":
     run_project(
@@ -27,7 +30,7 @@ if __name__ == "__main__":
             "Combined_EUDEMO",
             root_components=[
                 Bluemira_PowerPlant_EUDEMO(),
-                EUDEMO_Reactor(process_mfile_path),
+                EUDEMO_Reactor(process_mfile_path, translation=Vec3(50, 0, 0)),
                 LightsCamera(),
             ],
             overwrite=True,
@@ -53,15 +56,6 @@ if __name__ == "__main__":
                                     )
                                     for x in range(2)
                                     for z in range(2)
-                                ]
-                                + [
-                                    BlenderTransform(
-                                        position=Vec3(0, -50, -10)
-                                        + Vec3(-5 + x * 10, 0, 0),
-                                        rotation=Vec3(-math.pi / 3, 0, 0),
-                                    )
-                                    for x in range(2)
-                                    for z in range(2)
                                 ],
                                 camera_transform=BlenderTransform(
                                     position=Vec3(0, -75, -5),
@@ -69,18 +63,18 @@ if __name__ == "__main__":
                                 ),
                             ),
                         ],
-                        # select=[
-                        #     SceneStateSelect(
-                        #         component="Plasma",
-                        #         state=[
-                        #             None,
-                        #             ProcessEUDEMOSceneState(
-                        #                 start_angle=0,
-                        #                 end_angle=360,
-                        #             ),
-                        #         ],
-                        #     )
-                        # ],
+                        select=[
+                            SceneStateSelect(
+                                component="Plasma",
+                                state=[
+                                    None,
+                                    ProcessEUDEMOSceneState(
+                                        start_angle=0,
+                                        end_angle=360,
+                                    ),
+                                ],
+                            )
+                        ],
                     ),
                 ],
             ),

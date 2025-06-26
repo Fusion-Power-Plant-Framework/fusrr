@@ -133,8 +133,9 @@ class BlenderCompound(Compound[S]):
             )
         self._this_c = create_collection(b_collection_name)
         self.b_collection_name = b_collection_name
+        super().pre_build(name, scene)
 
-    def post_build(self, _name: str, _scene: Scene[S]) -> None:
+    def post_build(self, name: str, scene: Scene[S]) -> None:
         # select all created objects, create a collection and add them to it
         created_objs = get_objects(set(self._get_sub_component_names()))
         link_objects_to_collection(self._this_c, created_objs)
@@ -143,3 +144,4 @@ class BlenderCompound(Compound[S]):
         sub_cs = get_collections(set(self._get_sub_collection_names()))
         for c in sub_cs:
             link_collections(self._this_c, c)
+        super().post_build(name, scene)

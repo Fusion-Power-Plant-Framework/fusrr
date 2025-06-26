@@ -234,6 +234,19 @@ def create_collection(name: str) -> bpy.types.Collection:
     return col
 
 
+def select_collection_objects(col: bpy.types.Collection):
+    """Select all objects in a collection."""
+    for obj in col.objects:
+        obj.select_set(True)
+
+
+def select_collection_all_objects(col_name: str):
+    """Select all objects in a collection and make the first one active."""
+    col = get_collection_f(col_name)
+    for obj in col.all_objects:
+        obj.select_set(True)
+
+
 def link_objects_to_collection(
     col: bpy.types.Collection,
     objects: Iterable[bpy.types.Object],
