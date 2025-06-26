@@ -31,7 +31,7 @@ classifiers = [
 ]
 
 dependencies = [
-  "bpy", "numpy=1.26.4", "pydantic>=2.11.0"
+  "bpy", "numpy==1.26.4", "pydantic>=2.11.0"
   ]
 
 [project.optional-dependencies]
@@ -58,7 +58,7 @@ features = ["dev", "test", "lint"]
 dependencies = ["process @ file:///PROCESS"]
 [tool.hatch.envs.docker-examples.scripts]
 # super hacky for now
-run = "cd examples && python simple_scene.py && cd eudemo && python eudemo.py"
+run = "python examples/simple_scene.py && python examples/combined_eudemo/run_project.py"
 
 # env: test
 [tool.hatch.envs.test]
