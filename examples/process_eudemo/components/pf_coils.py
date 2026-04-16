@@ -1,4 +1,5 @@
 from process.geometry.geometry_parameterisations import RectangleGeometry
+from collections.abc import Callable
 
 from examples.process_eudemo.providers import process_params_provider
 from examples.process_eudemo.scene_state import ProcessEUDEMOSceneState
@@ -28,8 +29,8 @@ class PFCoilsDesigner(Designer):
         self.params = params
 
     def run(self) -> None:
-        bore = float(self.params.bore)
-        ohcth = float(self.params.ohcth)
+        dr_bore = float(self.params.dr_bore)
+        dr_cs = float(self.params.dr_cs)
         ohdz = float(self.params.ohdz)
         iohcl = self.params.get("iohcl", 1)
 
@@ -39,15 +40,17 @@ class PFCoilsDesigner(Designer):
         def _rgx(prefix: str, n: int) -> str:
             return _rgx_f(prefix, f"{n:01}")
 
-        number_of_coils = self.params.n_keys_with(_rgx_f("rpf", r"\d"))
+        number_of_coils = self.params.n_keys_with(
+            _rgx_f("r_pf_coil_middle", r"\d")
+        )
 
         if iohcl == 0:
             number_of_coils += 1
 
         self.pf_coils_geom = [
             RectangleGeometry(
-                anchor_x=self.params.get_with(_rgx("rpf", coil)),
-                anchor_z=self.params.get_with(_rgx("zpf", coil)),
+                anchor_x=self.params.get_with(_rgx("r_pf_coil_middle", coil)),
+                anchor_z=self.params.get_with(_rgx("z_pf_coil_middle", coil)),
                 width=self.params.get_with(_rgx("pfdr", coil)),
                 height=self.params.get_with(_rgx("pfdz", coil)),
             )
@@ -55,7 +58,7 @@ class PFCoilsDesigner(Designer):
         ]
 
         self.central_coil_geom = RectangleGeometry(
-            anchor_x=bore, anchor_z=0, width=ohcth, height=ohdz
+            anchor_x=dr_bore, anchor_z=0, width=dr_cs, height=ohdz
         )
 
 
@@ -74,10 +77,10 @@ def PFCoils():
     return BlenderCompound(comps)
 
 
-def _coil_builder(geom: RectangleGeometry, angle: float):
+def _coil_builder(geom: RectangleGeometry, angle: float) -> Callable:
     """Helper function to build a coil component."""
 
-    def builder(_obj, m):
+    def builder(_obj, m) -> None:
         face_path_pts = process_rect_to_vec3_path_points(geom)
         mesh_add_edges_from_points(m, face_path_pts, close=True)
         mesh_revolve(m, Vec3.ZERO, Vec3.Z, angle)
@@ -87,23 +90,25 @@ def _coil_builder(geom: RectangleGeometry, angle: float):
 
 @component
 def PFCoil(geom: RectangleGeometry, *, scene: Scene[ProcessEUDEMOSceneState]):
+    """Component to build a PF coil for a PROCESS reactor."""
     return BlenderComp(
         builder=_coil_builder(geom, scene.state.end_angle),
         material=MetallicMaterial(
             base_colour=MaterialColour(1.0, 0.2, 0.2, 1),
             metallicness=MaterialValueZeroToOne(1.0),
-            roughness=MaterialValueZeroToOne(0.2),
+            roughness_fw_channel=MaterialValueZeroToOne(0.2),
         ),
     )
 
 
 @component
 def CSCoil(geom: RectangleGeometry, *, scene: Scene[ProcessEUDEMOSceneState]):
+    """Component to build a CS coil for a PROCESS reactor."""
     return BlenderComp(
         builder=_coil_builder(geom, scene.state.end_angle),
         material=MetallicMaterial(
             base_colour=MaterialColour(0.9, 0.2, 1, 1),
             metallicness=MaterialValueZeroToOne(1.0),
-            roughness=MaterialValueZeroToOne(0.2),
+            roughness_fw_channel=MaterialValueZeroToOne(0.2),
         ),
     )

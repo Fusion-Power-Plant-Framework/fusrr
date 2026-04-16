@@ -27,13 +27,17 @@ class PlasmaDesigner(Designer):
         triang_95 = self.params.triang95
         kappa_95 = self.params.kappa95
         i_single_null = bool(self.params.i_single_null)
+        i_plasma_shape = self.params.i_plasma_shape
+        square = self.params.plasma_square
 
         pg = plasma_geometry(
-            r_0=r_0,
-            a=a,
-            triang_95=triang_95,
-            kappa_95=kappa_95,
+            rmajor=r_0,
+            rminor=a,
+            triang=triang_95,
+            kappa=kappa_95,
             i_single_null=i_single_null,
+            i_plasma_shape=i_plasma_shape,
+            square=square,
         )
 
         rs_ib, rs_ob = pg.rs
@@ -49,7 +53,7 @@ def Plasma(*, scene: Scene[ProcessEUDEMOSceneState]):
     params = useProvider(process_params_provider)
     d = useDesigner(PlasmaDesigner(params))
 
-    def builder(_obj, m):
+    def builder(_obj, m) -> None:
         mesh_add_edges_from_points(m, d.ib_pts)
         mesh_add_edges_from_points(m, d.ob_pts)
         mesh_revolve(m, Vec3.ZERO, Vec3.Z, scene.state.end_angle)

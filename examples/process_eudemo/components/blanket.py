@@ -32,11 +32,11 @@ class BlanketDesigner(Designer):
     def run(self) -> None:
         self.i_single_null = bool(self.params.i_single_null)
         triang_95 = self.params.triang95
-        blnktth = self.params.blnktth
-        blnkith = self.params.blnkith
-        blnkoth = self.params.blnkoth
-        c_shldith = cumulative_radial_build("shldith", self.params)
-        c_blnkoth = cumulative_radial_build("blnkoth", self.params)
+        dz_blkt_upper = self.params.dz_blkt_upper
+        dr_blkt_inboard = self.params.dr_blkt_inboard
+        dr_blkt_outboard = self.params.dr_blkt_outboard
+        c_shldith = cumulative_radial_build("dr_shld_inboard", self.params)
+        c_blnkoth = cumulative_radial_build("dr_blkt_outboard", self.params)
 
         cumulative_upper, cumulative_lower, _, _ = cumul_setup(
             params_dict=self.params
@@ -45,22 +45,22 @@ class BlanketDesigner(Designer):
         if self.i_single_null == 1:
             # Upper blanket: outer surface
             radx_outer = (
-                cumulative_radial_build("blnkoth", self.params)
+                cumulative_radial_build("dr_blkt_outboard", self.params)
                 + cumulative_radial_build("vvblgapi", self.params)
             ) / 2.0
             rminx_outer = (
-                cumulative_radial_build("blnkoth", self.params)
+                cumulative_radial_build("dr_blkt_outboard", self.params)
                 - cumulative_radial_build("vvblgapi", self.params)
             ) / 2.0
 
             # Upper blanket: inner surface
             radx_inner = (
-                cumulative_radial_build("fwoth", self.params)
-                + cumulative_radial_build("blnkith", self.params)
+                cumulative_radial_build("dr_fw_outboard", self.params)
+                + cumulative_radial_build("dr_blkt_inboard", self.params)
             ) / 2.0
             rminx_inner = (
-                cumulative_radial_build("fwoth", self.params)
-                - cumulative_radial_build("blnkith", self.params)
+                cumulative_radial_build("dr_fw_outboard", self.params)
+                - cumulative_radial_build("dr_blkt_inboard", self.params)
             ) / 2.0
             bg_single_null = blanket_geometry_single_null(
                 radx_outer=radx_outer,
@@ -70,11 +70,11 @@ class BlanketDesigner(Designer):
                 cumulative_upper=cumulative_upper,
                 triang=triang_95,
                 cumulative_lower=cumulative_lower,
-                blnktth=blnktth,
+                dz_blkt_upper=dz_blkt_upper,
                 c_shldith=c_shldith,
                 c_blnkoth=c_blnkoth,
-                blnkith=blnkith,
-                blnkoth=blnkoth,
+                dr_blkt_inboard=dr_blkt_inboard,
+                dr_blkt_outboard=dr_blkt_outboard,
             )
             rs = bg_single_null.rs
             zs = bg_single_null.zs
@@ -85,11 +85,11 @@ class BlanketDesigner(Designer):
             bg_double_null = blanket_geometry_double_null(
                 cumulative_lower=cumulative_lower,
                 triang=triang_95,
-                blnktth=blnktth,
+                dz_blkt_upper=dz_blkt_upper,
                 c_shldith=c_shldith,
                 c_blnkoth=c_blnkoth,
-                blnkith=blnkith,
-                blnkoth=blnkoth,
+                dr_blkt_inboard=dr_blkt_inboard,
+                dr_blkt_outboard=dr_blkt_outboard,
             )
 
             rs_ob, rs_ib = bg_double_null.rs
@@ -109,7 +109,7 @@ def Blanket(*, scene: Scene[ProcessEUDEMOSceneState]):
     params = useProvider(process_params_provider)
     d = useDesigner(BlanketDesigner(params))
 
-    def builder(_obj, m):
+    def builder(_obj, m) -> None:
         if d.i_single_null == 1:
             mesh_add_edges_from_points(m, d.pts)
         if d.i_single_null == 0:

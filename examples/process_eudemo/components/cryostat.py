@@ -31,11 +31,13 @@ class CryostatDesigner(Designer):
         self.params = params
 
     def run(self):
-        rdewex = self.params.rdewex
-        ddwex = self.params.ddwex
-        zdewex = self.params.zdewex
+        r_cryostat_inboard = self.params.r_cryostat_inboard
+        dr_cryostat = self.params.dr_cryostat
+        z_cryostat_half_inside = self.params.z_cryostat_half_inside
         self.vars = CryostatGeometry(
-            width=rdewex, height=zdewex, thickness=ddwex
+            width=r_cryostat_inboard,
+            height=z_cryostat_half_inside,
+            thickness=dr_cryostat,
         )
 
         rs = [
@@ -63,10 +65,11 @@ class CryostatDesigner(Designer):
 
 @component
 def Cryostat(*, scene: Scene[ProcessEUDEMOSceneState]):
+    """Component to design the cryostat of a PROCESS reactor."""
     params = useProvider(process_params_provider)
     d = useDesigner(CryostatDesigner(params))
 
-    def builder(_obj, m):
+    def builder(_obj, m) -> None:
         mesh_add_edges_from_points(m, d.pts)
         mesh_revolve(m, Vec3.ZERO, Vec3.Z, scene.state.end_angle)
 
@@ -75,6 +78,6 @@ def Cryostat(*, scene: Scene[ProcessEUDEMOSceneState]):
         material=MetallicMaterial(
             base_colour=MaterialColour(0.8, 0.8, 0.8, 1),
             metallicness=MaterialValueZeroToOne(0.1),
-            roughness=MaterialValueZeroToOne(0.2),
+            roughness_fw_channel=MaterialValueZeroToOne(0.2),
         ),
     )

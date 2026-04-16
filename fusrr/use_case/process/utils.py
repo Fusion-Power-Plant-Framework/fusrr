@@ -81,12 +81,12 @@ def cumulative_radial_build(section, component_shape):
     for item in RADIAL_BUILD:
         if item in ("rminori", "rminoro", "rminor"):
             cumulative_build += component_shape.rminor
-        elif item in ("vvblgapi", "vvblgapo", "vvblgap"):
-            cumulative_build += component_shape.vvblgap
-        elif "d_vv_in" in item:
-            cumulative_build += component_shape.d_vv_in
-        elif "d_vv_out" in item:
-            cumulative_build += component_shape.d_vv_out  # c_shldith
+        elif item in ("vvblgapi", "vvblgapo", "dr_shld_blkt_gap"):
+            cumulative_build += component_shape.dr_shld_blkt_gap
+        elif "dr_vv_inboard" in item:
+            cumulative_build += component_shape.dr_vv_inboard
+        elif "dr_vv_outboard" in item:
+            cumulative_build += component_shape.dr_vv_outboard  # c_shldith
         # TODO: not sure if this works?:
         else:
             cumulative_build += getattr(component_shape, item)
