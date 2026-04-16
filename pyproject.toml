@@ -31,7 +31,7 @@ classifiers = [
 ]
 
 dependencies = [
-  "bpy", "numpy==1.26.4", "pydantic>=2.11.0"
+  "bpy", "numpy", "pydantic>=2.11.0"
   ]
 
 [project.optional-dependencies]
@@ -45,6 +45,8 @@ test = [
 ]
 docs = ["mkdocs-material", "mkdocstrings[python]"]
 lint = ["ruff", "mypy"]
+process = ["process @ git+https://github.com/ukaea/process@v3.3.0"]
+
 [project.urls]
 Source        = "https://github.com/Fusion-Power-Plant-Framework/fusrr"
 Documentation = "https://github.com/Fusion-Power-Plant-Framework/fusrr#readme"
