@@ -78,7 +78,7 @@ class TFCoilsDesigner(Designer):
                 y2=y2,
                 y4=y4,
                 y5=y5,
-                dr_tf_inborard=tf_ib_tk,
+                dr_tf_inboard=tf_ib_tk,
             )
             face_verts = None
         else:
@@ -92,7 +92,7 @@ class TFCoilsDesigner(Designer):
                 y2=y2,
                 y4=y4,
                 y5=y5,
-                dr_tf_inborard=tf_ib_tk,
+                dr_tf_inboard=tf_ib_tk,
                 rtangle=rt_angle,
                 rtangle2=rt_angle2,
             )
@@ -187,6 +187,6 @@ def TFCoil(cl: TFCoilDShape):
         builder=builder,
         material=MetallicMaterial(
             base_colour=MaterialColour(0.1, 0.1, 0.1, 1),
-            roughness_fw_channel=MaterialValueZeroToOne(0.1),
+            roughness=MaterialValueZeroToOne(0.1),
         ),
     )

@@ -44,6 +44,7 @@ class PFCoilsDesigner(Designer):
             _rgx_f("r_pf_coil_middle", r"\d")
         )
 
+        # What does this do?
         if iohcl == 0:
             number_of_coils += 1
 
@@ -54,7 +55,7 @@ class PFCoilsDesigner(Designer):
                 width=self.params.get_with(_rgx("pfdr", coil)),
                 height=self.params.get_with(_rgx("pfdz", coil)),
             )
-            for coil in range(1, number_of_coils + 1)
+            for coil in range(number_of_coils - 1)
         ]
 
         self.central_coil_geom = RectangleGeometry(
@@ -96,7 +97,7 @@ def PFCoil(geom: RectangleGeometry, *, scene: Scene[ProcessEUDEMOSceneState]):
         material=MetallicMaterial(
             base_colour=MaterialColour(1.0, 0.2, 0.2, 1),
             metallicness=MaterialValueZeroToOne(1.0),
-            roughness_fw_channel=MaterialValueZeroToOne(0.2),
+            roughness=MaterialValueZeroToOne(0.2),
         ),
     )
 
@@ -109,6 +110,6 @@ def CSCoil(geom: RectangleGeometry, *, scene: Scene[ProcessEUDEMOSceneState]):
         material=MetallicMaterial(
             base_colour=MaterialColour(0.9, 0.2, 1, 1),
             metallicness=MaterialValueZeroToOne(1.0),
-            roughness_fw_channel=MaterialValueZeroToOne(0.2),
+            roughness=MaterialValueZeroToOne(0.2),
         ),
     )

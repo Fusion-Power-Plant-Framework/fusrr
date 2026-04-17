@@ -78,6 +78,6 @@ def Cryostat(*, scene: Scene[ProcessEUDEMOSceneState]):
         material=MetallicMaterial(
             base_colour=MaterialColour(0.8, 0.8, 0.8, 1),
             metallicness=MaterialValueZeroToOne(0.1),
-            roughness_fw_channel=MaterialValueZeroToOne(0.2),
+            roughness=MaterialValueZeroToOne(0.2),
         ),
     )
