@@ -45,7 +45,7 @@ class TFCoilsDesigner(Designer):
         self.end_angle = end_angle
 
     def run(self) -> None:
-        tf_ib_tk = self.params.tfc_inleg
+        tf_ib_tk = self.params.dr_tf_inboard
         rt_angle = np.pi / 2
         rt_angle2 = 2 * rt_angle
 

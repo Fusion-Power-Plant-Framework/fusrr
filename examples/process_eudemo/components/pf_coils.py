@@ -44,7 +44,7 @@ class PFCoilsDesigner(Designer):
             _rgx_f("r_pf_coil_middle", r"\d")
         )
 
-        # What does this do?
+        # If central solenoid is not present
         if iohcl == 0:
             number_of_coils += 1
 
