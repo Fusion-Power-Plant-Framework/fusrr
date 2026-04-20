@@ -11,7 +11,7 @@ config_dir = project_dir / "config"
 output_dir = project_dir / "output"
 
 project_config = config_dir / "Process_EUDEMO.json"
-process_mfile_path = config_dir / "EUDEMO_MFILE.DAT"
+process_mfile_path = config_dir / "test_large_tokamak_MFILE.DAT"
 
 if __name__ == "__main__":
     run_project(
@@ -31,7 +31,7 @@ if __name__ == "__main__":
                     SceneConfig(
                         name="scene 2",
                         state=ProcessEUDEMOSceneState(
-                            start_angle=0.0, end_angle=90.0
+                            start_angle=0.0, end_angle=180.0
                         ),
                         select=[
                             SceneStateSelect(

@@ -34,8 +34,8 @@ class BlenderProject(FusrrProject[S]):
         output_directory: PathLike | None = None,
         overwrite: bool = False,
         render_engine: Literal[
-            "BLENDER_EEVEE_NEXT", "BLENDER_WORKBENCH", "CYCLES"
-        ] = "BLENDER_EEVEE_NEXT",
+            "BLENDER_EEVEE", "BLENDER_WORKBENCH", "CYCLES"
+        ] = "BLENDER_EEVEE",
         render_res: tuple[int, int] = (1920, 1920),
         render_samples: int = 10,
         render_file_format: Literal["PNG", "JPEG"] = "PNG",
@@ -55,6 +55,10 @@ class BlenderProject(FusrrProject[S]):
             overwrite:
                 Whether to overwrite the .blend file when saving,
                 if it already exists.
+            render_engine: The engine to use for rendering.
+            render_res: The resolution of the rendered image.
+            render_samples: Number of samples to render.
+            render_file_format: File format to save the rendered image as.
             default_scene:
                 The default scene state for the project.
         """
