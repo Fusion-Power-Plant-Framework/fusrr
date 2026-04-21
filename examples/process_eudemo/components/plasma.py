@@ -22,22 +22,22 @@ class PlasmaDesigner(Designer):
         self.params = params
 
     def run(self) -> None:
-        r_0 = self.params.rmajor
-        a = self.params.rminor
-        triang_95 = self.params.triang95
-        kappa_95 = self.params.kappa95
+        rmajor = self.params.rmajor
+        rminor = self.params.rminor
+        triang95 = self.params.triang95
+        kappa95 = self.params.kappa95
         i_single_null = bool(self.params.i_single_null)
         i_plasma_shape = self.params.i_plasma_shape
-        square = self.params.plasma_square
+        plasma_square = self.params.plasma_square
 
         pg = plasma_geometry(
-            rmajor=r_0,
-            rminor=a,
-            triang=triang_95,
-            kappa=kappa_95,
+            rmajor=rmajor,
+            rminor=rminor,
+            triang=triang95,
+            kappa=kappa95,
             i_single_null=i_single_null,
             i_plasma_shape=i_plasma_shape,
-            square=square,
+            square=plasma_square,
         )
 
         rs_ib, rs_ob = pg.rs
