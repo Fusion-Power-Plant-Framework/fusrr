@@ -45,7 +45,7 @@ def cumul_setup(params_dict):
     subtotal = 0
     for item in vertical_upper:
         upper[item] = float(params_dict[item])
-        subtotal += float(upper[item])
+        subtotal += upper[item]
         cumulative_upper[item] = subtotal
 
     lower = {}
@@ -53,7 +53,7 @@ def cumul_setup(params_dict):
     subtotal = 0
     for item in vertical_lower:
         lower[item] = float(params_dict[item])
-        subtotal -= float(lower[item])
+        subtotal -= lower[item]
         cumulative_lower[item] = subtotal
 
     return cumulative_upper, cumulative_lower, upper, lower

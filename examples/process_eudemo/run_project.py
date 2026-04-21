@@ -11,7 +11,7 @@ config_dir = project_dir / "config"
 output_dir = project_dir / "output"
 
 project_config = config_dir / "Process_EUDEMO.json"
-process_mfile_path = config_dir / "test_large_tokamak_MFILE.DAT"
+process_mfile_path = config_dir / "large_tokamak_MFILE.DAT"
 
 if __name__ == "__main__":
     run_project(

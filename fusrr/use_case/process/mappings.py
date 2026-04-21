@@ -30,7 +30,7 @@ RADIAL_BUILD = [
 ]
 
 vertical_upper = [
-    "rminor*kappa",
+    "z_plasma_xpoint_upper",
     "dz_fw_plasma_gap",
     "dz_fw_upper",
     "dz_blkt_upper",
@@ -44,7 +44,7 @@ vertical_upper = [
 ]
 
 vertical_lower = [
-    "rminor*kappa",
+    "z_plasma_xpoint_lower",
     "dz_xpoint_divertor",
     "dz_divertor",
     "dz_shld_lower",
