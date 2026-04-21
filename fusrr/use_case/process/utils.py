@@ -79,9 +79,9 @@ def cumulative_radial_build(section, component_shape):
     complete = False
     cumulative_build = 0
     for item in RADIAL_BUILD:
-        if item in ("rminori", "rminoro", "rminor"):
+        if item in "rminor":
             cumulative_build += component_shape.rminor
-        elif item in ("vvblgapi", "vvblgapo", "dr_shld_blkt_gap"):
+        elif item in "dr_shld_blkt_gap":
             cumulative_build += component_shape.dr_shld_blkt_gap
         elif "dr_vv_inboard" in item:
             cumulative_build += component_shape.dr_vv_inboard

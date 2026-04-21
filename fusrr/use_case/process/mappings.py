@@ -1,3 +1,5 @@
+# Some variables are repeated to count inboard and outboard side
+# dr_tf_shld_gap, rminor and dr_shld_blkt_gap
 RADIAL_BUILD = [
     "dr_bore",
     "dr_cs",
@@ -9,21 +11,21 @@ RADIAL_BUILD = [
     "dr_shld_vv_gap_inboard",
     "dr_vv_inboard",
     "dr_shld_inboard",
-    "vvblgapi",
+    "dr_shld_blkt_gap",
     "dr_blkt_inboard",
     "dr_fw_inboard",
     "dr_fw_plasma_gap_inboard",
-    "rminori",
-    "rminoro",
+    "rminor",
+    "rminor",
     "dr_fw_plasma_gap_outboard",
     "dr_fw_outboard",
     "dr_blkt_outboard",
-    "vvblgapo",
+    "dr_shld_blkt_gap",
     "dr_shld_outboard",
     "dr_vv_outboard",
     "dr_shld_vv_gap",
     "dr_shld_thermal_outboard",
-    "dr_tf_shld_gap",  # Is this meant to be listed twice?
+    "dr_tf_shld_gap",
     "dr_tf_outboard",
 ]
 
