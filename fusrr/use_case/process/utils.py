@@ -79,17 +79,7 @@ def cumulative_radial_build(section, component_shape):
     complete = False
     cumulative_build = 0
     for item in RADIAL_BUILD:
-        if item in "rminor":
-            cumulative_build += component_shape.rminor
-        elif item in "dr_shld_blkt_gap":
-            cumulative_build += component_shape.dr_shld_blkt_gap
-        elif "dr_vv_inboard" in item:
-            cumulative_build += component_shape.dr_vv_inboard
-        elif "dr_vv_outboard" in item:
-            cumulative_build += component_shape.dr_vv_outboard  # c_shldith
-        # TODO: not sure if this works?:
-        else:
-            cumulative_build += getattr(component_shape, item)
+        cumulative_build += getattr(component_shape, item)
         if item == section:
             complete = True
             break

@@ -46,11 +46,11 @@ class BlanketDesigner(Designer):
             # Upper blanket: outer surface
             radx_outer = (
                 cumulative_radial_build("dr_blkt_outboard", self.params)
-                + cumulative_radial_build("vvblgapi", self.params)
+                + cumulative_radial_build("dr_shld_blkt_gap", self.params)
             ) / 2.0
             rminx_outer = (
                 cumulative_radial_build("dr_blkt_outboard", self.params)
-                - cumulative_radial_build("vvblgapi", self.params)
+                - cumulative_radial_build("dr_shld_blkt_gap", self.params)
             ) / 2.0
 
             # Upper blanket: inner surface
