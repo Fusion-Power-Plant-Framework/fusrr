@@ -31,7 +31,7 @@ class PFCoilsDesigner(Designer):
     def run(self) -> None:
         dr_bore = float(self.params.dr_bore)
         dr_cs = float(self.params.dr_cs)
-        ohdz = float(self.params.ohdz)
+        dz_cs_full = float(self.params.dz_cs_full)
         iohcl = self.params.get("iohcl", 1)
 
         def _rgx_f(prefix: str, r: str) -> str:
@@ -59,7 +59,7 @@ class PFCoilsDesigner(Designer):
         ]
 
         self.central_coil_geom = RectangleGeometry(
-            anchor_x=dr_bore, anchor_z=0, width=dr_cs, height=ohdz
+            anchor_x=dr_bore, anchor_z=0, width=dr_cs, height=dz_cs_full
         )
 
 

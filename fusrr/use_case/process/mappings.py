@@ -23,7 +23,7 @@ RADIAL_BUILD = [
     "dr_vv_outboard",
     "dr_shld_vv_gap",
     "dr_shld_thermal_outboard",
-    "dr_tf_shld_gap",
+    "dr_tf_shld_gap",  # Is this meant to be listed twice?
     "dr_tf_outboard",
 ]
 
@@ -35,7 +35,7 @@ vertical_upper = [
     "dr_shld_blkt_gap",
     "dz_shld_upper",
     "dz_vv_upper",
-    "vgap2",
+    "dz_shld_vv_gap",
     "dz_shld_thermal",
     "dr_tf_shld_gap",
     "dr_tf_inboard",
@@ -43,11 +43,11 @@ vertical_upper = [
 
 vertical_lower = [
     "rminor*kappa",
-    "vgap",
+    "dz_xpoint_divertor",
     "dz_divertor",
     "dz_shld_lower",
     "dz_vv_lower",
-    "vgap2",
+    "dz_shld_vv_gap",
     "dz_shld_thermal",
     "dr_tf_shld_gap",
     "dr_tf_inboard",

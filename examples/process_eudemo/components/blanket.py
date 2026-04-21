@@ -31,7 +31,7 @@ class BlanketDesigner(Designer):
 
     def run(self) -> None:
         self.i_single_null = bool(self.params.i_single_null)
-        triang_95 = self.params.triang95
+        triang95 = self.params.triang95
         dz_blkt_upper = self.params.dz_blkt_upper
         dr_blkt_inboard = self.params.dr_blkt_inboard
         dr_blkt_outboard = self.params.dr_blkt_outboard
@@ -68,7 +68,7 @@ class BlanketDesigner(Designer):
                 radx_inner=radx_inner,
                 rminx_inner=rminx_inner,
                 cumulative_upper=cumulative_upper,
-                triang=triang_95,
+                triang=triang95,
                 cumulative_lower=cumulative_lower,
                 dz_blkt_upper=dz_blkt_upper,
                 c_shldith=c_shldith,
@@ -84,7 +84,7 @@ class BlanketDesigner(Designer):
         if self.i_single_null == 0:
             bg_double_null = blanket_geometry_double_null(
                 cumulative_lower=cumulative_lower,
-                triang=triang_95,
+                triang=triang95,
                 dz_blkt_upper=dz_blkt_upper,
                 c_shldith=c_shldith,
                 c_blnkoth=c_blnkoth,
