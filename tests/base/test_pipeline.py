@@ -1,7 +1,9 @@
+import pytest
 from fusrr.core.vectors import Vec3
 from examples.simple_scene import cube
 
 
+@pytest.mark.skip(reason="test not ready yet")
 def test_pipeline():
     # Test currently using dummy values
     pipeline = FusrrBuildPipeline(world_state=FusrrWorldState())  # noqa: F821

@@ -12,12 +12,12 @@ ENV FUSRR_RUN_TYPE=tests
 # sets the virtual environment path for Hatch
 ENV HATCH_ENV_TYPE_VIRTUAL_PATH=.venv
 
-## -- Install Python 3.10 (from a ppa), pip, and Hatch --
+## -- Install Python 3.13 (from a ppa), pip, and Hatch --
 
 RUN apt-get update && apt-get upgrade -y \
     && apt-get install -y software-properties-common \
     && add-apt-repository -y ppa:deadsnakes/ppa \
-    && apt-get install -y python3.10 python3-pip \
+    && apt-get install -y python3.13 python3-pip \
     # pyxdg seems to help the Docker container to run without errors
     && pip install --upgrade pip hatch pyxdg
 
@@ -31,7 +31,7 @@ RUN apt-get install -y \
     lcov \
     poppler-utils
 
-RUN git clone --depth 1 --branch v3.1.0 https://github.com/ukaea/PROCESS
+RUN git clone --depth 1 --branch v3.3.0 https://github.com/ukaea/PROCESS
 # for now, we only need the python source from PROCESS
 # and don't need to build it, as we don't run it.
 #! do not remove - could be useful in the future
