@@ -8,7 +8,6 @@ from fusrr.hooks import Designer, useDesigner
 from fusrr.modelling.blender.component import BlenderComp, BlenderCompound
 from fusrr.modelling.blender.materials.base import BlenderMaterial
 from fusrr.modelling.blender.materials.materials import (
-    GlassMaterial,
     MetallicMaterial,
     PlasmaMaterial,
 )

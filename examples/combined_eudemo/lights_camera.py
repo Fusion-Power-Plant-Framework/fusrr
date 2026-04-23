@@ -1,4 +1,5 @@
 import math
+import bpy
 
 from examples.combined_eudemo.scene_state import LightsCameraSceneState
 from fusrr import Scene, component
@@ -11,7 +12,9 @@ from fusrr.modelling.blender.tools.object_tools import add_camera, add_light
 
 @component
 def Light(transform: BlenderTransform):
-    def builder(name: str):
+    """Add a light to the scene."""
+
+    def builder(name: str) -> bpy.types.Object:
         return add_light(
             name,
             type="SPOT",
@@ -24,6 +27,7 @@ def Light(transform: BlenderTransform):
 
 @component
 def Lights(*, scene: Scene[LightsCameraSceneState]):
+    """Add multiple lights to the scene."""
     lights = [
         Light(trans, name=f"light_{i}")
         for i, trans in enumerate(scene.state.lights)
@@ -33,7 +37,9 @@ def Lights(*, scene: Scene[LightsCameraSceneState]):
 
 @component
 def Camera(*, scene: Scene[LightsCameraSceneState]):
-    def builder(name: str):
+    """Add a camera to the scene."""
+
+    def builder(name: str) -> bpy.types.Object:
         return add_camera(name, activate_for_scene=True)
 
     return BlenderComp(
@@ -46,8 +52,8 @@ def Camera(*, scene: Scene[LightsCameraSceneState]):
 def PlaneGrounding():
     """A component that adds a plane background to the scene."""
 
-    def builder(name: str):
-        return add_plane("plane_grounding")
+    def builder(name: str = "plane_grounding") -> bpy.types.Object:
+        return add_plane(name)
 
     return BlenderComp(
         obj_builder=builder,
@@ -62,8 +68,8 @@ def PlaneGrounding():
 def PlaneBacking():
     """A component that adds a plane background to the scene."""
 
-    def builder(name: str):
-        return add_plane("plane_backing")
+    def builder(name: str = "plane_backing") -> bpy.types.Object:
+        return add_plane(name)
 
     return BlenderComp(
         obj_builder=builder,

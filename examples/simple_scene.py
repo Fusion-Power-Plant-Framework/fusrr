@@ -1,4 +1,5 @@
 import numpy as np
+import bpy
 from pydantic import BaseModel
 
 from fusrr import component
@@ -19,8 +20,9 @@ class SimpleSceneState(BaseModel):
 
 @component
 def cube(scale: Vec3, location: Vec3):
-    def builder(comp_name: str):
-        """Builds a simple cube."""
+    """Builds a simple cube."""
+
+    def builder(comp_name: str) -> bpy.types.Object:
         return add_cube(
             name=comp_name,
             scale=scale,
@@ -58,12 +60,13 @@ class CubeCurveDesigner(Designer):
         # Build the (scale, location) pairs
         self.vals = [
             (Vec3.ONE * s, Vec3(x, y, 0.0))
-            for s, x, y in zip(scales, positions, y_positions)
+            for s, x, y in zip(scales, positions, y_positions, strict=False)
         ]
 
 
 @component
 def cube_curve(*, scene: Scene[SimpleSceneState]):
+    """Creates a curve of cubes."""
     d = useDesigner(
         CubeCurveDesigner(
             n_cubes=scene.state.n_cubes,

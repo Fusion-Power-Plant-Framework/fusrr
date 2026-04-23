@@ -25,7 +25,9 @@ class ProjectContext(Generic[S]):
         ptx_id: int | None = None,
         initial_scene_config: SceneConfig[S] | None = None,
     ):
-        """Initializes the project context with an empty stack and context registry."""
+        """Initializes the project context with an empty stack
+        and context registry.
+        """
         self.ptx_id = ptx_id
         self._stk = deque()
         self._ctx_reg: dict[tuple[int, ...], Context] = {}
@@ -103,19 +105,15 @@ class FusrrProject(Generic[S]):
 
     def on_start(self) -> None:
         """Initializes the project context and prepares the project."""
-        pass
 
     def on_scene_start(self, scene_config: SceneConfig[S]) -> None:
         """Saves the current scene state."""
-        pass
 
     def on_scene_end(self, scene_config: SceneConfig[S]) -> None:
         """Saves the current scene state."""
-        pass
 
     def on_finish(self) -> None:
         """Finalizes the project, cleaning up resources."""
-        pass
 
 
 def run_project(project: FusrrProject):

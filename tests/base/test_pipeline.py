@@ -1,8 +1,10 @@
-from fusrr import run_project
+from fusrr.core.vectors import Vec3
+from examples.simple_scene import cube
 
 
 def test_pipeline():
-    pipeline = FusrrBuildPipeline(world_state=FusrrWorldState())
+    # Test currently using dummy values
+    pipeline = FusrrBuildPipeline(world_state=FusrrWorldState())  # noqa: F821
     assert pipeline.entity_names() == set()
     assert pipeline.object_names() == set()
     assert pipeline.collection_names() == set()

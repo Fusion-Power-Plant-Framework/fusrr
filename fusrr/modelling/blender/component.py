@@ -3,9 +3,6 @@ from __future__ import annotations
 import contextlib
 from typing import TYPE_CHECKING
 
-import bpy
-import bmesh
-
 from fusrr.core.component import Comp, Compound
 from fusrr.core.config_model import S, Scene
 from fusrr.modelling.blender.tools.mesh_tools import (
@@ -24,13 +21,18 @@ from fusrr.modelling.blender.tools.scene_tools import (
 from fusrr.modelling.blender.transform import BlenderTransform
 
 if TYPE_CHECKING:
+    import bpy
+    import bmesh
+
     from collections.abc import Callable
 
     from fusrr.modelling.blender.materials.base import BlenderMaterial
 
 
 def _blender_component_name(name: str, scene: Scene[S]) -> str:
-    """Generates a unique name for a Blender component based on the scene state."""
+    """Generates a unique name for a Blender component
+    based on the scene state.
+    """
     return f"{scene.name}.{name}"
 
 
@@ -82,7 +84,8 @@ class BlenderComp(Comp[S]):
         b_component_name = _blender_component_name(name, scene)
         if check_object_in_scene(b_component_name):
             raise ValueError(
-                f"Object with name {b_component_name} already exists in the scene."
+                f"Object with name {b_component_name}",
+                "already exists in the scene.",
             )
         obj = None
         with contextlib.suppress(NotImplementedError):
@@ -109,7 +112,9 @@ class BlenderCompound(Compound[S]):
     """Base class for Blender collections."""
 
     def _get_sub_component_names(self) -> list[str]:
-        """Returns the names of sub-components, must be run in post_build only."""
+        """Returns the names of sub-components,
+        must be run in post_build only.
+        """
         return [
             c.built.b_component_name
             for c in self.components
@@ -117,7 +122,9 @@ class BlenderCompound(Compound[S]):
         ]
 
     def _get_sub_collection_names(self) -> list[str]:
-        """Returns the names of sub-compounds, must be run in post_build only."""
+        """Returns the names of sub-compounds,
+        must be run in post_build only.
+        """
         return [
             c.built.b_collection_name
             for c in self.components

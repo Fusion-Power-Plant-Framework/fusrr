@@ -75,7 +75,9 @@ class Vec3:
 
     @classmethod
     def random(cls, range_start: float = 0.0, range_end: float = 1.0) -> Vec3:
-        """Return a random vector with coordinates in the range [-scale, scale]."""
+        """Return a random vector with coordinates
+        in the range [-scale, scale].
+        """
         from random import uniform
 
         return Vec3(
@@ -92,15 +94,17 @@ class Vec3:
         y: tuple[float, float] | float = 0,
         z: tuple[float, float] | float = 0,
     ):
-        """Return a random vector with coordinates in the range [-scale, scale] per axis."""
+        """Return a random vector with coordinates
+        in the range [-scale, scale] per axis.
+        """
         from random import uniform
 
         if isinstance(x, tuple):
-            x = uniform(a=x[0], b=x[1])
+            x = uniform(a=x[0], b=x[1])  # noqa: S311
         if isinstance(y, tuple):
-            y = uniform(a=y[0], b=y[1])
+            y = uniform(a=y[0], b=y[1])  # noqa: S311
         if isinstance(z, tuple):
-            z = uniform(a=z[0], b=z[1])
+            z = uniform(a=z[0], b=z[1])  # noqa: S311
 
         return Vec3(x, y, z)
 

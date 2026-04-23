@@ -18,7 +18,7 @@ from fusrr.modelling.blender.tools.scene_tools import (
 )
 
 
-class EUDEMO_Compound(BlenderCompound):
+class EUDEMO_Compound(BlenderCompound):  # noqa: N801
     """Compound for the EUDEMO reactor components."""
 
     def __init__(self, components, *, translation: Vec3 | None = None):
@@ -36,6 +36,7 @@ class EUDEMO_Compound(BlenderCompound):
 
 @component
 def EUDEMO_Reactor(mfile_filepath: PathLike, translation: Vec3 | None = None):
+    """A component for creating an EUDEMO Reactor."""
     useSetProvider(process_params_provider, mfile_filepath)
 
     return EUDEMO_Compound(

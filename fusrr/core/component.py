@@ -13,8 +13,6 @@ if TYPE_CHECKING:
     from collections.abc import Callable
     from contextvars import Context
 
-    from fusrr.core.project import ProjectContext
-
 
 class Comp(Generic[S]):
     def __init__(self, *, builder: Callable[[], None] | None = None):
@@ -138,7 +136,7 @@ class FusrrComponent(Generic[S]):
 
     def _set_constructed(self, constructed: CONSTRUCTOR_RETURN) -> None:
         """Sets the type of the component based on the constructed object."""
-        if not isinstance(constructed, (Comp, Compound)):
+        if not isinstance(constructed, (Comp | Compound)):
             raise TypeError(
                 f"Expected Comp or Compound, got {type(constructed)}."
             )

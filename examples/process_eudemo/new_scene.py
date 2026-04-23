@@ -26,15 +26,16 @@ a = provider(lambda n: TestClassToBeProvided(n))
 
 class ExampleInnerCompDesigner(Designer):
     def run(self) -> None:
-        print(f"$$$ Running ExampleInnerCompDesigner")
+        print("$$$ Running ExampleInnerCompDesigner")
 
 
 @component
 def InnerComp(some_prop):
+    """A component for building an inner component."""
     p = useProvider(a)
-    d = useDesigner(ExampleInnerCompDesigner())
+    useDesigner(ExampleInnerCompDesigner())
 
-    def builder():
+    def builder() -> None:
         print(
             f"InnerComp: some_prop={some_prop}, provided_value={p.some_value}"
         )
@@ -47,12 +48,13 @@ class ExampleCompDesigner(Designer):
         self.bval = bval
 
     def run(self) -> None:
-        print(f"$$$ Running ExampleCompDesigner")
+        print("$$$ Running ExampleCompDesigner")
         self.val = 5
 
 
 @component
 def ExampleCoComp():
+    """An example compound component."""
     print("Running ExampleCoComp...")
 
     useSetProvider(a, 42)

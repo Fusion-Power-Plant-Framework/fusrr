@@ -12,7 +12,7 @@ plugins:
   - search
   - gen-files:
       scripts:
-      - scripts/gen_ref_pages.py
+        - scripts/gen_ref_pages.py
   - autorefs
 nav:
   - index.md

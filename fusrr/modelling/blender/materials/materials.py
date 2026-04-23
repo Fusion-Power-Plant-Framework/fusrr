@@ -8,6 +8,7 @@ from fusrr.modelling.blender.data_libs.materials_lib import (
 from fusrr.modelling.blender.materials.base import BlenderMaterial
 
 if TYPE_CHECKING:
+    import bpy
     from fusrr.modelling.blender.materials.value_models import (
         MaterialColour,
         MaterialValue,
