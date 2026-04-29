@@ -1,9 +1,13 @@
-from typing import Literal
+from __future__ import annotations
 
-import bpy
+from typing import Literal, TYPE_CHECKING
+
 from pydantic import BaseModel
 
 from fusrr.core.vectors import Vec3
+
+if TYPE_CHECKING:
+    import bpy
 
 
 class BlenderTransform(BaseModel):

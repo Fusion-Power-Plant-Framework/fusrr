@@ -1,5 +1,8 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import numpy as np
-import bpy
 from pydantic import BaseModel
 
 from fusrr import component
@@ -11,6 +14,9 @@ from fusrr.hooks.hooks import useDesigner
 from fusrr.modelling.blender.component import BlenderComp, BlenderCompound
 from fusrr.modelling.blender.project import BlenderProject
 from fusrr.modelling.blender.tools.mesh_tools import add_cube
+
+if TYPE_CHECKING:
+    import bpy
 
 
 class SimpleSceneState(BaseModel):

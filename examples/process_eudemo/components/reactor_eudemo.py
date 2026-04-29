@@ -1,4 +1,6 @@
-from os import PathLike
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from examples.process_eudemo.components.blanket import Blanket
 from examples.process_eudemo.components.cryostat import Cryostat
@@ -8,7 +10,6 @@ from examples.process_eudemo.components.tf_coils import TFCoils
 from examples.process_eudemo.components.vacuum_vessel import VacuumVessel
 from examples.process_eudemo.providers import process_params_provider
 from fusrr import component
-from fusrr.core.vectors import Vec3
 from fusrr.hooks import useSetProvider
 from fusrr.modelling.blender import BlenderCompound
 from fusrr.modelling.blender.tools.ops_tools import translate_selected
@@ -16,6 +17,10 @@ from fusrr.modelling.blender.tools.scene_tools import (
     deselect_all,
     select_collection_all_objects,
 )
+
+if TYPE_CHECKING:
+    from os import PathLike
+    from fusrr.core.vectors import Vec3
 
 
 class EUDEMO_Compound(BlenderCompound):  # noqa: N801

@@ -1,5 +1,6 @@
 """Collection of functions that operate on Blender objects."""
 
+from __future__ import annotations
 from typing import Literal
 
 import bpy

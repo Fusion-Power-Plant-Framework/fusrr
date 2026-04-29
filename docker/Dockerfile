@@ -17,7 +17,9 @@ ENV HATCH_ENV_TYPE_VIRTUAL_PATH=.venv
 RUN apt-get update && apt-get upgrade -y \
     && apt-get install -y software-properties-common \
     && add-apt-repository -y ppa:deadsnakes/ppa \
-    && apt-get install -y python3.13.0 python3-pip \
+    && apt-get update \
+    && apt-get install -y python3.13 \
+    && apt-get install -y python3-pip \
     # pyxdg seems to help the Docker container to run without errors
     && pip install --upgrade pip hatch pyxdg
 

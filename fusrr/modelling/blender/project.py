@@ -1,9 +1,11 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import time
-from os import PathLike
 from pathlib import Path
 from typing import Literal
 
-from fusrr.core.component import FusrrComponent
 from fusrr.core.config_model import ProjectConfig, S, SceneConfig
 from fusrr.core.project import FusrrProject
 from fusrr.modelling.blender.data_libs.materials_lib import (
@@ -16,6 +18,10 @@ from fusrr.modelling.blender.tools.scene_tools import (
     deselect_all,
     render_scene,
 )
+
+if TYPE_CHECKING:
+    from os import PathLike
+    from fusrr.core.component import FusrrComponent
 
 
 class BlenderProject(FusrrProject[S]):

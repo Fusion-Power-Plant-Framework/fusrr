@@ -1,12 +1,10 @@
-from pathlib import Path
+from __future__ import annotations
 
-import bpy
+from typing import TYPE_CHECKING
 
-from examples.bluemira_eudemo.scene_state import BmEUDEMOSceneState
 from fusrr import Scene, Vec3, component
 from fusrr.hooks import Designer, useDesigner
 from fusrr.modelling.blender.component import BlenderComp, BlenderCompound
-from fusrr.modelling.blender.materials.base import BlenderMaterial
 from fusrr.modelling.blender.materials.materials import (
     MetallicMaterial,
     PlasmaMaterial,
@@ -22,6 +20,12 @@ from fusrr.modelling.blender.tools.scene_tools import (
     import_gltf,
     remove_object,
 )
+
+if TYPE_CHECKING:
+    from pathlib import Path
+    import bpy
+    from examples.bluemira_eudemo.scene_state import BmEUDEMOSceneState
+    from fusrr.modelling.blender.materials.base import BlenderMaterial
 
 
 @component

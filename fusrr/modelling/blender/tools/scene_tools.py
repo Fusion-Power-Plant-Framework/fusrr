@@ -1,12 +1,17 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import re
-from collections.abc import Iterable
-from os import PathLike
 from pathlib import Path
 from typing import Literal
 
 import bpy
 
-from fusrr.core.vectors import Vec3
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+    from os import PathLike
+    from fusrr.core.vectors import Vec3
 
 
 def check_object_in_scene(name: str) -> bool:

@@ -1,7 +1,10 @@
-import re
-from typing import Any
+from __future__ import annotations
 
-from process.io.mfile import MFile
+import re
+from typing import Any, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from process.io.mfile import MFile
 
 
 class ProcessParams:
