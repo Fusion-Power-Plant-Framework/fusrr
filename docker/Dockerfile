@@ -13,15 +13,10 @@ ENV FUSRR_RUN_TYPE=tests
 ENV HATCH_ENV_TYPE_VIRTUAL_PATH=.venv
 
 ## -- Install Python 3.13 (from a ppa), pip, and Hatch --
+FROM python:3.13-slim-trixie
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-RUN apt-get update && apt-get upgrade -y \
-    && apt-get install -y software-properties-common \
-    && add-apt-repository -y ppa:deadsnakes/ppa \
-    && apt-get update \
-    && apt-get install -y python3.13 \
-    && apt-get install -y python3-pip \
-    # pyxdg seems to help the Docker container to run without errors
-    && pip install --upgrade pip hatch pyxdg
+RUN uv python install 3.13
 
 # -- Setup and build PROCESS --
 
