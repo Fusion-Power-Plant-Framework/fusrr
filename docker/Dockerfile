@@ -5,6 +5,9 @@ RUN mkdir /tmp/.X11-unix && \
     chmod 1777 /tmp/.X11-unix && \
     chown root:root /tmp/.X11-unix
 
+# for uv install later
+FROM python:3.13-slim-trixie
+
 # This is read by the docker_entry.sh script,
 # used to determine if tests or exmaples should be run
 ENV FUSRR_RUN_TYPE=tests
@@ -13,15 +16,14 @@ ENV FUSRR_RUN_TYPE=tests
 ENV HATCH_ENV_TYPE_VIRTUAL_PATH=.venv
 
 ## -- Install Python 3.13 from uv --
-FROM python:3.13-slim-trixie
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
-
 RUN uv python install 3.13
 
 # -- Setup and build PROCESS --
 RUN apt-get update && apt-get upgrade -y \
     && apt-get install -y git
 
+RUN uv pip install --system hatch hatchling hatch-vcs
 RUN uv pip install --system "git+https://github.com/ukaea/process@v3.3.0"
 
 # for now, we only need the python source from PROCESS
