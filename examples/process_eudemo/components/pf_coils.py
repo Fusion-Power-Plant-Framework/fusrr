@@ -40,8 +40,9 @@ class PFCoilsDesigner(Designer):
         def _rgx(prefix: str, n: int) -> str:
             return _rgx_f(prefix, f"{n:01}")
 
-        number_of_coils = self.params.n_keys_with(
-            _rgx_f("r_pf_coil_middle", r"\d")
+        # -1 because the MFILE uses the rgx for referencing CS radius
+        number_of_coils = (
+            self.params.n_keys_with(_rgx_f("r_pf_coil_middle", r"\d")) - 1
         )
 
         # If central solenoid is not present
@@ -55,7 +56,7 @@ class PFCoilsDesigner(Designer):
                 width=self.params.get_with(_rgx("pfdr", coil)),
                 height=self.params.get_with(_rgx("pfdz", coil)),
             )
-            for coil in range(number_of_coils - 1)
+            for coil in range(number_of_coils)
         ]
 
         self.central_coil_geom = RectangleGeometry(
