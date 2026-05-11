@@ -42,7 +42,7 @@ Setup and activate your environment with your chosen Python environment manager 
 Run the following to install this project as a local editable install, with the necessary optional dependency groups:
 
 ```bash
-pip install -e '.[dev,test,lint]'
+pip install -e '.[dev,test,lint,examples]'
 ```
 
 ### With Hatch
@@ -82,26 +82,20 @@ This will create the default hatch environment in the project folder.
 
 Then set the path to your Python environment in your editor to `.hatch/fusrr/bin/python`
 
+If you are experiencing issues with Python versions, run this before `hatch shell`:
+
+```bash
+hatch env remove default
+```
+
 ## Installing PROCESS
 
 After your environment has been setup, you will need to install PROCESS.
 
-Make sure your environment is active, clone [PROCESS](https://github.com/ukaea/PROCESS) and follow the install [instructions](https://ukaea.github.io/PROCESS/installation/installation-ubuntu/).
-
-In summary you need to run the following:
+Make sure your environment is active, then run the following:
 
 ```bash
-sudo apt update
-sudo apt install -y cmake gfortran python3-pip lcov poppler-utils python3-venv
-
-git clone https://github.com/ukaea/PROCESS
-cd PROCESS
-
-cmake -S . -B build
-cmake --build build
-
-# make sure you have your FUSRR Python environment active
-pip install -e .
+pip install -e .['process']
 ```
 
 ## Tests
