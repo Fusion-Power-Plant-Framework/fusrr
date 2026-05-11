@@ -2,7 +2,7 @@
 
 **Fus**ion **R**eactor **R**enderer
 
-![image](examples/initial_collage.png)
+<img width="1920" height="1920" alt="Image" src="https://github.com/user-attachments/assets/28a17dfb-0e67-49c4-b2c0-5fcd8a776458" />
 
 ## Developing visualisations of fusion reactors
 
