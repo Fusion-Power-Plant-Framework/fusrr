@@ -17,7 +17,7 @@ def Light(transform: BlenderTransform):
     def builder(name: str) -> bpy.types.Object:
         return add_light(
             name,
-            type="SPOT",
+            light_type="SPOT",
             energy=10000,
             spot_angle_rad=math.pi / 2,
         )

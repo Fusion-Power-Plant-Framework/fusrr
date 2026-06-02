@@ -2,7 +2,7 @@
 
 **Fus**ion **R**eactor **R**enderer
 
-<img width="1920" height="1920" alt="Image" src="https://github.com/user-attachments/assets/28a17dfb-0e67-49c4-b2c0-5fcd8a776458" />
+<img width="500" height="500" alt="Image" src="https://github.com/user-attachments/assets/28a17dfb-0e67-49c4-b2c0-5fcd8a776458" />
 
 ## Developing visualisations of fusion reactors
 
@@ -25,19 +25,14 @@ Although any Python environment manager can be used, we recommend using the defa
 To get bpy module types, install the following dependencies:
 
 ```bash
-pip install fake-bpy-module-4.3
-```
-
-For the latest version of `bpy` you can use:
-
-```bash
 pip install fake-bpy-module-latest
 ```
 
 ### Without Hatch
 
-1
 Setup and activate your environment with your chosen Python environment manager (pyenv, conda, virtualenv, etc.)
+
+Ensure your Python version is between 3.13 - 3.13.8.
 
 Run the following to install this project as a local editable install, with the necessary optional dependency groups:
 
@@ -82,7 +77,7 @@ This will create the default hatch environment in the project folder.
 
 Then set the path to your Python environment in your editor to `.hatch/fusrr/bin/python`
 
-If you are experiencing issues with Python versions, run this before `hatch shell`:
+If you are experiencing issues with Python versions setting to a default rather than the necessary 3.13 - 3.13.8 required for `fusrr`, run this before running `hatch shell` again:
 
 ```bash
 hatch env remove default
