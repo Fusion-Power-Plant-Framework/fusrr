@@ -32,12 +32,13 @@ pip install fake-bpy-module-latest
 
 Setup and activate your environment with your chosen Python environment manager (pyenv, conda, virtualenv, etc.)
 
-Ensure your Python version is between 3.13 - 3.13.8.
+> [!IMPORTANT]
+> Ensure your Python version is between 3.13 - 3.13.8.
 
 Run the following to install this project as a local editable install, with the necessary optional dependency groups:
 
 ```bash
-pip install -e '.[dev,test,lint,examples]'
+pip install -e '.[dev,test,lint]'
 ```
 
 ### With Hatch
@@ -51,6 +52,21 @@ pip install hatch
 ```
 
 If you can run `hatch -h` then Hatch has been successfully installed.
+
+> [!IMPORTANT]
+> Ensure you have Hatch version 1.13.0 or later, otherwise it won't cover Python 3.13.
+
+If you already have Hatch installed, check your version by running:
+
+```bash
+hatch --version
+```
+
+If it is below 1.13.0, please run the following:
+
+```bash
+pip install --upgrade hatch
+```
 
 We recommend setting the `dirs.env` in your hatch config to the following:
 
