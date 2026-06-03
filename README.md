@@ -28,19 +28,6 @@ To get bpy module types, install the following dependencies:
 pip install fake-bpy-module-latest
 ```
 
-### Without Hatch
-
-Setup and activate your environment with your chosen Python environment manager (pyenv, conda, virtualenv, etc.)
-
-> [!IMPORTANT]
-> Ensure your Python version is between 3.13 - 3.13.8.
-
-Run the following to install this project as a local editable install, with the necessary optional dependency groups:
-
-```bash
-pip install -e '.[dev,test,lint]'
-```
-
 ### With Hatch
 
 To start using Hatch, it must be installed and accessible from the command line. See the Hatch [installation](https://hatch.pypa.io/latest/install/) for more.
@@ -99,6 +86,19 @@ If you are experiencing issues with Python versions setting to a default rather 
 hatch env remove default
 ```
 
+### Without Hatch
+
+Setup and activate your environment with your chosen Python environment manager (pyenv, conda, virtualenv, etc.)
+
+> [!IMPORTANT]
+> Ensure your Python version is between 3.13 - 3.13.8.
+
+Run the following to install this project as a local editable install, with the necessary optional dependency groups:
+
+```bash
+pip install -e '.[dev,test,lint]'
+```
+
 ## Installing PROCESS
 
 After your environment has been setup, you will need to install PROCESS.
@@ -111,11 +111,18 @@ pip install -e .['process']
 
 ## Tests
 
-Run
+If using Hatch, run:
 
 ```bash
 hatch run test:tests
 ```
+
+Else use pytest:
+
+```bash
+pytest tests
+```
+
 
 ## Licence Information
 
