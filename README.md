@@ -96,7 +96,7 @@ Setup and activate your environment with your chosen Python environment manager 
 Run the following to install this project as a local editable install, with the necessary optional dependency groups:
 
 ```bash
-pip install -e '.[dev,test,lint]'
+pip install -e .'[dev,test,lint]'
 ```
 
 ## Installing PROCESS

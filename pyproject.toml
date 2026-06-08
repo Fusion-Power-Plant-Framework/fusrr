@@ -19,7 +19,7 @@ description = ""
 readme = "README.md"
 dynamic = ['version']
 license = "MIT"
-requires-python = ">=3.13, <3.13.9"
+requires-python = ">=3.13"
 keywords = ["tokamak", "blender", "rendering", "nuclear", "fusion"]
 classifiers = [
   "Programming Language :: Python",
@@ -31,7 +31,7 @@ classifiers = [
 ]
 
 dependencies = [
-  "bpy==5.1.1", "numpy", "pydantic>=2.11.0"
+  "bpy", "numpy", "pydantic>=2.11.0"
   ]
 
 [project.optional-dependencies]
