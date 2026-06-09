@@ -8,12 +8,15 @@
 
 The aim of this repository is to take outputs from ``PROCESS`` and `BLUEMIRA` and render them to be able to produce useful visualisations in Blender.
 
+> [! NOTE]
+> We are tied to the Python version required by the Blender module, bpy.
+
 ## Setup
 
 This project required Git LFS, install it on Ubuntu:
 
 ```bash
-apt install git-lfs
+sudo apt install git-lfs
 ```
 
 Git LFS is commonly part of Git and installed along with it.
@@ -96,7 +99,7 @@ Setup and activate your environment with your chosen Python environment manager 
 Run the following to install this project as a local editable install, with the necessary optional dependency groups:
 
 ```bash
-pip install -e .'[dev,test,lint]'
+python -m pip install -e .'[dev,test,lint]'
 ```
 
 ## Installing PROCESS
