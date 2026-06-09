@@ -8,7 +8,7 @@
 
 The aim of this repository is to take outputs from [`PROCESS`](https://github.com/ukaea/PROCESS) and [`Bluemira`](https://github.com/Fusion-Power-Plant-Framework/bluemira) and render them to be able to produce useful visualisations in Blender.
 
-> [! NOTE]
+> [!NOTE]
 > We are tied to the Python version required by the Blender module, bpy.
 > Currently this is Python 3.13.0 - 3.13.8.
 
