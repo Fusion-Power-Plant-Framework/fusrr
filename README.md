@@ -90,20 +90,6 @@ Make sure your environment is active, then run the following:
 python -m pip install -e .'[process]'
 ```
 
-## Tests
-
-If using Hatch, run:
-
-```bash
-hatch run test:tests
-```
-
-Else use pytest:
-
-```bash
-pytest tests
-```
-
 ## Troubleshooting
 
 ### Hatch
