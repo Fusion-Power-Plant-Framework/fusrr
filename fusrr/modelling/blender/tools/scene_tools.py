@@ -1,12 +1,17 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import re
-from collections.abc import Iterable
-from os import PathLike
 from pathlib import Path
 from typing import Literal
 
 import bpy
 
-from fusrr.core.vectors import Vec3
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+    from os import PathLike
+    from fusrr.core.vectors import Vec3
 
 
 def check_object_in_scene(name: str) -> bool:
@@ -90,7 +95,8 @@ def create_object(
 
     Args:
         name: The name of the object to create.
-        mesh: The mesh to use for the object. If None, a new mesh will be created.
+        mesh: The mesh to use for the object.
+            If None, a new mesh will be created.
     """
     deselect_all()
 
@@ -172,7 +178,8 @@ def get_object_by_pattern_f(pattern: str) -> bpy.types.Object:
     """Get a single object whose name matches the given pattern.
 
     Raises:
-        ValueError: If no object is found or if multiple objects match the pattern.
+        ValueError: If no object is found or
+            if multiple objects match the pattern.
 
     Args:
         pattern: The regular expression pattern to match.
@@ -387,7 +394,7 @@ def import_gltf(
     objs_name_prefix: str | None = None,
     scale: Vec3 | None = None,
 ) -> None:
-    """Imports gltf file"""
+    """Imports gltf file."""
     deselect_all()
     bpy.ops.import_scene.gltf(filepath=Path(gltf_path).resolve().as_posix())
     if scale is not None:
@@ -418,7 +425,8 @@ def render_scene(
         "TARGA_RAW",  # Targa Raw.Output image in uncompressed Targa format.
         "CINEON",  # Cineon.Output image in Cineon format.
         "DPX",  # DPX.Output image in DPX format.
-        "OPEN_EXR_MULTILAYER",  # OpenEXR MultiLayer.Output image in multilayer OpenEXR format.
+        "OPEN_EXR_MULTILAYER",  # OpenEXR MultiLayer.
+        # Output image in multilayer OpenEXR format.
         "OPEN_EXR",  # OpenEXR.Output image in OpenEXR format.
         "HDR",  # Radiance HDR.Output image in Radiance HDR format.
         "TIFF",  # TIFF.Output image in TIFF format.
@@ -426,15 +434,19 @@ def render_scene(
         "FFMPEG",  # FFmpeg Video.
     ] = "JPEG",
     engine: Literal[
-        "BLENDER_EEVEE_NEXT", "BLENDER_WORKBENCH", "CYCLES"
-    ] = "BLENDER_EEVEE_NEXT",
+        "BLENDER_EEVEE", "BLENDER_WORKBENCH", "CYCLES"
+    ] = "BLENDER_EEVEE",
     samples: int = 10,
 ):
     """Render the current scene to an image file.
 
     Args:
-        output_path: The path to save the rendered image.
         scene_name: The name of the scene to render. Defaults to "RenderScene".
+        output_path: The path to save the rendered image.
+        res: Resolution of the rendered image.
+        file_format: The format to save the file in.
+        engine: The name of the render engine.
+        samples: Number of samples to render.
     """
     if not bpy.context.scene.camera:
         print("Attempting to render with no camera set in the scene.")
@@ -447,7 +459,7 @@ def render_scene(
     bpy.context.scene.render.resolution_y = res[1]
     bpy.context.scene.render.image_settings.file_format = file_format
 
-    bpy.context.scene.render.engine = engine  # type: ignore
+    bpy.context.scene.render.engine = engine
     bpy.context.scene.cycles.samples = samples
     bpy.context.scene.cycles.preview_samples = samples
     bpy.context.scene.eevee.taa_samples = samples

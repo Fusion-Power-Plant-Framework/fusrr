@@ -45,23 +45,23 @@ class TFCoilsDesigner(Designer):
         self.end_angle = end_angle
 
     def run(self) -> None:
-        tf_ib_tk = self.params.tfc_inleg
+        tf_ib_tk = self.params.dr_tf_inboard
         rt_angle = np.pi / 2
         rt_angle2 = 2 * rt_angle
 
-        x1 = self.params["xarc(1)"]
-        y1 = self.params["yarc(1)"]
-        x2 = self.params["xarc(2)"]
-        y2 = self.params["yarc(2)"]
-        x3 = self.params["xarc(3)"]
-        y3 = self.params["yarc(3)"]
-        x4 = self.params["xarc(4)"]
-        y4 = self.params["yarc(4)"]
-        x5 = self.params["xarc(5)"]
-        y5 = self.params["yarc(5)"]
+        x1 = self.params["r_tf_arc(1)"]
+        y1 = self.params["z_tf_arc(1)"]
+        x2 = self.params["r_tf_arc(2)"]
+        y2 = self.params["z_tf_arc(2)"]
+        x3 = self.params["r_tf_arc(3)"]
+        y3 = self.params["z_tf_arc(3)"]
+        x4 = self.params["r_tf_arc(4)"]
+        y4 = self.params["z_tf_arc(4)"]
+        x5 = self.params["r_tf_arc(5)"]
+        y5 = self.params["z_tf_arc(5)"]
         if y3 != 0:
             print(
-                "TF coil geometry: The value of yarc(3) is not zero, "
+                "TF coil geometry: The value of z_tf_arc(3) is not zero, "
                 "but should be."
             )
 
@@ -78,7 +78,7 @@ class TFCoilsDesigner(Designer):
                 y2=y2,
                 y4=y4,
                 y5=y5,
-                tfcth=tf_ib_tk,
+                dr_tf_inboard=tf_ib_tk,
             )
             face_verts = None
         else:
@@ -92,7 +92,7 @@ class TFCoilsDesigner(Designer):
                 y2=y2,
                 y4=y4,
                 y5=y5,
-                tfcth=tf_ib_tk,
+                dr_tf_inboard=tf_ib_tk,
                 rtangle=rt_angle,
                 rtangle2=rt_angle2,
             )
@@ -104,7 +104,7 @@ class TFCoilsDesigner(Designer):
                     seg_pts.append(Vec3(x, 0, z))
                 path_pts.append(seg_pts)
 
-            angle_per_coil = 360 / self.params["n_tf"]
+            angle_per_coil = 360 / self.params["n_tf_coils"]
 
             self.tf_cls = [
                 TFCoilDShape(
@@ -113,7 +113,7 @@ class TFCoilsDesigner(Designer):
                     ib_leg_end=Vec3(x5, 0, y5),
                     ob_leg_arch_pts=path_pts,
                 )
-                for n in range(int(self.params["n_tf"]))
+                for n in range(int(self.params["n_tf_coils"]))
                 if self.start_angle < n * angle_per_coil < self.end_angle
             ]
 
@@ -139,6 +139,8 @@ def TFCoils(*, scene: Scene[ProcessEUDEMOSceneState]):
 
 @component
 def TFCoil(cl: TFCoilDShape):
+    """Component to build the TF coils of a PROCESS reactor."""
+
     def builder(_obj, m) -> None:
         # Inner (straight) leg
         mesh_add_edges_from_points(m, [cl.ib_leg_start, cl.ib_leg_end])

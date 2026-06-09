@@ -8,7 +8,7 @@ from examples.process_eudemo.scene_state import ProcessEUDEMOSceneState
 from fusrr import Vec3, component
 from fusrr.core.config_model import Scene
 from fusrr.hooks import Designer, useDesigner, useProvider
-from fusrr.modelling.blender import BlenderComp, BlenderCompound
+from fusrr.modelling.blender import BlenderComp
 from fusrr.modelling.blender.materials import MaterialColour, MetallicMaterial
 from fusrr.modelling.blender.tools.mesh_tools import (
     mesh_add_edges_from_points,
@@ -34,22 +34,22 @@ class VacuumVesselDesigner(Designer):
 
         # Outer side (furthest from plasma)
         radx_outer = (
-            cumulative_radial_build("d_vv_out", self.params)
-            + cumulative_radial_build("gapds", self.params)
+            cumulative_radial_build("dr_vv_outboard", self.params)
+            + cumulative_radial_build("dr_shld_vv_gap_inboard", self.params)
         ) / 2.0
         rminx_outer = (
-            cumulative_radial_build("d_vv_out", self.params)
-            - cumulative_radial_build("gapds", self.params)
+            cumulative_radial_build("dr_vv_outboard", self.params)
+            - cumulative_radial_build("dr_shld_vv_gap_inboard", self.params)
         ) / 2.0
 
         # Inner side (nearest to the plasma)
         radx_inner = (
-            cumulative_radial_build("shldoth", self.params)
-            + cumulative_radial_build("d_vv_in", self.params)
+            cumulative_radial_build("dr_shld_outboard", self.params)
+            + cumulative_radial_build("dr_vv_inboard", self.params)
         ) / 2.0
         rminx_inner = (
-            cumulative_radial_build("shldoth", self.params)
-            - cumulative_radial_build("d_vv_in", self.params)
+            cumulative_radial_build("dr_shld_outboard", self.params)
+            - cumulative_radial_build("dr_vv_inboard", self.params)
         ) / 2.0
 
         if i_single_null == 1:

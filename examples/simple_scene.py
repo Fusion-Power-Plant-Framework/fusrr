@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import numpy as np
 from pydantic import BaseModel
 
@@ -11,6 +15,9 @@ from fusrr.modelling.blender.component import BlenderComp, BlenderCompound
 from fusrr.modelling.blender.project import BlenderProject
 from fusrr.modelling.blender.tools.mesh_tools import add_cube
 
+if TYPE_CHECKING:
+    import bpy
+
 
 class SimpleSceneState(BaseModel):
     n_cubes: int
@@ -19,8 +26,9 @@ class SimpleSceneState(BaseModel):
 
 @component
 def cube(scale: Vec3, location: Vec3):
-    def builder(comp_name: str):
-        """Builds a simple cube."""
+    """Builds a simple cube."""
+
+    def builder(comp_name: str) -> bpy.types.Object:
         return add_cube(
             name=comp_name,
             scale=scale,
@@ -58,12 +66,13 @@ class CubeCurveDesigner(Designer):
         # Build the (scale, location) pairs
         self.vals = [
             (Vec3.ONE * s, Vec3(x, y, 0.0))
-            for s, x, y in zip(scales, positions, y_positions)
+            for s, x, y in zip(scales, positions, y_positions, strict=False)
         ]
 
 
 @component
 def cube_curve(*, scene: Scene[SimpleSceneState]):
+    """Creates a curve of cubes."""
     d = useDesigner(
         CubeCurveDesigner(
             n_cubes=scene.state.n_cubes,

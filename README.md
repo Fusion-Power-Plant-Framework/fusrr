@@ -2,48 +2,32 @@
 
 **Fus**ion **R**eactor **R**enderer
 
-![image](examples/initial_collage.png)
+<img width="500" height="500" alt="Image" src="https://github.com/user-attachments/assets/28a17dfb-0e67-49c4-b2c0-5fcd8a776458" />
 
 ## Developing visualisations of fusion reactors
 
-The aim of this repository is to take outputs from ``PROCESS`` and `BLUEMIRA` and render them to be able to produce useful visualisations in Blender.
+The aim of this repository is to take outputs from [`PROCESS`](https://github.com/ukaea/PROCESS) and [`Bluemira`](https://github.com/Fusion-Power-Plant-Framework/bluemira) and render them to be able to produce useful visualisations in Blender.
+
+> [!NOTE]
+> We are tied to the Python version required by the Blender module, bpy.
+> Currently this is Python 3.13.0 - 3.13.8.
 
 ## Setup
 
-This project required Git LFS, install it on Ubuntu:
+This project required [Git LFS](https://github.com/git-lfs/git-lfs). Git LFS is commonly part of Git and installed along with it, but you can install it on Ubuntu:
 
 ```bash
-apt install git-lfs
+sudo apt install git-lfs
 ```
-
-Git LFS is commonly part of Git and installed along with it.
-
-This project uses [Hatch](https://hatch.pypa.io/latest/).
-
-Although any Python environment manager can be used, we recommend using the default environment setup by Hatch.
 
 To get bpy module types, install the following dependencies:
 
 ```bash
-pip install fake-bpy-module-4.3
+pip install fake-bpy-module
 ```
 
-For the latest version of `bpy` you can use:
+This project uses [Hatch](https://hatch.pypa.io/latest/). Although any Python environment manager can be used, we recommend using the default environment setup by Hatch.
 
-```bash
-pip install fake-bpy-module-latest
-```
-
-### Without Hatch
-
-1
-Setup and activate your environment with your chosen Python environment manager (pyenv, conda, virtualenv, etc.)
-
-Run the following to install this project as a local editable install, with the necessary optional dependency groups:
-
-```bash
-pip install -e '.[dev,test,lint]'
-```
 
 ### With Hatch
 
@@ -56,6 +40,7 @@ pip install hatch
 ```
 
 If you can run `hatch -h` then Hatch has been successfully installed.
+
 
 We recommend setting the `dirs.env` in your hatch config to the following:
 
@@ -80,37 +65,56 @@ hatch shell
 
 This will create the default hatch environment in the project folder.
 
-Then set the path to your Python environment in your editor to `.hatch/fusrr/bin/python`
+If using an editor, set the path to your Python environment in your editor to `.hatch/fusrr/bin/python`.
+
+### Without Hatch
+
+Setup and activate your environment with your chosen Python environment manager (pyenv, conda, virtualenv, etc.)
+
+> [!IMPORTANT]
+> Ensure your Python version is between 3.13.0 - 3.13.8.
+
+Run the following to install this project as a local editable install, with the necessary optional dependency groups:
+
+```bash
+python -m pip install -e .'[dev,test,lint]'
+```
 
 ## Installing PROCESS
 
 After your environment has been setup, you will need to install PROCESS.
 
-Make sure your environment is active, clone [PROCESS](https://github.com/ukaea/PROCESS) and follow the install [instructions](https://ukaea.github.io/PROCESS/installation/installation-ubuntu/).
-
-In summary you need to run the following:
+Make sure your environment is active, then run the following:
 
 ```bash
-sudo apt update
-sudo apt install -y cmake gfortran python3-pip lcov poppler-utils python3-venv
-
-git clone https://github.com/ukaea/PROCESS
-cd PROCESS
-
-cmake -S . -B build
-cmake --build build
-
-# make sure you have your FUSRR Python environment active
-pip install -e .
+python -m pip install -e .'[process]'
 ```
 
-## Tests
+## Troubleshooting
 
-Run
+### Hatch
+
+> [!IMPORTANT]
+> Ensure you have Hatch version 1.13.0 or later, otherwise it won't cover Python 3.13.
+
+If you already have Hatch installed, check your version by running:
 
 ```bash
-hatch run test:tests
+hatch --version
 ```
+
+If it is below 1.13.0, please update it:
+
+```bash
+pip install --upgrade hatch
+```
+
+If you are experiencing issues with Python versions setting to a default rather than the necessary 3.13.0 - 3.13.8 required for `fusrr`, run this before running `hatch shell` again:
+
+```bash
+hatch env remove default
+```
+
 
 ## Licence Information
 

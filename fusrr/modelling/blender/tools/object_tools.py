@@ -1,5 +1,6 @@
 """Collection of functions that operate on Blender objects."""
 
+from __future__ import annotations
 from typing import Literal
 
 import bpy
@@ -117,7 +118,7 @@ def add_light(
     *,
     energy: int = 100,
     color: Vec3 = Vec3.ONE,
-    type: Literal[
+    light_type: Literal[
         "POINT",  # Point.Omnidirectional point light source.
         "SUN",  # Sun.Constant direction parallel ray light source.
         "SPOT",  # Spot.Directional cone light source.
@@ -126,10 +127,15 @@ def add_light(
     spot_angle_rad: float = 0.0,
 ) -> bpy.types.Object:
     """Add a light to the scene.
+
     Args:
         name: The name of the light to add.
+        energy: Intensity of the light.
+        color: Color of light.
+        light_type: Type of light to use.
+        spot_angle_rad: Angle to direct the light.
     """
-    light_data = bpy.data.lights.new(name, type=type)
+    light_data = bpy.data.lights.new(name, type=light_type)
     light = bpy.data.objects.new(name, light_data)
     bpy.context.scene.collection.objects.link(light)
     light.location = (0, 0, 0)
@@ -146,6 +152,7 @@ def add_camera(
 
     Args:
         name: The name of the camera to add.
+        activate_for_scene: Whether to activate the camera
     """
     cam_data = bpy.data.cameras.new(name)
     cam = bpy.data.objects.new(name, cam_data)

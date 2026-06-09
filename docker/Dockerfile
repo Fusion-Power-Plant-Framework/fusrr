@@ -5,6 +5,7 @@ RUN mkdir /tmp/.X11-unix && \
     chmod 1777 /tmp/.X11-unix && \
     chown root:root /tmp/.X11-unix
 
+
 # This is read by the docker_entry.sh script,
 # used to determine if tests or exmaples should be run
 ENV FUSRR_RUN_TYPE=tests
@@ -12,26 +13,18 @@ ENV FUSRR_RUN_TYPE=tests
 # sets the virtual environment path for Hatch
 ENV HATCH_ENV_TYPE_VIRTUAL_PATH=.venv
 
-## -- Install Python 3.10 (from a ppa), pip, and Hatch --
-
-RUN apt-get update && apt-get upgrade -y \
-    && apt-get install -y software-properties-common \
-    && add-apt-repository -y ppa:deadsnakes/ppa \
-    && apt-get install -y python3.10 python3-pip \
-    # pyxdg seems to help the Docker container to run without errors
-    && pip install --upgrade pip hatch pyxdg
+## -- Install Python 3.13 from uv --
+FROM python:3.13-slim-trixie
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+RUN uv python install 3.13
 
 # -- Setup and build PROCESS --
+RUN apt-get update && apt-get upgrade -y \
+    && apt-get install -y git
 
-# Packages needed by PROCESS
-RUN apt-get install -y \
-    git \
-    cmake \
-    gfortran \
-    lcov \
-    poppler-utils
+RUN uv pip install --system hatch hatchling hatch-vcs
+RUN uv pip install --system "git+https://github.com/ukaea/process@v3.3.0"
 
-RUN git clone --depth 1 --branch v3.1.0 https://github.com/ukaea/PROCESS
 # for now, we only need the python source from PROCESS
 # and don't need to build it, as we don't run it.
 #! do not remove - could be useful in the future

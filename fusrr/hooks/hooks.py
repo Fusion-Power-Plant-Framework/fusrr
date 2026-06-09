@@ -3,8 +3,6 @@ from __future__ import annotations
 import contextlib
 from typing import TYPE_CHECKING, Any
 
-from cvxpy import entr
-
 from fusrr.hooks._hook_state import HOOK_STATE
 from fusrr.hooks.base import D, P, Provided, T
 
@@ -40,6 +38,7 @@ def _deps_should_run(
 
 
 def useDesigner(designer: D, deps: Sequence[Any] | None = ()) -> D:
+    """Either use designer or run designer."""
     entry = HOOK_STATE.frame_entry_for(designer)
     if entry is None or _deps_should_run(entry.deps, deps):
         designer.run()
@@ -50,6 +49,7 @@ def useDesigner(designer: D, deps: Sequence[Any] | None = ()) -> D:
 
 
 def provider(prov: Callable[P, T]) -> Provided[P, T]:
+    """Provides instances of a specific type."""
     return Provided(prov)
 
 

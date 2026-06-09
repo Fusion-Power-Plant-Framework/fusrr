@@ -1,9 +1,11 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import time
-from os import PathLike
 from pathlib import Path
 from typing import Literal
 
-from fusrr.core.component import FusrrComponent
 from fusrr.core.config_model import ProjectConfig, S, SceneConfig
 from fusrr.core.project import FusrrProject
 from fusrr.modelling.blender.data_libs.materials_lib import (
@@ -16,6 +18,10 @@ from fusrr.modelling.blender.tools.scene_tools import (
     deselect_all,
     render_scene,
 )
+
+if TYPE_CHECKING:
+    from os import PathLike
+    from fusrr.core.component import FusrrComponent
 
 
 class BlenderProject(FusrrProject[S]):
@@ -34,8 +40,8 @@ class BlenderProject(FusrrProject[S]):
         output_directory: PathLike | None = None,
         overwrite: bool = False,
         render_engine: Literal[
-            "BLENDER_EEVEE_NEXT", "BLENDER_WORKBENCH", "CYCLES"
-        ] = "BLENDER_EEVEE_NEXT",
+            "BLENDER_EEVEE", "BLENDER_WORKBENCH", "CYCLES"
+        ] = "BLENDER_EEVEE",
         render_res: tuple[int, int] = (1920, 1920),
         render_samples: int = 10,
         render_file_format: Literal["PNG", "JPEG"] = "PNG",
@@ -55,6 +61,10 @@ class BlenderProject(FusrrProject[S]):
             overwrite:
                 Whether to overwrite the .blend file when saving,
                 if it already exists.
+            render_engine: The engine to use for rendering.
+            render_res: The resolution of the rendered image.
+            render_samples: Number of samples to render.
+            render_file_format: File format to save the rendered image as.
             default_scene:
                 The default scene state for the project.
         """
