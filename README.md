@@ -10,7 +10,7 @@ The aim of this repository is to take outputs from [`PROCESS`](https://github.co
 
 > [! NOTE]
 > We are tied to the Python version required by the Blender module, bpy.
-> Currently this is Python 3.13 - 3.13.8.
+> Currently this is Python 3.13.0 - 3.13.8.
 
 ## Setup
 
@@ -72,7 +72,7 @@ If using an editor, set the path to your Python environment in your editor to `.
 Setup and activate your environment with your chosen Python environment manager (pyenv, conda, virtualenv, etc.)
 
 > [!IMPORTANT]
-> Ensure your Python version is between 3.13 - 3.13.8.
+> Ensure your Python version is between 3.13.0 - 3.13.8.
 
 Run the following to install this project as a local editable install, with the necessary optional dependency groups:
 
@@ -109,7 +109,7 @@ If it is below 1.13.0, please update it:
 pip install --upgrade hatch
 ```
 
-If you are experiencing issues with Python versions setting to a default rather than the necessary 3.13 - 3.13.8 required for `fusrr`, run this before running `hatch shell` again:
+If you are experiencing issues with Python versions setting to a default rather than the necessary 3.13.0 - 3.13.8 required for `fusrr`, run this before running `hatch shell` again:
 
 ```bash
 hatch env remove default
