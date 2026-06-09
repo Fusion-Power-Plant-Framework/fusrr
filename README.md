@@ -6,7 +6,7 @@
 
 ## Developing visualisations of fusion reactors
 
-The aim of this repository is to take outputs from ``PROCESS`` and `BLUEMIRA` and render them to be able to produce useful visualisations in Blender.
+The aim of this repository is to take outputs from [`PROCESS`](https://github.com/ukaea/PROCESS) and [`Bluemira`](https://github.com/Fusion-Power-Plant-Framework/bluemira) and render them to be able to produce useful visualisations in Blender.
 
 > [! NOTE]
 > We are tied to the Python version required by the Blender module, bpy.
@@ -87,7 +87,7 @@ After your environment has been setup, you will need to install PROCESS.
 Make sure your environment is active, then run the following:
 
 ```bash
-pip install -e .'[process]'
+python -m pip install -e .'[process]'
 ```
 
 ## Tests
