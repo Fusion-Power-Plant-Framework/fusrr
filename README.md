@@ -10,26 +10,24 @@ The aim of this repository is to take outputs from ``PROCESS`` and `BLUEMIRA` an
 
 > [! NOTE]
 > We are tied to the Python version required by the Blender module, bpy.
+> Currently this is Python 3.13 - 3.13.8.
 
 ## Setup
 
-This project required Git LFS, install it on Ubuntu:
+This project required [Git LFS](https://github.com/git-lfs/git-lfs). Git LFS is commonly part of Git and installed along with it, but you can install it on Ubuntu:
 
 ```bash
 sudo apt install git-lfs
 ```
 
-Git LFS is commonly part of Git and installed along with it.
-
-This project uses [Hatch](https://hatch.pypa.io/latest/).
-
-Although any Python environment manager can be used, we recommend using the default environment setup by Hatch.
-
 To get bpy module types, install the following dependencies:
 
 ```bash
-pip install fake-bpy-module-latest
+pip install fake-bpy-module
 ```
+
+This project uses [Hatch](https://hatch.pypa.io/latest/). Although any Python environment manager can be used, we recommend using the default environment setup by Hatch.
+
 
 ### With Hatch
 
@@ -43,20 +41,6 @@ pip install hatch
 
 If you can run `hatch -h` then Hatch has been successfully installed.
 
-> [!IMPORTANT]
-> Ensure you have Hatch version 1.13.0 or later, otherwise it won't cover Python 3.13.
-
-If you already have Hatch installed, check your version by running:
-
-```bash
-hatch --version
-```
-
-If it is below 1.13.0, please run the following:
-
-```bash
-pip install --upgrade hatch
-```
 
 We recommend setting the `dirs.env` in your hatch config to the following:
 
@@ -81,13 +65,7 @@ hatch shell
 
 This will create the default hatch environment in the project folder.
 
-Then set the path to your Python environment in your editor to `.hatch/fusrr/bin/python`
-
-If you are experiencing issues with Python versions setting to a default rather than the necessary 3.13 - 3.13.8 required for `fusrr`, run this before running `hatch shell` again:
-
-```bash
-hatch env remove default
-```
+If using an editor, set the path to your Python environment in your editor to `.hatch/fusrr/bin/python`.
 
 ### Without Hatch
 
@@ -109,7 +87,7 @@ After your environment has been setup, you will need to install PROCESS.
 Make sure your environment is active, then run the following:
 
 ```bash
-pip install -e .['process']
+pip install -e .'[process]'
 ```
 
 ## Tests
@@ -124,6 +102,31 @@ Else use pytest:
 
 ```bash
 pytest tests
+```
+
+## Troubleshooting
+
+### Hatch
+
+> [!IMPORTANT]
+> Ensure you have Hatch version 1.13.0 or later, otherwise it won't cover Python 3.13.
+
+If you already have Hatch installed, check your version by running:
+
+```bash
+hatch --version
+```
+
+If it is below 1.13.0, please update it:
+
+```bash
+pip install --upgrade hatch
+```
+
+If you are experiencing issues with Python versions setting to a default rather than the necessary 3.13 - 3.13.8 required for `fusrr`, run this before running `hatch shell` again:
+
+```bash
+hatch env remove default
 ```
 
 
