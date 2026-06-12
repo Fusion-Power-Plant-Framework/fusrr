@@ -10,24 +10,11 @@ The aim of this repository is to take outputs from [`PROCESS`](https://github.co
 
 > [!NOTE]
 > We are tied to the Python version required by the Blender module, bpy.
-> Currently this is Python 3.13.0 - 3.13.8.
+> Currently this is Python 3.13.
 
 ## Setup
 
-This project required [Git LFS](https://github.com/git-lfs/git-lfs). Git LFS is commonly part of Git and installed along with it, but you can install it on Ubuntu:
-
-```bash
-sudo apt install git-lfs
-```
-
-To get bpy module types, install the following dependencies:
-
-```bash
-pip install fake-bpy-module
-```
-
 This project uses [Hatch](https://hatch.pypa.io/latest/). Although any Python environment manager can be used, we recommend using the default environment setup by Hatch.
-
 
 ### With Hatch
 
@@ -42,21 +29,6 @@ pip install hatch
 If you can run `hatch -h` then Hatch has been successfully installed.
 
 
-We recommend setting the `dirs.env` in your hatch config to the following:
-
-```toml
-[dirs.env]
-virtual = ".hatch"
-```
-
-The path to this file can be found by running:
-
-```bash
-hatch config find
-```
-
-It makes it easier to set the path to environment in your code editor.
-
 Then run:
 
 ```bash
@@ -65,19 +37,12 @@ hatch shell
 
 This will create the default hatch environment in the project folder.
 
-If using an editor, set the path to your Python environment in your editor to `.hatch/fusrr/bin/python`.
-
 ### Without Hatch
 
 Setup and activate your environment with your chosen Python environment manager (pyenv, conda, virtualenv, etc.)
 
-> [!IMPORTANT]
-> Ensure your Python version is between 3.13.0 - 3.13.8.
-
-Run the following to install this project as a local editable install, with the necessary optional dependency groups:
-
 ```bash
-python -m pip install -e .'[dev,test,lint]'
+python -m pip install .
 ```
 
 ## Installing PROCESS
@@ -115,6 +80,34 @@ If you are experiencing issues with Python versions setting to a default rather 
 hatch env remove default
 ```
 
+## Development
+
+Run the following to install this project as a local editable install, with the necessary optional dependency groups:
+
+```bash
+python -m pip install -e .'[dev, test, lint]'
+```
+
+Install the following dependencies to enable code completion of Blender Python API modules in commonly used IDEs:
+
+```bash
+pip install fake-bpy-module
+```
+
+If using Hatch: to make it easier to set the path to environment in your code editor, we recommend setting the `dirs.env` in your hatch config to the following:
+
+```toml
+[dirs.env]
+virtual = ".hatch"
+```
+
+The path to this file can be found by running:
+
+```bash
+hatch config find
+```
+
+If using an editor, set the path to your Python environment in your editor to `.hatch/fusrr/bin/python`.
 
 ## Licence Information
 

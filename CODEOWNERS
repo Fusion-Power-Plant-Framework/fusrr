@@ -1,8 +1,8 @@
 # Rendering Pipeline codeowners file
 
-# All PRs need to be approved by at least 1 member of the renderingpipeline team
+# All PRs need to be approved by at least 1 member of the fusrr-admin team
 
-*       @Fusion-Power-Plant-Framework/renderingpipeline
+*       @Fusion-Power-Plant-Framework/fusrr-admin
 
 # Module responsibility
 
@@ -10,8 +10,8 @@
 
 # Repository responsibility
 
-/.* @Fusion-Power-Plant-Framework/renderingpipeline
-/.github/ @Fusion-Power-Plant-Framework/renderingpipeline
-/LICENCE @Fusion-Power-Plant-Framework/renderingpipeline
-/pyproject.toml @Fusion-Power-Plant-Framework/renderingpipeline
-/scripts/ @Fusion-Power-Plant-Framework/renderingpipeline
+/.* @Fusion-Power-Plant-Framework/fusrr-admin
+/.github/ @Fusion-Power-Plant-Framework/fusrr-admin
+/LICENCE @Fusion-Power-Plant-Framework/fusrr-admin
+/pyproject.toml @Fusion-Power-Plant-Framework/fusrr-admin
+/scripts/ @Fusion-Power-Plant-Framework/fusrr-admin

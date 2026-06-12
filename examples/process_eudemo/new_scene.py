@@ -21,7 +21,7 @@ class TestClassToBeProvided(Designer):
         print(f"Running TestClassToBeProvided with value: {self.some_value}")
 
 
-a = provider(lambda n: TestClassToBeProvided(n))
+a = provider(lambda n: TestClassToBeProvided(n))  # noqa: PLW0108
 
 
 class ExampleInnerCompDesigner(Designer):

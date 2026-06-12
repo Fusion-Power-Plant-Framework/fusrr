@@ -78,7 +78,7 @@ class Vec3:
         """Return a random vector with coordinates
         in the range [-scale, scale].
         """
-        from random import uniform
+        from random import uniform  # noqa:  PLC0415
 
         return Vec3(
             uniform(a=range_start, b=range_end),  # noqa: S311
@@ -97,7 +97,7 @@ class Vec3:
         """Return a random vector with coordinates
         in the range [-scale, scale] per axis.
         """
-        from random import uniform
+        from random import uniform  # noqa: PLC0415
 
         if isinstance(x, tuple):
             x = uniform(a=x[0], b=x[1])  # noqa: S311
