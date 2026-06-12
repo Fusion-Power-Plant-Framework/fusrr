@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Generic, ParamSpec, TypeVar
+from typing import TYPE_CHECKING, ParamSpec, TypeVar
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -21,7 +21,7 @@ P = ParamSpec("P")
 T = TypeVar("T")
 
 
-class Provided(Generic[P, T]):
+class Provided[P, T]:
     """A class to provide instances of a specific type."""
 
     def __init__(self, cb: Callable[P, T]):
