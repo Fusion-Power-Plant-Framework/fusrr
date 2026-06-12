@@ -19,7 +19,7 @@ def load_json(config_path: PathLike) -> dict[str, Any]:
 T = TypeVar("T")
 
 
-def run_list_async_concurrently(
+def run_list_async_concurrently[T](
     itr: Iterable[T], func_getter: Callable[[T], Callable]
 ) -> list:
     """Run a list of functions concurrently."""
