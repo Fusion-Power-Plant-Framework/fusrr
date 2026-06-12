@@ -1,27 +1,27 @@
 cff-version: 1.2.0
 authors:
-  - family-names: Brady
-    given-names: H.
-    affiliation: United Kingdom Atomic Energy Authority, Culham Science Centre, Abingdon, Oxfordshire OX14 3DB, United Kingdom
-
   - family-names: Cook
     given-names: J. E.
-    affiliation: United Kingdom Atomic Energy Authority, Culham Science Centre, Abingdon, Oxfordshire OX14 3DB, United Kingdom
-
-  - family-names: Maddock
-    given-names: J.
-    affiliation: United Kingdom Atomic Energy Authority, Culham Science Centre, Abingdon, Oxfordshire OX14 3DB, United Kingdom
-
-  - family-names: Murphy
-    given-names: M.
     affiliation: United Kingdom Atomic Energy Authority, Culham Science Centre, Abingdon, Oxfordshire OX14 3DB, United Kingdom
 
   - family-names: Funk
     given-names: O.
     affiliation: United Kingdom Atomic Energy Authority, Culham Science Centre, Abingdon, Oxfordshire OX14 3DB, United Kingdom
 
+  - family-names: Maddock
+    given-names: J.
+    affiliation: United Kingdom Atomic Energy Authority, Culham Science Centre, Abingdon, Oxfordshire OX14 3DB, United Kingdom
+
   - family-names: Peters
     given-names: J. A.
+    affiliation: United Kingdom Atomic Energy Authority, Culham Science Centre, Abingdon, Oxfordshire OX14 3DB, United Kingdom
+
+  - family-names: Brady
+    given-names: H.
+    affiliation: United Kingdom Atomic Energy Authority, Culham Science Centre, Abingdon, Oxfordshire OX14 3DB, United Kingdom
+
+  - family-names: Murphy
+    given-names: M.
     affiliation: United Kingdom Atomic Energy Authority, Culham Science Centre, Abingdon, Oxfordshire OX14 3DB, United Kingdom
 
 title: "fusrr: A Rendering Pipeline for Fusion Reactor Designs"
