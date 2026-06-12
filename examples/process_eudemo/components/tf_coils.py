@@ -69,7 +69,7 @@ class TFCoilsDesigner(Designer):
         i_tf_shape = int(self.params.get("i_tf_shape", 1))
 
         if i_tf_shape == 2:  # noqa: PLR2004
-            rects = tfcoil_geometry_rectangular_shape(
+            _rects = tfcoil_geometry_rectangular_shape(
                 x1=x1,
                 x2=x2,
                 x4=x4,
@@ -82,7 +82,7 @@ class TFCoilsDesigner(Designer):
             )
             face_verts = None
         else:
-            rects, face_verts = tfcoil_geometry_d_shape(
+            _rects, face_verts = tfcoil_geometry_d_shape(
                 x1=x1,
                 x2=x2,
                 x3=x3,
