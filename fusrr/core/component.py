@@ -63,7 +63,7 @@ class FusrrComponent[S]:
         self._file = inspect.getfile(self._constructor)
         self._sig = inspect.signature(self._constructor)
         self._scene_in_params = "scene" in self._sig.parameters
-        self._constructor_name = self._constructor.__name__
+        self._constructor_name = self._constructor.__name__  # ty: ignore[unresolved-attribute]
         self._set_name = name
         self._args = args or ()
         self._kwargs = kwargs or {}
@@ -187,9 +187,9 @@ class FusrrComponent[S]:
         constructed = self._run_constructor(ctx=ctx, scene=scene)
         # self.is_compound is set by _set_constructed in _run_constructor
         if self.is_compound:
-            self._build_compound(constructed, scene, proj_ctx)  # type: ignore[call-arg]
+            self._build_compound(constructed, scene, proj_ctx)  # ty: ignore[invalid-argument-type]
         else:
-            self._build_component(constructed, scene)  # type: ignore[call-arg]
+            self._build_component(constructed, scene)  # ty: ignore[invalid-argument-type]
         ctx.run(self._run_ctx_cleanup)
         proj_ctx.pop_key()
 

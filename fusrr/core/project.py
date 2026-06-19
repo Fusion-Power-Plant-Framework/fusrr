@@ -14,7 +14,6 @@ from fusrr.hooks._hook_state import HOOK_STATE
 
 if TYPE_CHECKING:
     from contextvars import Context
-
     from fusrr.core.component import FusrrComponent
 
 

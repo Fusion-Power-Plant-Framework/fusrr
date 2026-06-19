@@ -5,8 +5,7 @@ from typing import TYPE_CHECKING, Any, ClassVar
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
-    from fusrr.hooks.base import Provided
-    from fusrr.hooks.base import P, R, Runnable, T
+    from fusrr.hooks.base import Provided, P, R, Runnable, T
 
 
 class CacheEntry[T]:
