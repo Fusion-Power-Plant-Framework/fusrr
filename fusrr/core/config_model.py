@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from typing import Generic, TypeVar
+from typing import TypeVar, Generic
 
 from pydantic import BaseModel
 
@@ -10,17 +10,17 @@ S = TypeVar("S", bound=BaseModel)
 
 
 @dataclass(frozen=True)
-class Scene(Generic[S]):
+class Scene[S]:
     name: str
     state: S
 
 
-class SceneStateSelect(BaseModel, Generic[S]):
+class SceneStateSelect(BaseModel, Generic[S]):  # noqa: UP046
     component: str
     state: S | list[S | None]
 
 
-class SceneConfig(BaseModel, Generic[S]):
+class SceneConfig(BaseModel, Generic[S]):  # noqa: UP046
     name: str
     state: S | list[S]
     select: list[SceneStateSelect[S]] | None = None
@@ -53,5 +53,5 @@ class SceneConfig(BaseModel, Generic[S]):
         return Scene(name=self.name, state=ss)
 
 
-class ProjectConfig(BaseModel, Generic[S]):
+class ProjectConfig(BaseModel, Generic[S]):  # noqa: UP046
     scenes: list[SceneConfig[S]]

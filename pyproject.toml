@@ -44,7 +44,7 @@ test = [
   "pytest-json-report",
 ]
 docs = ["mkdocs-material", "mkdocstrings[python]"]
-lint = ["ruff", "mypy"]
+lint = ["ruff", "ty"]
 process = ["process @ git+https://github.com/ukaea/process@v3.3.0"]
 
 [project.urls]
@@ -91,6 +91,10 @@ dependencies = ["ruff", "pre-commit"]
 [tool.hatch.envs.lint.scripts]
 style = "ruff check {args:.}"
 fmt   = "pre-commit run --all-files --hook-stage manual"
+type  = "ty check {args: .}"
+
+[tool.ty.rules]
+unresolved-import = "ignore"
 
 # tool: ruff
 [tool.ruff]
@@ -109,8 +113,6 @@ exclude = [
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [
-  "UP046",  # To do with Generic subclass
-  "UP047",  # likewise, fix soon
   "INP001", # Ignore requiring __init__.py files
   "D105",   # Don't require docstrings for magic methods
   "N802",   # Upper case function names are allowed

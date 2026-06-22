@@ -3,18 +3,18 @@ from __future__ import annotations
 import contextlib
 import inspect
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Generic
+from typing import TYPE_CHECKING, Any
 
-from fusrr.core.config_model import S, Scene
 from fusrr.core.project import ProjectContext
 from fusrr.hooks._hook_state import HOOK_STATE
 
 if TYPE_CHECKING:
     from collections.abc import Callable
     from contextvars import Context
+    from fusrr.core.config_model import S, Scene
 
 
-class Comp(Generic[S]):
+class Comp[S]:
     def __init__(self, *, builder: Callable[[], None] | None = None):
         self._builder = builder
 
@@ -25,7 +25,7 @@ class Comp(Generic[S]):
             raise NotImplementedError("Builder function is not defined.")
 
 
-class Compound(Generic[S]):
+class Compound[S]:
     def __init__(
         self,
         components: list[FusrrComponent],
@@ -51,7 +51,7 @@ class Compound(Generic[S]):
 CONSTRUCTOR_RETURN = Comp | Compound
 
 
-class FusrrComponent(Generic[S]):
+class FusrrComponent[S]:
     def __init__(
         self,
         constructor: Callable[..., CONSTRUCTOR_RETURN],
@@ -63,7 +63,7 @@ class FusrrComponent(Generic[S]):
         self._file = inspect.getfile(self._constructor)
         self._sig = inspect.signature(self._constructor)
         self._scene_in_params = "scene" in self._sig.parameters
-        self._constructor_name = self._constructor.__name__
+        self._constructor_name = self._constructor.__name__  # ty: ignore[unresolved-attribute]
         self._set_name = name
         self._args = args or ()
         self._kwargs = kwargs or {}
@@ -187,9 +187,9 @@ class FusrrComponent(Generic[S]):
         constructed = self._run_constructor(ctx=ctx, scene=scene)
         # self.is_compound is set by _set_constructed in _run_constructor
         if self.is_compound:
-            self._build_compound(constructed, scene, proj_ctx)  # type: ignore[call-arg]
+            self._build_compound(constructed, scene, proj_ctx)  # ty: ignore[invalid-argument-type]
         else:
-            self._build_component(constructed, scene)  # type: ignore[call-arg]
+            self._build_component(constructed, scene)  # ty: ignore[invalid-argument-type]
         ctx.run(self._run_ctx_cleanup)
         proj_ctx.pop_key()
 

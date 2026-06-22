@@ -21,7 +21,7 @@ P = ParamSpec("P")
 T = TypeVar("T")
 
 
-class Provided(Generic[P, T]):
+class Provided(Generic[P, T]):  # noqa: UP046
     """A class to provide instances of a specific type."""
 
     def __init__(self, cb: Callable[P, T]):

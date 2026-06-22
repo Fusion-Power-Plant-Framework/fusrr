@@ -6,7 +6,7 @@ from examples.simple_scene import cube
 @pytest.mark.skip(reason="test not ready yet")
 def test_pipeline():
     # Test currently using dummy values
-    pipeline = FusrrBuildPipeline(world_state=FusrrWorldState())  # noqa: F821
+    pipeline = FusrrBuildPipeline(world_state=FusrrWorldState())  # noqa: F821 # ty: ignore[unresolved-reference]
     assert pipeline.entity_names() == set()
     assert pipeline.object_names() == set()
     assert pipeline.collection_names() == set()

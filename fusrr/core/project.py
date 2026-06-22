@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections import deque
 from os import PathLike
 from pathlib import Path
-from typing import TYPE_CHECKING, Generic
+from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
 
@@ -14,11 +14,10 @@ from fusrr.hooks._hook_state import HOOK_STATE
 
 if TYPE_CHECKING:
     from contextvars import Context
-
     from fusrr.core.component import FusrrComponent
 
 
-class ProjectContext(Generic[S]):
+class ProjectContext[S]:
     def __init__(
         self,
         *,
@@ -61,7 +60,7 @@ class ProjectContext(Generic[S]):
         return self._cur_scene_config.get_applicable_scene(name, self.ptx_id)
 
 
-class FusrrProject(Generic[S]):
+class FusrrProject[S]:
     def __init__(
         self,
         project_name: str,

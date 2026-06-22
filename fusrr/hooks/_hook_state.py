@@ -1,15 +1,14 @@
 from __future__ import annotations
 
 from contextvars import Context, ContextVar, copy_context
-from typing import TYPE_CHECKING, Any, ClassVar, Generic
-
-from fusrr.hooks.base import P, Provided, R, Runnable, T
+from typing import TYPE_CHECKING, Any, ClassVar
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
+    from fusrr.hooks.base import Provided, P, R, Runnable, T
 
 
-class CacheEntry(Generic[T]):
+class CacheEntry[T]:
     def __init__(self, inst: T, deps: Sequence[Any]):
         self.inst = inst
         self.deps = deps
