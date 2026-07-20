@@ -60,7 +60,7 @@ features = ["dev", "test", "lint"]
 [tool.hatch.envs.docker-examples]
 dependencies = ["process @ file:///PROCESS"]
 [[tool.hatch.envs.docker-examples.matrix]]
-python = ["3.13.0", "3.13.1", "3.13.2", "3.13.3", "3.13.4", "3.13.5", "3.13.6", "3.13.7", "3.13.8", "3.13.9", "3.13.10", "3.13.11", "3.13.12"]
+python = ["3.13.10", "3.13.11", "3.13.12", "3.13.13", "3.13.14"]
 [tool.hatch.envs.docker-examples.scripts]
 # super hacky for now
 run = "python examples/simple_scene.py && python examples/combined_eudemo/run_project.py"
@@ -70,7 +70,7 @@ run = "python examples/simple_scene.py && python examples/combined_eudemo/run_pr
 features = ["test"]
 # when in Docker, it can only run tests on imported python versions, so must match
 [[tool.hatch.envs.test.matrix]]
-python = ["3.13.0", "3.13.1", "3.13.2", "3.13.3", "3.13.4", "3.13.5", "3.13.6", "3.13.7", "3.13.8", "3.13.9", "3.13.10", "3.13.11", "3.13.12"]
+python = ["3.13.10", "3.13.11", "3.13.12", "3.13.13", "3.13.14"]
 [tool.hatch.envs.test.scripts]
 tests      = "pytest {args:tests}"
 tests-cov  = "coverage run -m pytest {args:tests}"
@@ -113,6 +113,9 @@ exclude = [
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [
+  "RUF105",  # keep codes
+  "RUF106",
+  "RUF201",
   "INP001", # Ignore requiring __init__.py files
   "D105",   # Don't require docstrings for magic methods
   "N802",   # Upper case function names are allowed
