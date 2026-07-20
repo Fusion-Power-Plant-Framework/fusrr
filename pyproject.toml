@@ -113,6 +113,9 @@ exclude = [
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [
+  "RUF105",  # keep codes
+  "RUF106",
+  "RUF201",
   "INP001", # Ignore requiring __init__.py files
   "D105",   # Don't require docstrings for magic methods
   "N802",   # Upper case function names are allowed
